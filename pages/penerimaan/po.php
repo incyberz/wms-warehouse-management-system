@@ -1,3 +1,16 @@
+<?php
+include 'podo_styles.php';
+
+$p = $_GET['p'] ?? '';
+if($p!=''){
+  if(file_exists("$p.php")){
+    include "$p.php";
+  }else{
+    include 'na.php';
+  }
+}else{
+?>
+
 <div class="pagetitle">
   <h1>Purchase Order / Penerimaan Barang</h1>
   <nav>
@@ -30,17 +43,17 @@
       /*margin-bottom: 20px;*/
     }
 
-    .jumlah_po{
+    .jumlah_podo{
       font-family: verdana;
       font-size: 25px;
       color: #555;
     }
 
-    .jumlah_item{
+    .jumlah_item_podo{
       color: #888;
       font-size: 14px;
     }
-    .satuan{
+    .satuan_podo{
       color: #aaa;
       font-size: 12px;
     }
@@ -52,24 +65,24 @@
       </div>
       <div id="blok_steps">
         <div>
-          <a href="?data_po">Data PO</a> 
-          <br><span class="jumlah_po"><?=12 ?> <span class=satuan>PO</span></span>
-          <br><span class="jumlah_item"><?=3412 ?> <span class=satuan>item</span></span>
+          <a href="?po&p=data_po">Data PO</a> 
+          <br><span class="jumlah_podo"><?=12 ?> <span class=satuan_podo>PO</span></span>
+          <br><span class="jumlah_item_podo"><?=3412 ?> <span class=satuan_podo>item</span></span>
         </div>
         <div>
-          <a href="?penerimaan">Penerimaan</a> 
-          <br><span class="jumlah_po"><?=11 ?> <span class=satuan>PO</span></span>
-          <br><span class="jumlah_item"><?=3411 ?> <span class=satuan>item</span></span>
+          <a href="?po&p=terima_barang">Terima Barang</a> 
+          <br><span class="jumlah_podo"><?=11 ?> <span class=satuan_podo>PO</span></span>
+          <br><span class="jumlah_item_podo"><?=3411 ?> <span class=satuan_podo>item</span></span>
         </div>
         <div>
-          <a href="?penempatan">Penempatan</a> 
-          <br><span class="jumlah_po"><?=9 ?> <span class=satuan>PO</span></span>
-          <br><span class="jumlah_item"><?=3051 ?> <span class=satuan>item</span></span>
+          <a href="?po&p=penempatan">Penempatan</a> 
+          <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
+          <br><span class="jumlah_item_podo"><?=3051 ?> <span class=satuan_podo>item</span></span>
         </div>
         <div>
-          <a href="?stok_gudang">Stok Gudang</a> 
-          <br><span class="jumlah_po"><?=9 ?> <span class=satuan>PO</span></span>
-          <br><span class="jumlah_item"><?=2912 ?> <span class=satuan>item</span></span>
+          <a href="?po&p=stok_gudang">Stok Gudang</a> 
+          <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
+          <br><span class="jumlah_item_podo"><?=2912 ?> <span class=satuan_podo>item</span></span>
         </div>
       </div>
     </div>
@@ -77,3 +90,4 @@
   </div>
 </section>
 
+<?php } ?>

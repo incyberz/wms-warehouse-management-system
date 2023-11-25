@@ -2,7 +2,7 @@
   <h1>Data PO</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po_home">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
       <li class="breadcrumb-item active">Data PO</li>
     </ol>
   </nav>
@@ -33,7 +33,7 @@ while($d=mysqli_fetch_assoc($q)){
   ";
 }
 
-echo $tr=='' ? div_alert('danger', 'Belum ada data PO | <a href="?tambah_po">Buat PO baru</a>') : "
+echo $tr=='' ? div_alert('danger', 'Belum ada data PO | <a href="?po&p=tambah_po">Buat PO baru</a>') : "
   <table class=table>
     <thead>
       <th>NO</th>

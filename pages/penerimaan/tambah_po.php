@@ -12,8 +12,8 @@ $img_add = '<img class="zoom pointer" src="assets/img/icons/add.png" alt="add" h
   <h1>Tambah PO</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po_home">PO Home</a></li>
-      <li class="breadcrumb-item"><a href="?data_po">Data PO</a></li>
+      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?po&p=data_po">Data PO</a></li>
       <li class="breadcrumb-item active">Tambah PO</li>
     </ol>
   </nav>

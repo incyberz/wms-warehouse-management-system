@@ -41,13 +41,13 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link collapsed" href="?po_home">
+      <a class="nav-link collapsed" href="?po">
         <i class="bi bi-person"></i>
         <span>Transasksi PO</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
+      <a class="nav-link collapsed" href="?do">
         <i class="bi bi-person"></i>
         <span>Transasksi DO</span>
       </a>
@@ -56,7 +56,7 @@
     <li class="nav-heading">Laporan</li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
+      <a class="nav-link collapsed" href="?laporan">
         <i class="bi bi-person"></i>
         <span>Laporan</span>
       </a>
