@@ -3,12 +3,14 @@ include 'podo_styles.php';
 
 $p = $_GET['p'] ?? '';
 if($p!=''){
-  if(file_exists("$p.php")){
+  if(file_exists("pages/pengiriman/$p.php")){
     include "$p.php";
   }else{
     include 'na.php';
   }
 }else{
+
+$id_do = 1; //zzz debug
 ?>
 
 <div class="pagetitle">
@@ -34,7 +36,7 @@ if($p!=''){
           <br><span class="jumlah_item_podo"><?=3412 ?> <span class=satuan_podo>item</span></span>
         </div>
         <div>
-          <a href="?do&p=picking">Picking</a> 
+          <a href="?do&p=picking_list">Picking</a> 
           <br><span class="jumlah_podo"><?=11 ?> <span class=satuan_podo>DO</span></span>
           <br><span class="jumlah_item_podo"><?=3411 ?> <span class=satuan_podo>item</span></span>
         </div>

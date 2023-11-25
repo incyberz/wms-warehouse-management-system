@@ -15,15 +15,15 @@
     </div>
 
     <div class="card-body">
-      <h5 class="card-title">Receiving <span>| Today</span></h5>
+      <h5 class="card-title">Penerimaan <span>| Today</span></h5>
 
       <div class="d-flex align-items-center">
         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
           <i class="bi bi-arrow-down-square"></i>
         </div>
         <div class="ps-3">
-          <h6>98</h6>
-          <span class="text-success small pt-1 fw-bold">5</span> <span class="text-muted small pt-2 ps-1">supplier</span>
+          <h6>98 <span class="text-muted small pt-2 ps-1">QTY</span></h6>
+          <span class="text-success small pt-1 fw-bold">5</span> <span class="text-muted small pt-2 ps-1">Purchase Order</span>
 
         </div>
       </div>

@@ -3,7 +3,7 @@ include 'podo_styles.php';
 
 $p = $_GET['p'] ?? '';
 if($p!=''){
-  if(file_exists("$p.php")){
+  if(file_exists("pages/penerimaan/$p.php")){
     include "$p.php";
   }else{
     include 'na.php';

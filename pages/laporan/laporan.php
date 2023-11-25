@@ -1,7 +1,7 @@
 <?php
 $p = $_GET['p'] ?? '';
 if($p!=''){
-  if(file_exists("$p.php")){
+  if(file_exists("pages/laporan/$p.php")){
     include "$p.php";
   }else{
     include 'na.php';

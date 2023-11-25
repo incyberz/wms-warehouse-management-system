@@ -144,71 +144,11 @@ $img_add = '<img class="zoom pointer" src="assets/img/icons/add.png" alt="add" h
     </div>
   </div>
   
-  <div class="wadah gradasi-hijau">
-    <h2 class=tengah>Picking List</h2>
-    <div class="wadah">
-      <div class="row">
-        <div class="col-6">
-          <div class="row">
-            <div class="col-4 miring abu">Nomor DO</div>
-            <div class="col-8">K02123123</div>
-            <div class="col-4 miring abu">Delivery No</div>
-            <div class="col-8">19836436</div>
-            <div class="col-4 miring abu">Operator</div>
-            <div class="col-8">Iin Sholihin</div>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="row">
-            <div class="col-4 miring abu">Tanggal Pengiriman</div>
-            <div class="col-8">09 - 10 - 2023</div>
-            <div class="col-4 miring abu">OTP</div>
-            <div class="col-8">IN2</div>
-            <div class="col-4 miring abu">Total QTY</div>
-            <div class="col-8">6.102.43</div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <table class="table table-striped">
-      <thead class=gradasi-hijau>
-        <th>NO</th>
-        <th>ITEM</th>
-        <th>KETERANGAN ITEM</th>
-        <th>SATUAN</th>
-        <th>QUANTITY</th>
-        <th>HARGA</th>
-        <th>JUMLAH</th>
-      </thead>
-      
-      <tr>
-        <td>1</td>
-        <td>K001</td>
-        <td>KAIN KATUN JET BLACK <?=$img_delete?></td>
-        <td>KG</td>
-        <td class=kanan>503.00</td>
-        <td class=kanan>115.315.32</td>
-        <td class=kanan>58.033.876.21</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>K027</td>
-        <td>KAIN BATIK ORI CIREBON MEGA MENDUNG <?=$img_delete?></td>
-        <td>KG</td>
-        <td class=kanan>19.00</td>
-        <td class=kanan>116.315.32</td>
-        <td class=kanan>2.208.108.21</td>
-      </tr> 
-      <tr>
-        <td><span class='miring abu kecil'>3</span></td>
-        <td colspan=6 ><span class="green pointer">Tambah item <?=$img_add?></span></td>
-      </tr> 
-    
-    </table>
-    <hr>
-    <button class='btn btn-primary'>Cetak Picking List</button>
-  </div>
+  <!-- ========================================================= -->
+  <!-- PICKING LISTS -->
+  <!-- ========================================================= -->
+  <?php include 'picking_list.php'; ?>
   
   <div class=' mt1 p1'>
     <div style='display:grid; grid-template-columns: 70px auto'>

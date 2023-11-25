@@ -22,8 +22,8 @@
           <i class="bi bi-arrow-down-up"></i>
         </div>
         <div class="ps-3">
-          <h6>3</h6>
-          <span class="text-success small pt-1 fw-bold">2</span> <span class="text-muted small pt-2 ps-1">supplier</span>
+          <h6>3 <span class="text-muted small pt-2 ps-1">PO</span></h6>
+          <span class="text-success small pt-1 fw-bold">29</span> <span class="text-muted small pt-2 ps-1">PO Total</span>
 
         </div>
       </div>

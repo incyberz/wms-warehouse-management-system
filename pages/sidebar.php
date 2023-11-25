@@ -29,27 +29,28 @@
     <li class="nav-heading">Transaksi</li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
-        <i class="bi bi-person"></i>
-        <span>PO Retur</span>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
-        <i class="bi bi-person"></i>
-        <span>DO Retur</span>
-      </a>
-    </li>
-    <li class="nav-item">
       <a class="nav-link collapsed" href="?po">
-        <i class="bi bi-person"></i>
-        <span>Transasksi PO</span>
+        <i class="bi bi-arrow-down-square"></i>
+        <span>Penerimaan (PO)</span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link collapsed" href="?do">
-        <i class="bi bi-person"></i>
-        <span>Transasksi DO</span>
+        <i class="bi bi-send-check"></i>
+        <span>Pengiriman (DO)</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?retur_po">
+        <i class="bi bi-arrow-return-left"></i>
+        <span>Retur PO</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?retur_do">
+        <i class="bi bi-arrow-return-right"></i>
+        <span>Retur DO</span>
       </a>
     </li>
 
@@ -57,7 +58,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" href="?laporan">
-        <i class="bi bi-person"></i>
+        <i class="bi bi-file-earmark-spreadsheet"></i>
         <span>Laporan</span>
       </a>
     </li>
