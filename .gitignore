@@ -1,0 +1,9 @@
+uploads/
+tmp/
+assets/
+assets/vendor/
+
+*old.*
+*.txt
+*.html
+*.tmp
