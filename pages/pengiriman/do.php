@@ -4,13 +4,13 @@ include 'podo_styles.php';
 $p = $_GET['p'] ?? '';
 if($p!=''){
   if(file_exists("pages/pengiriman/$p.php")){
+    $id_do = 1; //zzz debug
     include "$p.php";
   }else{
     include 'na.php';
   }
 }else{
 
-$id_do = 1; //zzz debug
 ?>
 
 <div class="pagetitle">

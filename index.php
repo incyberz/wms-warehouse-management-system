@@ -52,6 +52,8 @@ $debug .= "<hr>Anda login sebagai $nama_user dg id-role : $id_role<hr>";
 # INCLUDES
 # ================================================
 include 'include/insho_functions.php';
+include 'include/data_perusahaan.php';
+include 'include/crud_icons.php';
 
 
 
@@ -79,8 +81,9 @@ if(isset($_GET)){
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
+  <!-- <link href="assets/img/favicon.png" rel="icon"> -->
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -97,6 +100,7 @@ if(isset($_GET)){
 
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
+  <script src="assets/vendor/jquery/jquery-3.7.1.min.js"></script>
 
   <!-- =======================================================
   * Template Name: NiceAdmin - v2.5.0
@@ -108,7 +112,7 @@ if(isset($_GET)){
   <?php if(file_exists('../insho_styles.php')){
     include '../insho_styles.php'; 
   }else{
-    // include 'insho_styles.php'; 
+    include 'insho_styles.php'; 
   } 
   ?>
   <style>section{min-height: 100vh}</style>
@@ -139,7 +143,7 @@ if(isset($_GET)){
   <script src="assets/vendor/php-email-form/validate.js"></script> -->
 
   <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/main2.js"></script>
 
 </body>
 

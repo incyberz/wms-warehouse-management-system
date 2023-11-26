@@ -1,4 +1,4 @@
-<?php if(!isset($id_do)){ ?>
+<?php if(!isset($img_add)){ ?>
   <div class="pagetitle">
     <h1>Proses Picking</h1>
     <nav>

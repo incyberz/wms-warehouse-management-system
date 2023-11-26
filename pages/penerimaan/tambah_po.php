@@ -1,10 +1,15 @@
 <?php
-$nama_buyer = 'CV. BIENSI FESYENINDO';
-$alamat_buyer = 'Jl. Cimincrang No. 2B Kota Bandung, Jawa Barat 40613 Indonesia Telepon (022)-7802482';
+$nama_buyer = $nama_usaha;
+$alamat_buyer = $alamat_usaha;
+$telp_buyer = "$no_telp_kantor / $no_hp_kantor";
+$wa_buyer = $no_wa_kantor;
 
-$img_edit = '<img class="zoom pointer" src="assets/img/icons/edit.png" alt="edit" height=20px>';
-$img_delete = '<img class="zoom pointer" src="assets/img/icons/delete.png" alt="delete" height=20px>';
-$img_add = '<img class="zoom pointer" src="assets/img/icons/add.png" alt="add" height=20px>';
+$id_po = 'new';
+$nomor_po = date('Ymd').'01-MTL';
+$tanggal_pemesanan = date('Y-m-d');
+$tanggal_pengiriman = date('Y-m-d');
+$jangka_waktu = '45 hari kontrabon';
+$perintah_po = "Harap dikirim ke $nama_buyer barang-barang sesuai jumlah, spesifikasi dibawah ini, dengan ketentuan sebagaimana tertera dalam Purchase Order ini:";
 
 ?>
 
@@ -27,20 +32,25 @@ $img_add = '<img class="zoom pointer" src="assets/img/icons/add.png" alt="add" h
         <div class="bordered p1 h-100">
           <div class="tebal"><?=$nama_buyer?></div>
           <div class="kecil">
-            <?=$alamat_buyer?>
+            <?=$alamat_buyer?> 
+            Telp. <?=$telp_buyer?>
+            WA. <?=$wa_buyer?>
           </div>
         </div>
       </div>
       <div class="col-4 tengah f30">
         <div class="bordered p1 h-100" style="margin: 0 -25px">
           Purchase Order
-          <hr>
-          201911877-MTL
+          <hr style='margin: 5px 0'>
+          <span id="nomor_po"><?=$nomor_po?></span>
         </div>
       </div>
       <div class="col-4">
         <div class="bordered p1 h-100">
-          Kepada Yth.
+          <div class='flex-between'>
+            <div>Kepada Yth.</div>
+            <div><span class='btn_aksi' id="edit_judul_po__toggle"><?=$img_edit?></span></div>
+          </div>
           <div class="tebal ">CV KURNIA JAYA PERKASA</div> 
           <div>Jalan Letkol Ga Manulang No. 73 Padalarang</div>
         </div>
@@ -58,7 +68,7 @@ $img_add = '<img class="zoom pointer" src="assets/img/icons/add.png" alt="add" h
               <div>SUP001</div>
             </div>
             <div class="col-4">
-              <div class=" h-100 p1" style="border-left: solid 1px #ccc; border-right: solid 1px #ccc">
+              <div class=" h-100 " style="border-left: solid 1px #ccc; border-right: solid 1px #ccc">
                 <div>Kontak Personal</div>
                 <div>CV. Kurnia Jaya Perkasa</div>
               </div>
@@ -121,11 +131,168 @@ $img_add = '<img class="zoom pointer" src="assets/img/icons/add.png" alt="add" h
       </div>
     </div>
   </div>
-  
-  <div class='bordered mt1 p1'>
-    Harap dikirim ke <?=$nama_buyer?> barang-barang sesuai jumlah, spesifikasi dibawah ini, dengan ketentuan sebagaimana tertera dalam Purchase Order ini: <?=$img_edit?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- ================================================================ -->
+  <!-- EDIT JUDUL PO -->
+  <!-- ================================================================ -->
+  <div class="gradasi-kuning border-merah br5 mt2 mb2 p2" id=edit_judul_po>
+    <div class="row">
+      <div class="col-1">&nbsp;</div>
+      <div class="col-10">
+        <h2 class='tengah darkblue f20'>Edit Judul PO</h2>
+      </div>
+      <div class="col-1 kanan">
+        <span class="btn_aksi" id="edit_judul_po__close"><?=$img_close?></span>
+      </div>
+    </div>
+    <div class="wadah kecil flex-between bg-white">
+      <div>
+        <b>Identitas Perusahaan</b>
+        <div class=""><span class="abu miring">Perusahaan :</span> <?=$nama_usaha?></div>
+        <div class=""><span class="abu miring">Alamat Usaha :</span> <?=$alamat_usaha?></div>
+        <div class=""><span class="abu miring">Telepon Kantor :</span> <?=$no_telp_kantor?></div>
+        <div class=""><span class="abu miring">Whatsapp Kantor :</span> <?=$no_wa_kantor?></div>
+
+      </div>
+      <div>
+        <a href="?identitas_perusahaan" onclick='return confirm("Menuju laman Edit Perusahaan?")'><?=$img_edit?></a>
+      </div>
+    </div>
+
+    Nomor PO:
+    <input class="form-control mb2" value='<?=$nomor_po?>'>
+
+    <div class="wadah bg-white">
+      Buyer:
+      <input class="form-control mb2" value='<?=$nama_buyer?>'>
+
+      Alamat Buyer:
+      <input class="form-control mb2" value='<?=$alamat_buyer?>'>
+
+      Telfon/HP Buyer:
+      <input class="form-control mb2" value='<?=$telp_buyer?>'>
+    </div>
+
+    <div class="wadah bg-white">
+      Pilih Supplier:
+      <select class="form-control mb2">
+        <option>CV. KURNIA JAYA PERKASA</option>
+      </select>
+
+      <div class="wadah flex-between kecil">
+        <div>
+          <div><span class="abu miring">Nama Supplier:</span> <span id="nama_supplier_edit">???</span></div>
+          <div><span class="abu miring">Alamat Supplier:</span> <span id="alamat_supplier_edit">???</span></div>
+          <div><span class="abu miring">No HP Supplier:</span> <span id="no_hp_supplier_edit">???</span></div>
+          <div><span class="abu miring">No Telp Supplier:</span> <span id="no_telp_supplier_edit">???</span></div>
+          <div><span class="abu miring">No WA Supplier:</span> <span id="no_wa_supplier_edit">???</span></div>
+        </div>
+        <div>
+          <a href="?supplier&id_supplier=zzz" onclick='return confirm("Edit Data Supplier ini?")'><?=$img_edit?></a>
+        </div>
+      </div>
+
+    </div>
+
+
+    Tanggal Pemesanan:
+    <input type='date' class="form-control mb2" value='<?=$tanggal_pemesanan?>'>
+
+    Tanggal Pengiriman:
+    <input type='date' class="form-control mb2" value='<?=$tanggal_pengiriman?>'>
+
+    Jangka Waktu Pembayaran:
+    <input class="form-control mb2" value='<?=$jangka_waktu?>'>
+
+    Tempat Pengiriman:
+    <input class="form-control mb2" value='<?=$alamat_buyer?>'>
+
+    Tempat Penagihan:
+    <input class="form-control mb2" value='<?=$alamat_buyer?>'>
+
+    <div class="flex-between mt-4">
+      <button class="btn btn-primary btn_aksi" id=edit_judul_po__simpan>Simpan</button> 
+      <button class="btn btn-danger btn_aksi" id=edit_judul_po__cancel>Cancel</button> 
+    </div>
   </div>
+  <!-- END // EDIT JUDUL PO -->
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- ================================================================ -->
+  <!-- PERINTAH PO DAN KETERANGANS -->
+  <!-- ================================================================ -->
+  <div class='bordered mt1 p1'>
+    <?=$perintah_po?> 
+    <span class="btn_aksi" id="edit_perintah_po__toggle"><?=$img_edit?></span>
+  </div>
+  <!-- ================================================================ -->
+  <!-- EDIT PERINTAH PO -->
+  <!-- ================================================================ -->
+  <div class="gradasi-kuning border-merah br5 mt2 mb2 p2" id=edit_perintah_po>
+    <div class="row">
+      <div class="col-1">&nbsp;</div>
+      <div class="col-10">
+        <h2 class='tengah darkblue f20'>Edit Perintah PO</h2>
+      </div>
+      <div class="col-1 kanan">
+        <span class="btn_aksi" id="edit_perintah_po__close"><?=$img_close?></span>
+      </div>
+    </div>
+
+    Perintah PO:
+    <textarea rows="10" class="form-control mb2"><?=$perintah_po?></textarea>
+
+    <div class="flex-between mt-4">
+      <button class="btn btn-primary btn_aksi" id=edit_perintah_po__simpan>Simpan</button> 
+      <button class="btn btn-danger btn_aksi" id=edit_perintah_po__cancel>Cancel</button> 
+    </div>
+  </div>
+  <!-- END // EDIT PERINTAH PO -->
+
+  
+
+
   <div class='bordered mt1 p1 mb4'>
     <div style='display:grid; grid-template-columns: 50px auto'>
       <div>Ket:</div>
@@ -268,3 +435,24 @@ $img_add = '<img class="zoom pointer" src="assets/img/icons/add.png" alt="add" h
   <button class="btn btn-primary">Cetak PO</button>
   <button class="btn btn-danger">Hapus</button>
 </div>
+
+
+<script>
+  $(function(){
+    $('.btn_aksi').click(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id = rid[1];
+
+      console.log(aksi,id);
+
+      if(id=='toggle'){ $('#'+aksi).slideToggle(); }
+      if(id=='close' || id=='cancel'){ $('#'+aksi).slideUp(); }
+
+      if(aksi=='edit_judul_po'){
+      }
+      
+    })
+  })
+</script>

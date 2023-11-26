@@ -43,6 +43,8 @@
   .abu,.gray{color:gray}
   .darkblue{color:darkblue}
   .darkred{color:darkred}
+  .darkabu{color:#555}
+  .lightabu{color:#aaa}
 
 
   /* ================================================ */
@@ -179,6 +181,57 @@
 
 
   /* ================================================ */
+  /* BORDER | BORDER RADIUS */
+  /* ================================================ */
+  .bordered{border: solid 1px #ccc}
+  .border-merah{border: solid 1px #f55}
+  .border-biru{border: solid 1px #55f}
+  .border-hijau{border: solid 1px #5f5}
+  .br50{border-radius:50%}
+  .br5{border-radius:5px}
+  .br6{border-radius:6px}
+  .br7{border-radius:7px}
+  .br8{border-radius:8px}
+  .br9{border-radius:9px}
+  .br10{border-radius:10px}
+  .br11{border-radius:11px}
+  .br12{border-radius:12px}
+  .br13{border-radius:13px}
+  .br14{border-radius:14px}
+  .br15{border-radius:15px}
+
+
+  .f8 {font-size: 8px}
+  .f9 {font-size: 9px}
+  .f10 {font-size: 10px}
+  .f11 {font-size: 11px}
+  .f12 {font-size: 12px}
+  .f14 {font-size: 14px}
+  .f16 {font-size: 16px}
+  .f18 {font-size: 18px}
+  .f20 {font-size: 20px}
+  .f22 {font-size: 22px}
+  .f24 {font-size: 24px}
+  .f26 {font-size: 26px}
+  .f28 {font-size: 28px}
+  .f30 {font-size: 30px}
+  .f35 {font-size: 35px}
+  .f40 {font-size: 40px}
+  .f45 {font-size: 45px}
+  .f50 {font-size: 50px}
+  .f55 {font-size: 55px}
+  .f60 {font-size: 60px}
+  .f65 {font-size: 65px}
+  .f70 {font-size: 70px}
+  .f75 {font-size: 75px}
+  .f80 {font-size: 80px}
+  .f85 {font-size: 85px}
+  .f90 {font-size: 90px}
+  .f95 {font-size: 95px}
+  .f100 {font-size: 100px}
+
+
+  /* ================================================ */
   /* FLEX */
   /* ================================================ */
   .flexy{
@@ -186,4 +239,5 @@
     flex-wrap: wrap;
     gap: 15px;
   }
+  .flex-between{display:flex;justify-content: space-between;}
 </style>
