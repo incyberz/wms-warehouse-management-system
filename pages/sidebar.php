@@ -2,6 +2,7 @@
 
   <ul class="sidebar-nav" id="sidebar-nav">
 
+    <li class="nav-heading">Login as <b class="darkred"><?=$sebagai?></b></li>
     <li class="nav-item">
       <a class="nav-link " href="?">
         <i class="bi bi-grid"></i>
@@ -17,12 +18,10 @@
         <i class="bi bi-menu-button-wide"></i><span>Master Data</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="prebab-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-        <li><a href="?master&p=user"><i class="bi bi-circle"></i><span>User</span></a></li>
-        <li><a href="?master&p=buyer"><i class="bi bi-circle"></i><span>Buyer</span></a></li>
-        <li><a href="?master&p=kategori"><i class="bi bi-circle"></i><span>Kategori</span></a></li>
-        <li><a href="?master&p=barang"><i class="bi bi-circle"></i><span>Barang</span></a></li>
-        <li><a href="?master&p=supplier"><i class="bi bi-circle"></i><span>Supplier</span></a></li>
-        <li><a href="?master&p=gudang"><i class="bi bi-circle"></i><span>Gudang</span></a></li>
+        <?php 
+        foreach ($arr_master as $master) echo "
+        <li><a href='?master&p=$master'><i class='bi bi-circle'></i><span class=proper>$master</span></a></li>";
+        ?>
       </ul>
     </li>
 

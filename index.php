@@ -5,9 +5,11 @@ session_start();
 # ================================================
 $dm = 1;
 $debug = '';
+$unset = '<span class="kecil miring red consolas">unset</span>';
+$hideit = 'hideit';
 
 // set auto login
-$_SESSION['wms_username'] = 'admin';
+$_SESSION['wms_username'] = 'ppic';
 
 // set logout
 // unset($_SESSION['wms_username']);
@@ -54,6 +56,7 @@ $debug .= "<hr>Anda login sebagai $nama_user dg id-role : $id_role<hr>";
 include 'include/insho_functions.php';
 include 'include/data_perusahaan.php';
 include 'include/crud_icons.php';
+include 'include/arr_master.php';
 
 
 
@@ -115,7 +118,10 @@ if(isset($_GET)){
     include 'insho_styles.php'; 
   } 
   ?>
-  <style>section{min-height: 100vh}</style>
+  <style>
+    section{min-height: 100vh}
+    .formulir input,.formulir textarea {text-transform: uppercase}
+  </style>
 
 </head>
 
@@ -144,6 +150,7 @@ if(isset($_GET)){
 
   <!-- Template Main JS File -->
   <script src="assets/js/main2.js"></script>
+  <?php include 'include/js_btn_aksi.php'; ?>
 
 </body>
 
