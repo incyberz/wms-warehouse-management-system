@@ -1,13 +1,16 @@
 <script>
   $(function(){
     let link_ajax = '';
+    let id_po = $('#id_po').text();
+    let tb = $('#tb').text();
+
     $('.btn_aksi').click(function(){
       let tid = $(this).prop('id');
       let rid = tid.split('__');
       let elemen = rid[0];
       let aksi = rid[1];
       let id_item = rid[2] ?? '';
-      let from_db = rid[3] ?? '';
+      let kolom = rid[3] ?? '';
 
       console.log(elemen,aksi,id_item);
 
@@ -29,8 +32,10 @@
           // ====================================================
           // AJAX DELETE
           // ====================================================
-          if(from_db=='from_db'){
-            link_ajax = `ajax/delete_data.php?p=${elemen}&id=${id_item}`;
+          if(kolom!=''){
+            console.log(' delete with AJAX');
+            link_ajax = `ajax/crud.php?tb=${elemen}&aksi=delete&id=${id_item}`;
+
             $.ajax({
               url:link_ajax,
               success:function(a){
@@ -42,6 +47,9 @@
                 }
               }
             })
+          }else{
+            console.log('not delete to from_db');
+
           }
         }
 
@@ -65,7 +73,7 @@
         }
       }else if(aksi=='tambah'){
         console.log(aksi,elemen);
-        link_ajax = `ajax/insert_data.php?p=${elemen}`;
+        link_ajax = `ajax/crud.php?tb=${elemen}&aksi=insert`;
         $.ajax({
           url:link_ajax,
           success:function(a){
@@ -80,6 +88,72 @@
             }
           }
         })
+      }else if(aksi=='save_item' || aksi=='delete_item'){
+        // save item = add item ke list
+        // delete item = remove from list
+        if(aksi=='delete_item'){
+          let y = confirm('Yakin untuk hapus list-item?');
+          if(!y) return;
+        }
+
+        let kolom = rid[3];
+        // console.log(aksi, 'untuk', kolom, id_po);
+
+        if(id_po.length>0){
+          let z = document.getElementsByClassName(kolom);
+          let value_items = '';
+          let cid = '';
+          for (let i = 0; i < z.length; i++) {
+            if(id_item==i){
+              cid = i;
+              continue;
+            } 
+            value_items += z[i].innerText + ' ___';
+            console.log('LOOP =======',value_items);
+          }
+  
+          if(aksi=='save_item'){
+            value_items += $('#update_value__'+kolom+'__'+cid).val();
+          }
+          
+          value_items = value_items.replace(/\s\s+/g, ' ');
+          
+          console.log(value_items, kolom, id_po);
+          link_ajax = `ajax/crud.php?tb=po&aksi=update&id=${id_po}&kolom=${kolom}&value=${value_items}`;
+          console.log(link_ajax);
+
+          $.ajax({
+            url:link_ajax,
+            success:function(a){
+              if(a.trim()=='sukses'){
+                location.reload();
+              }else{
+                alert('Tidak bisa menyimpan item.');
+                console.log(a);
+              }
+            }
+          })
+
+        }
+
+      }else if(aksi=='simpan'){
+        let value = $('#input_'+kolom).val().replace(/\s\s+/g, ' ');
+        link_ajax = `ajax/crud.php?tb=${tb}&aksi=update&kolom=${kolom}&value=${value}&id=${id_po}`;
+        $.ajax({
+          url:link_ajax,
+          success:function(a){
+            if(a.trim()=='sukses'){
+              // location.reload();
+              $('#edit_'+kolom).slideUp();
+              $('#target_'+kolom).text(value);
+            }else{
+              alert('Tidak bisa menyimpan item.');
+              console.log(a);
+            }
+          }
+        })
+
+        console.log(id_po, kolom, value);
       }else{
         alert('Handler untuk aksi: '+aksi+" akan segera dibangun. Terimakasih sudah mencoba!");
         console.log('Belum ada handler untuk aksi: '+aksi);

@@ -72,27 +72,39 @@ if(isset($_POST['btn_update'])){
   
   
   # =========================================
-  # SELECT SINGLE MAIN DATA
+  # SELECT MAIN DATA
   # =========================================
   $keyword = $_GET['keyword'] ?? '';
   $sql_keyword = $keyword=='' ? '1' : "(a.kode like '%$keyword%' OR a.nama like '%$keyword%' )";
 
+  $sql_from = "
+  FROM tb_$p a 
+  WHERE status=1 
+  AND $sql_keyword 
+  ";
+
+  $s = "SELECT 1 $sql_from ";
+  // echo "<pre>$s</pre>";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $jumlah_row = mysqli_num_rows($q);
+  
   $s = "SELECT 
   a.id as id_$p, 
   a.kode as kode_$p, 
   a.nama as nama_$p,
   a.* 
-  FROM tb_$p a 
-  WHERE status=1 
-  AND $sql_keyword 
+  
+  $sql_from 
   ORDER BY a.kode 
+  LIMIT 20
   ";
   // echo "<pre>$s</pre>";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  $jumlah_row = mysqli_num_rows($q);
+  $jumlah_show = mysqli_num_rows($q);
   
   $tr = '';
   $i = 0;
+  $tambah_id = '';
   while($d=mysqli_fetch_assoc($q)){
     $i++;
     $id_p = $d["id_$p"];
@@ -280,7 +292,7 @@ if(isset($_POST['btn_update'])){
   }
 
   if($keyword==''){
-    $info = "Data $p tidak ditemukan.";
+    $info = "Belum ada data $p pada database.";
     $clear = '';
     $gradasi = '';
   }else{

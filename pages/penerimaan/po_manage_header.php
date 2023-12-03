@@ -1,5 +1,10 @@
 <?php
 $durasi_bayar_show = $durasi_bayar=='' ? $unset : "$durasi_bayar hr kontrabon";
+$tanggal_pemesanan = $tanggal_pemesanan ?? $date_created;
+$tanggal_pengiriman = $tanggal_pengiriman ?? $date_created;
+
+$tanggal_pemesanan_show = date('d - m - Y',strtotime($tanggal_pemesanan));
+$tanggal_pengiriman_show = date('d - m - Y',strtotime($tanggal_pengiriman));
 
 # ==========================================
 # SELECT SUPPLIER
@@ -69,18 +74,18 @@ $select_supplier = "<select class='form-control' name=id_supplier>$opt</select>"
       <div class="bordered p1 h-100 ">
         <div class="row">
           <div class="col-4">
-            <div>No. Supplier</div>
-            <div>SUP001</div>
+            <div class='abu miring'>No. Supplier</div>
+            <div ><?=$kode_supplier?></div>
           </div>
           <div class="col-4">
             <div class=" h-100 " style="border-left: solid 1px #ccc; border-right: solid 1px #ccc">
-              <div>Kontak Personal</div>
-              <div>CV. Kurnia Jaya Perkasa</div>
+              <div class='abu miring'>Kontak Personal</div>
+              <div ><?=$contact_person?></div>
             </div>
           </div>
           <div class="col-4">
-            <div>Tanggal Pemesanan</div>
-            <div>05 - 09 - 2023</div>
+            <div class='abu miring'>Tanggal Pemesanan</div>
+            <div ><?=$tanggal_pemesanan_show?></div>
           </div>
         </div>
       </div>
@@ -89,13 +94,13 @@ $select_supplier = "<select class='form-control' name=id_supplier>$opt</select>"
       <div class="bordered p1 h-100">
         <div class="row">
           <div class="col-6">
-            <div>Tanggal Pengiriman</div>
-            <div>09 - 10 - 2023</div>
+            <div class='abu miring'>Tanggal Pengiriman</div>
+            <div ><?=$tanggal_pengiriman_show?></div>
           </div>
           <div class="col-6">
             <div class="h-100" style="border-left: solid 1px #ccc">
-              <div>Jangka Waktu Pembayaran</div>
-              <div><?=$durasi_bayar_show?></div>
+              <div class='abu miring'>Jangka Waktu Pembayaran</div>
+              <div ><?=$durasi_bayar_show?></div>
             </div>
           </div>
         </div>
@@ -108,29 +113,17 @@ $select_supplier = "<select class='form-control' name=id_supplier>$opt</select>"
   <div class="row">
     <div class="col-7 " style="padding-right: 0">
       <div class="bordered p1 h-100 ">
-        <div class="row">
-          <div class="col-4">
-            <div>Tempat Pengiriman:</div>
-          </div>
-          <div class="col-8">
-            <div class=" h-100 p1" style="border: none">
-              <div><?=$alamat_buyer?></div>
-            </div>
-          </div>
+        <div class="flexy" style='gap:0 15px'>
+          <div class="abu miring">Tempat Pengiriman:</div>
+          <div><?=$alamat_buyer?></div>
         </div>
       </div>
     </div>
     <div class="col-5 " style="padding-left:0">
       <div class="bordered p1 h-100">
-        <div class="row">
-          <div class="col-5">
-            <div>Tempat Penagihan:</div>
-          </div>
-          <div class="col-7">
-            <div class="h-100">
-              <div><?=$alamat_buyer?></div>
-            </div>
-          </div>
+        <div class="flexy" style='gap:0 15px'>
+          <div class="abu miring">Tempat Penagihan:</div>
+          <div><?=$alamat_buyer?></div>
         </div>
       </div>
     </div>
@@ -214,11 +207,11 @@ $select_supplier = "<select class='form-control' name=id_supplier>$opt</select>"
   </div>
 
 
-  Tanggal Pemesanan:
-  <input type='date' class="form-control mb2" value='<?=$tanggal_pemesanan?>'>
+  Tanggal Pemesanan: <?=$tanggal_pemesanan?>
+  <input type='date' class="form-control mb2" value='<?=date('Y-m-d',strtotime($tanggal_pemesanan))?>'>
 
   Tanggal Pengiriman:
-  <input type='date' class="form-control mb2" value='<?=$tanggal_pengiriman?>'>
+  <input type='date' class="form-control mb2" value='<?=date('Y-m-d',strtotime($tanggal_pengiriman))?>'>
 
   Jangka Waktu Pembayaran:
   <input class="form-control mb2" value='<?=$durasi_bayar?>'>

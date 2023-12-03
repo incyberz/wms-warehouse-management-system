@@ -25,4 +25,6 @@ if($username==''){
   $id_role = $d['id_role'];
   $sebagai = $d['sebagai'];
   $nama_user = $d['nama_user'];
+
+  $_SESSION['wms_role'] = $sebagai;
 }

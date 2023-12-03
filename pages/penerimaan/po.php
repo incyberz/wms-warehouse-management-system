@@ -1,3 +1,4 @@
+<span id="tb" class=hideit>po</span>
 <?php
 include 'podo_styles.php';
 
@@ -10,6 +11,8 @@ if($p!=''){
   }
 }else{
 ?>
+
+<!-- for btn_aksi -->
 
 <div class="pagetitle">
   <h1>Purchase Order / Penerimaan Barang</h1>

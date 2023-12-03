@@ -4,10 +4,10 @@ if($perintah_po=='') $perintah_po = "Harap dikirim ke $nama_buyer barang-barang 
 
 ?>
 <div class='bordered mt1 p1'>
-  <?=$perintah_po?> 
+  <span id=target_perintah_po><?=$perintah_po?></span>
   <span class="btn_aksi" id="edit_perintah_po__toggle"><?=$img_edit?></span>
 </div>
-<div class="gradasi-kuning border-merah br5 mt2 mb2 p2 <?=$hideit?>" id=edit_perintah_po>
+<div class="gradasi-kuning border-merah br5 mt2 mb2 p2 hideit" id=edit_perintah_po>
   <div class="row">
     <div class="col-1">&nbsp;</div>
     <div class="col-10">
@@ -19,10 +19,10 @@ if($perintah_po=='') $perintah_po = "Harap dikirim ke $nama_buyer barang-barang 
   </div>
 
   Perintah PO:
-  <textarea rows="10" class="form-control mb2"><?=$perintah_po?></textarea>
+  <textarea rows="10" class="form-control mb2" id=input_perintah_po><?=$perintah_po?></textarea>
 
   <div class="flex-between mt-2">
-    <button class="btn btn-primary btn_aksi " id=edit_perintah_po__simpan>Simpan</button> 
+    <button class="btn btn-primary btn_aksi " id=edit_perintah_po__simpan__id_po__perintah_po>Simpan</button> 
     <span class="btn btn-danger btn_aksi " id=edit_perintah_po__cancel>Cancel</span> 
   </div>
 </div>

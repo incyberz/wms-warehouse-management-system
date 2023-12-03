@@ -65,6 +65,8 @@ if($no_po==''){
   a.*,
   b.id as id_supplier,
   b.nama as nama_supplier ,
+  b.kode as kode_supplier ,
+  b.contact_person ,
   b.no_telfon as telp_supplier ,
   b.alamat as alamat_supplier 
 
@@ -87,11 +89,18 @@ if($no_po==''){
 
   //supplier
   $id_supplier = $d['id_supplier'];
+  $kode_supplier = $d['kode_supplier'];
   $nama_supplier = $d['nama_supplier'];
   $telp_supplier = $d['telp_supplier'];
   $alamat_supplier = $d['alamat_supplier'];
+  $contact_person = $d['contact_person'];
 
   $keterangan = $d['keterangan'];
+  $ket_item = $d['ket_item'];
+
+  $date_created = $d['date_created'];
+  $tanggal_pemesanan = $d['tanggal_pemesanan'];
+  $tanggal_pengiriman = $d['tanggal_pengiriman'];
 
   $id_po = $d['id_po'];
   $tanggal_pemesanan = $d['tanggal_pemesanan'];
@@ -99,7 +108,9 @@ if($no_po==''){
   $durasi_bayar = $d['durasi_bayar'];
   $perintah_po = $d['perintah_po'];
 
+  echo "<span id=id_po class=hideit>$id_po</span>";
   echo "<div class='bordered p2 bg-white'>";
+    
 
     # ================================================================
     # HEADER PO -->
@@ -122,7 +133,7 @@ if($no_po==''){
     # ITEMS PO + CATATAN -->
     # ================================================================
     include 'po_manage_items.php';
-    include 'po_manage_catatan_items.php';
+    include 'po_manage_items_ket.php';
     
     # ================================================================
     # DIVERIFIKASI OLEH -->

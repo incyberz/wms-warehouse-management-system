@@ -10,6 +10,7 @@ switch($parameter){
   case 'po' : include 'pages/penerimaan/po.php'; break;
   case 'do' : include 'pages/pengiriman/do.php'; break;
   case 'laporan' : include 'pages/laporan/laporan.php'; break;
+  case 'update_barang' : include 'pages/admin/update_barang.php'; break;
   default:
     if(file_exists($page_tujuan)){
       include $page_tujuan;

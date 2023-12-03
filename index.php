@@ -6,10 +6,11 @@ session_start();
 $dm = 1;
 $debug = '';
 $unset = '<span class="kecil miring red consolas">unset</span>';
+$null = '<span class="kecil miring red consolas">null</span>';
 $hideit = 'hideit';
 
 // set auto login
-$_SESSION['wms_username'] = 'ppic';
+$_SESSION['wms_username'] = 'proc';
 
 // set logout
 // unset($_SESSION['wms_username']);
