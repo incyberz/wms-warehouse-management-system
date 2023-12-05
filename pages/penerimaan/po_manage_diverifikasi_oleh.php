@@ -1,4 +1,7 @@
-<div class="bordered p1 tengah">
+<div class="bordered p1">
+  Statu PO: <span class="miring darkred">belum diverifikasi</span>
+</div>
+<!-- <div class="bordered p1 tengah">
   Diverifikasi oleh:
 </div>
 <div class="tengah">
@@ -45,4 +48,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->

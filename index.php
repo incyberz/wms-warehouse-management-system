@@ -121,6 +121,15 @@ if(isset($_GET)){
   ?>
   <style>
     section{min-height: 100vh}
+    h2{
+      font-size: 16px; 
+      background: linear-gradient(#efe,#cfc);
+      font-weight: bold;
+      color: #66a;
+      padding: 7px;
+      border-radius: 5px;
+      box-shadow: 1px 1px 3px gray;
+    }
     .formulir input,.formulir textarea {text-transform: uppercase}
   </style>
 

@@ -8,3 +8,6 @@ $img_detail = '<img class="zoom pointer" src="assets/img/icons/detail.png" alt="
 $img_unique = '<img class="zoom pointer" src="assets/img/icons/unique.png" alt="close" height=20px>';
 $img_manage = '<img class="zoom pointer" src="assets/img/icons/manage.png" alt="close" height=20px>';
 $img_login_as = '<img class="zoom pointer" src="assets/img/icons/login_as.png" alt="close" height=20px>';
+$img_help = '<img class="zoom pointer" src="assets/img/icons/help.png" alt="close" height=20px>';
+$img_check = '<img class="zoom pointer" src="assets/img/icons/check.png" alt="close" height=20px>';
+

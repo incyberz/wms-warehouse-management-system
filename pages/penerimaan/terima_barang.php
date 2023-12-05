@@ -1,13 +1,7 @@
-<div class="pagetitle">
-  <h1>Terima Barang</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
-      <li class="breadcrumb-item active">Terima Barang</li>
-    </ol>
-  </nav>
-</div>
-
-<p>Page terima barang digunakan untuk verifikasi isi PO saat barang sudah datang ke Gudang.</p>
-
-<div class="alert alert-danger">Page ini masih dalam tahap pengembangan. Terimakasih.</div>
+<?php
+$no_po = $_GET['no_po'] ?? '';
+if($no_po==''){
+  include 'terima_barang_cari_nomor_po.php';
+}else{
+  include 'bukti_barang_masuk.php';
+}

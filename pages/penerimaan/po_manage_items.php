@@ -49,7 +49,9 @@ b.tmp_stok,
 b.id as id_barang,  
 b.kode as kode_barang,  
 b.nama as nama_barang,
-(SELECT stok FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) stok   
+(SELECT stok FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) stok,   
+(SELECT tanggal FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) last_trx
+
 FROM tb_po_item a 
 JOIN tb_barang b ON a.id_barang=b.id 
 WHERE a.id_po=$id_po";
@@ -81,25 +83,38 @@ if(mysqli_num_rows($q)){
     }else{
       $jumlah = $qty * $harga;
       $total = 'zzz';
-
     }
+
+    $age = round((strtotime('now') - strtotime($d['last_trx'])) / (60*60*24),0);
+
+    if($age<30){
+      $age_show = "$age<span class='miring abu'>d</span>";
+    }elseif($age<365){
+      $age_show = round($age/30,0)."<span class='miring abu'>m</span>";
+    }else{
+      $age_show = round($age/365,0)."<span class='miring abu'>y</span>";
+    }
+
 
     $tr .= "
       <tr id=source_edit_item_po__1>
         <td>$jumlah_item</td>
-        <td>$d[kode_barang]</td>
         <td>
-          $d[nama_barang] 
-          <span class='btn_aksi' id='edit_item_po__delete__$id'>$img_delete</span>
-          <div class='kecil abu miring'>
-            <div class=hideit>$d[keterangan]</div>
-            <div>Stok Awal: <span id=stok_awal__$id>$stok</span> $satuan</div>
+          <div class=darkblue>
+            $d[kode_barang]
+            <span class='btn_aksi' id='edit_item_po__delete__$id'>$img_delete</span>
+          </div>
+          <div class=darkabu>$d[nama_barang]</div> 
+        </td>
+        <td>
+          <div class='kecil'>
+            <div><span class='abu miring'>Stok-lama:</span> <span id=stok_lama__$id>$stok</span> $satuan</div>
+            <div><span class='abu miring'>Age:</span> $age_show $img_detail</div>
           </div>
         </td>
-        <td>$satuan</td>
         <td class=kanan>
           <input class='form-control input input__$id input_qty' style=width:110px type=number step=0.01 id=qty__$id value='$qty'>
-          <div class='kecil abu kiri mt1'>Stok Akhir: <span id=stok_akhir__$id>$stok</span> $satuan</div>
+          <div class='kecil abu kiri mt1'>Stok-baru: <span id=stok_baru__$id>$stok</span></div>
         </td>
         <td class=kanan>
           <input class='form-control input input__$id input_harga' style=width:150px type=number step=0.01 id=harga__$id value='$harga'>
@@ -120,7 +135,6 @@ if(mysqli_num_rows($q)){
     <th>NO</th>
     <th>KODE</th>
     <th>KETERANGAN</th>
-    <th>SATUAN</th>
     <th>QUANTITY</th>
     <th>HARGA</th>
     <th>JUMLAH</th>
@@ -130,7 +144,7 @@ if(mysqli_num_rows($q)){
   
   <tr>
     <td><span class='miring abu kecil'><?php echo ($jumlah_item+1);?></span></td>
-    <td colspan=6 >
+    <td colspan=5 >
       <span class="green pointer">
         <span class="btn_aksi" id="edit_item_po__toggle">
         Tambah item <?=$img_add?></span>
@@ -159,19 +173,19 @@ if(mysqli_num_rows($q)){
   </tr> 
   <tfoot class=gradasi-kuning>
     <tr>
-      <td colspan=4 class=kanan>Total</td>
+      <td colspan=3 class=kanan>Total</td>
       <td class=kanan id=total_qty>?</td>
       <td>&nbsp;</td>
       <td class=kanan id=total>?</td>
     </tr>
     <tr>
-      <td colspan=4 class=kanan>PPN 11%</td>
+      <td colspan=3 class=kanan>PPN 11%</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td class=kanan id=ppn>?</td>
     </tr>
     <tr>
-      <td colspan=4 class=kanan>Total + PPN</td>
+      <td colspan=3 class=kanan>Total + PPN</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td class=kanan id=total_ppn>?</td>
@@ -201,7 +215,7 @@ if(mysqli_num_rows($q)){
   function hitung(id){
     let harga = parseFloat($('#harga__'+id).val());
     let qty = parseFloat($('#qty__'+id).val());
-    let stok_awal = parseFloat($('#stok_awal__'+id).text());
+    let stok_lama = parseFloat($('#stok_lama__'+id).text());
     let jumlah = 0;
 
     harga = isNaN(harga) ? 0 : harga;
@@ -218,7 +232,7 @@ if(mysqli_num_rows($q)){
     } 
 
     $('#jumlah__'+id).text(rupiah(jumlah));
-    $('#stok_akhir__'+id).text(stok_awal+qty);
+    $('#stok_baru__'+id).text(stok_lama+qty);
 
     total += jumlah;
   }

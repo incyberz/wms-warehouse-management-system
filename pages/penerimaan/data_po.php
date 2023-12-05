@@ -29,7 +29,8 @@ while($d=mysqli_fetch_assoc($q)){
   $tr .= "
     <tr>
       <td>$i</td>
-      <td><a href='?po&p=po_manage&no_po=$d[no_po]'>$d[nama_supplier]</td>
+      <td><a href='?po&p=po_manage&no_po=$d[no_po]'>$d[no_po]</a></td>
+      <td>$d[nama_supplier]</td>
       <td>edit | hapus</td>
     </tr>
   ";
@@ -40,6 +41,7 @@ echo $tr=='' ? div_alert('danger', 'Belum ada data PO | <a href="?po&p=po_manage
   <table class=table>
     <thead>
       <th>NO</th>
+      <th>NOMOR PO</th>
       <th>SUPPLIER</th>
       <th>AKSI</th>
     </thead>
