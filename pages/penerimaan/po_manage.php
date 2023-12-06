@@ -25,8 +25,10 @@ $select_supplier = "
 ";
 
 
-$aksi = $_GET['aksi'] ?? '';
-$no_po = $_GET['no_po'] ?? '';
+// $aksi = $_GET['aksi'] ?? '';
+// $no_po = $_GET['no_po'] ?? '';
+$aksi = isset($_GET['aksi']) ? $_GET['aksi'] : '';
+$no_po = isset($_GET['no_po']) ? $_GET['no_po'] : '';
 if($no_po==''){
   if(isset($_POST['btn_buat_po'])){
     $kode = clean_sql($_POST['kode']);

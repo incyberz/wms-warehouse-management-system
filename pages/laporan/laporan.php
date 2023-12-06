@@ -1,5 +1,6 @@
 <?php
-$p = $_GET['p'] ?? '';
+// $p = $_GET['p'] ?? '';
+$p = isset($_GET['p']) ? $_GET['p'] : '';
 if($p!=''){
   if(file_exists("pages/laporan/$p.php")){
     include "$p.php";

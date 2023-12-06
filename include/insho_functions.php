@@ -31,31 +31,31 @@ function eta($eta,$indo=1){
   }else{
     if($eta> -60){
       $eta = -$eta;
-      return $indo ? "$eta detik yang lalu" : "$eta seconds left";
+      return $indo ? "$eta detik yang lalu" : "$eta seconds ago";
     }elseif($eta > -60*60){
       $menit = ceil($eta/60);
       $menit = -$menit;
-      return $indo ? "$menit menit yang lalu" : "$menit minutes left";
+      return $indo ? "$menit menit yang lalu" : "$menit minutes ago";
     }elseif($eta > -60*60*24){
       $jam = ceil($eta/(60*60));
       $jam = -$jam;
-      return $indo ? "$jam jam yang lalu" : "$jam hours left";
+      return $indo ? "$jam jam yang lalu" : "$jam hours ago";
     }elseif($eta > -60*60*24*7){
       $hari = ceil($eta/(60*60*24));
       $hari = -$hari;
-      return $indo ? "$hari hari yang lalu" : "$hari days left";
+      return $indo ? "$hari hari yang lalu" : "$hari days ago";
     }elseif($eta > -60*60*24*7*4){
       $minggu = ceil($eta/(60*60*24*7));
       $minggu = -$minggu;
-      return $indo ? "$minggu minggu yang lalu" : "$minggu weeks left";
+      return $indo ? "$minggu minggu yang lalu" : "$minggu weeks ago";
     }elseif($eta > -60*60*24*365){
       $bulan = ceil($eta/(60*60*24*7*4));
       $bulan = -$bulan;
-      return $indo ? "$bulan bulan yang lalu" : "$bulan monts left";
+      return $indo ? "$bulan bulan yang lalu" : "$bulan monts ago";
     }else{
       $tahun = ceil($eta/(60*60*24*365));
       $tahun = -$tahun;
-      return $indo ? "$tahun tahun yang lalu" : "$tahun years left";
+      return $indo ? "$tahun tahun yang lalu" : "$tahun years ago";
     }    
   }
 }

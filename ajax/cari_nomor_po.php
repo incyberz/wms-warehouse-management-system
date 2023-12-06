@@ -4,7 +4,8 @@ include '../include/crud_icons.php';
 // ONLY('WH');
 
 
-$keyword = $_GET['keyword'] ?? die(erid('keyword'));
+// $keyword = $_GET['keyword'] ?? die(erid('keyword'));
+$keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 
 $tr = "<tr><td colspan=100% class='alert alert-danger'>PO tidak ditemukan.</td></tr>";
 $s = "SELECT  

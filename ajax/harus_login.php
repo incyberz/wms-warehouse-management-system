@@ -1,6 +1,7 @@
 <?php
 session_start();
-$username = $_SESSION['wms_username'] ?? die('Silahkan Login terlebih dahulu.');
+// $username = $_SESSION['wms_username'] ?? die('Silahkan Login terlebih dahulu.');
+$username = isset($_SESSION['wms_username']) ? $_SESSION['wms_username'] : die('Silahkan Login terlebih dahulu.');
 include '../conn.php';
 include '../data_user.php';
 
