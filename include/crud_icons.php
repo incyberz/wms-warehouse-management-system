@@ -11,4 +11,5 @@ $img_manage = '<img class="zoom pointer" src="assets/img/icons/manage.png" alt="
 $img_login_as = '<img class="zoom pointer" src="assets/img/icons/login_as.png" alt="login_as" height=20px>';
 $img_help = '<img class="zoom pointer" src="assets/img/icons/help.png" alt="help" height=20px>';
 $img_check = '<img class="zoom pointer" src="assets/img/icons/check.png" alt="check" height=20px>';
+$img_warning = '<img class="zoom pointer" src="assets/img/icons/warning.png" alt="warning" height=20px>';
 

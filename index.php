@@ -10,7 +10,7 @@ $null = '<span class="kecil miring red consolas">null</span>';
 $hideit = 'hideit';
 
 // set auto login
-$_SESSION['wms_username'] = 'proc';
+$_SESSION['wms_username'] = 'wh';
 
 // set logout
 // unset($_SESSION['wms_username']);

@@ -25,6 +25,10 @@ if($username==''){
   $id_role = $d['id_role'];
   $sebagai = $d['sebagai'];
   $nama_user = $d['nama_user'];
+  $jabatan = $d['jabatan'];
 
   $_SESSION['wms_role'] = $sebagai;
+
+  $nama_user = ucwords(strtolower($nama_user));
+  $jabatan = ucwords(strtolower($jabatan));
 }
