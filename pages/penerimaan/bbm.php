@@ -14,8 +14,8 @@
 # =======================================================================
 # PROCESSORS 
 # =======================================================================
-include 'bbm_upload_process.php';
-include 'bbm_verification_process.php';
+include 'bbm_process_upload.php';
+include 'bbm_process_verification.php';
 
 $tb_identitas_po = '';
 $tb_items = '';
@@ -70,7 +70,7 @@ if($id_bbm==''){
   # =======================================================================
   # GET ITEM PO
   # =======================================================================
-  include 'bbm_get_item_po.php';
+  include 'bbm_qty_diterima.php';
 } 
 include 'bbm_js.php';
 ?>

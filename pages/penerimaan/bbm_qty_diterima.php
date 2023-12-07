@@ -3,7 +3,7 @@
 # GET ITEM PO
 # =======================================================================
 $s = "SELECT *,
-a.id as id_item,
+a.id as id_po_item,
 b.id as id_barang,
 b.kode as kode_barang,
 b.nama as nama_barang,
@@ -30,7 +30,7 @@ if(mysqli_num_rows($q)==0){
   $i=0;
   while($d=mysqli_fetch_assoc($q)){
     $i++;
-    $id = $d['id_item'];
+    $id = $d['id_po_item'];
     $step = $d['step'] ?? 0.0001;
     $qty = $d['qty'];
     $qty_diterima = $d['qty_diterima'];
@@ -87,7 +87,9 @@ if(mysqli_num_rows($q)==0){
               <div class='$hideit_check' id=img_check__$id>$img_check</div>
             </div>
           </div>
-          
+        </td>
+        <td class=hide_cetak>
+          <a href='?po&p=bbm_subitem&id_bbm=$id_bbm&id_po_item=$id'>$img_next</a>
         </td>
       </tr>
     ";
@@ -101,6 +103,7 @@ $tb_items = "
       <th>Kode / Item</th>
       <th>QTY-PO</th>
       <th>QTY Diterima</th>
+      <th class=hide_cetak>Aksi</th>
     </thead>
     $tr
   </table>
@@ -122,40 +125,7 @@ $tb_items = "
 # QTY DITERIMA PADA BBM
 # =======================================================================
 echo "<h2>QTY Diterima pada BBM $no_bbm</h2>";
-
-if(isset($_POST['btn_simpan'])){
-  // echo '<pre>';
-  // var_dump($_POST);
-  // echo '</pre>';
-  $id_bbm = $_POST['id_bbm'];
-
-  foreach ($_POST as $key => $qty_diterima) {
-    if(strpos("salt$key",'qty_diterima__')){
-      $arr = explode('__',$key);
-      $id_po_item = $arr[1];
-
-      $s = "SELECT id as id_bbm_item FROM tb_bbm_item WHERE id_bbm=$id_bbm AND id_po_item=$id_po_item";
-      $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-      if(mysqli_num_rows($q)>1){
-        die("Tidak boleh 2 id_bbm_item untuk 1 id_bbm<hr>id_bbm: $id_bbm | id_po_item: $id_po_item ");
-      }else{
-        if(mysqli_num_rows($q)){
-          $d = mysqli_fetch_assoc($q);
-          $s = "UPDATE tb_bbm_item SET qty_diterima=$qty_diterima WHERE id=$d[id_bbm_item]";
-        }else{
-          $s = "INSERT INTO tb_bbm_item (id_bbm,id_po_item,qty_diterima) VALUES ($id_bbm,$id_po_item,$qty_diterima)";
-        }
-        $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-      }
-    }
-  }
-
-  $s = "UPDATE tb_bbm SET tanggal_terima=CURRENT_TIMESTAMP WHERE id=$id_bbm";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-
-  jsurl("?po&p=terima_barang&no_po=$no_po");
-  exit;
-}
+include 'bbm_process_simpan_item.php';
 
 echo "
   <form method=post >

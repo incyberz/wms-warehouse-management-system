@@ -12,4 +12,7 @@ $img_login_as = '<img class="zoom pointer" src="assets/img/icons/login_as.png" a
 $img_help = '<img class="zoom pointer" src="assets/img/icons/help.png" alt="help" height=20px>';
 $img_check = '<img class="zoom pointer" src="assets/img/icons/check.png" alt="check" height=20px>';
 $img_warning = '<img class="zoom pointer" src="assets/img/icons/warning.png" alt="warning" height=20px>';
+$img_next = '<img class="zoom pointer" src="assets/img/icons/next.png" alt="next" height=20px>';
+
+
 
