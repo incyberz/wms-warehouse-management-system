@@ -11,7 +11,8 @@ if($username==''){
   $s = "SELECT a.*, 
   a.kode as username,   
   a.nama as nama_user,  
-  b.kode as sebagai 
+  b.kode as sebagai,
+  b.nama as jabatan  
   FROM tb_user a 
   JOIN tb_role b ON a.id_role=b.id 
   WHERE a.kode='$username'";

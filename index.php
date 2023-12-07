@@ -8,9 +8,10 @@ $debug = '';
 $unset = '<span class="kecil miring red consolas">unset</span>';
 $null = '<span class="kecil miring red consolas">null</span>';
 $hideit = 'hideit';
+$view_mode = $_GET['view_mode'] ?? '';
 
 // set auto login
-$_SESSION['wms_username'] = 'wh';
+$_SESSION['wms_username'] = 'whas';
 
 // set logout
 // unset($_SESSION['wms_username']);
@@ -136,15 +137,15 @@ if(isset($_GET)){
 </head>
 
 <body>
-  <?php include 'pages/header.php'; ?>
-  <?php include 'pages/sidebar.php'; ?>
+  <?php if($view_mode!='cetak') include 'pages/header.php'; ?>
+  <?php if($view_mode!='cetak') include 'pages/sidebar.php'; ?>
   
   
   <main id="main" class="main">
     <?php include 'routing.php'; ?>
   </main>
   
-  <?php include 'pages/footer.php'; ?>
+  <?php if($view_mode!='cetak') include 'pages/footer.php'; ?>
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 

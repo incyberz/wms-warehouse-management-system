@@ -55,7 +55,9 @@ if(mysqli_num_rows($q)==0){
         $no_bbm = $d2['kode'];
         $secondary = 'success';
         $border = 'border-biru';
+        $hide_cetak = '';
       }else{
+        $hide_cetak = 'hide_cetak';
         $secondary = 'secondary';
         $border = 'bordered';
       }
@@ -80,7 +82,7 @@ if(mysqli_num_rows($q)==0){
       $qty_diterima_per_bbm = str_replace('.0000','',$qty_diterima_per_bbm);
 
       $link_no_bbm.= "
-        <div id=$id class='$border br5 p2 gradasi-$merah'>
+        <div id=$id class='$border $hide_cetak br5 p2 gradasi-$merah'>
           <div class='flex-between' style=gap:10px>
             <div>
               <div class='f12 miring abu'>$d2[nomor]</div>

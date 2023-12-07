@@ -1,6 +1,7 @@
 <span id="tb" class=hideit>po</span>
 <?php
 include 'podo_styles.php';
+include 'pages/must_login.php';
 
 // $p = $_GET['p'] ?? '';
 $p = isset($_GET['p']) ? $_GET['p'] : '';

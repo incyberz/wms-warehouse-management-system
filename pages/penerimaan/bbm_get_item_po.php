@@ -68,7 +68,7 @@ if(mysqli_num_rows($q)==0){
       <tr>
         <td>$i</td>
         <td>
-          <span class=darkblue>$d[kode_barang] <a href='?master&p=barang&keyword=$d[kode_barang]' onclick='return confirm(\"Ingin mengubah data barang ini?\")'>$img_edit</a></span>
+          <span class=darkblue>$d[kode_barang] <a class=hide_cetak href='?master&p=barang&keyword=$d[kode_barang]' onclick='return confirm(\"Ingin mengubah data barang ini?\")'>$img_edit</a></span>
           <div class='darkabu f14'>$d[nama_barang]</div>
         </td>
         <td>
@@ -158,24 +158,26 @@ if(isset($_POST['btn_simpan'])){
 }
 
 echo "
-  <form method=post>
+  <form method=post >
     <input type='hidden' name=id_bbm value=$id_bbm>
     $tb_items
 
-    <div class='flexy'>
-      <div class='pt1'>
-        <input type='checkbox' id=saya_menyatakan $saya_menyatakan_disabled>
+    <div class=hide_cetak>
+      <div class='flexy'>
+        <div class='pt1'>
+          <input type='checkbox' id=saya_menyatakan $saya_menyatakan_disabled>
+        </div>
+        <div>
+          <label for='saya_menyatakan'>Saya menyatakan telah menerima dan mengukur semua kuantitas item dari PO ini.</label>
+        </div>
       </div>
-      <div>
-        <label for='saya_menyatakan'>Saya menyatakan telah menerima dan mengukur semua kuantitas item dari PO ini.</label>
-      </div>
-    </div>
-    <div class='flexy mt4'>
-      <div style=flex:1>
-        <button class='btn btn-primary btn-sm w-100' disabled id=btn_simpan name=btn_simpan>$btn_simpan_caption</button>
-      </div>
-      <div style=flex:1>
-        <span class='btn btn-success btn-sm w-100 btn_aksi' id=blok_cetak__toggle disabled>Prasyarat Cetak BBM</span>
+      <div class='flexy mt4'>
+        <div style=flex:1>
+          <button class='btn btn-primary btn-sm w-100' disabled id=btn_simpan name=btn_simpan>$btn_simpan_caption</button>
+        </div>
+        <div style=flex:1>
+          <span class='btn btn-success btn-sm w-100 btn_aksi' id=blok_cetak__toggle disabled>Prasyarat Cetak BBM</span>
+        </div>
       </div>
     </div>
   </form>
