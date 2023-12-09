@@ -1,6 +1,4 @@
 <?php
-$bintang = '<span class="tebal red pointer" onclick="alert(\'Field ini wajib diisi.\')">*</span>';
-$unique = '<span class="tebal blue pointer" onclick="alert(\'Field ini isinya harus unique.\')">*</span>';
 $kode_caption = $p=='user' ? 'Username' : 'Kode';
 
 $hak_akses = [

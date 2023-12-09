@@ -16,3 +16,5 @@ $img_next = '<img class="zoom pointer" src="assets/img/icons/next.png" alt="next
 
 
 
+$bintang = '<span class="tebal red pointer" onclick="alert(\'Field ini wajib diisi.\')">*</span>';
+$unique = '<span class="tebal blue pointer" onclick="alert(\'Field ini isinya harus unique.\')">*</span>';

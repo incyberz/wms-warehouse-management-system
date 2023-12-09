@@ -1,47 +1,49 @@
 <?php
-$id_bbm_item = $_GET['id_bbm_item'] ?? die(erid('id_bbm_item'));
-$s = "SELECT * 
-FROM tb_bbm_item a 
-WHERE id=$id_bbm_item";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
+if(isset($_POST['btn_cetak_label'])){
+  include 'insho_styles.php';
+  echo "<link href='assets/vendor/bootstrap/css/bootstrap.min.css' rel='stylesheet'>";
+  echo "<link href='assets/css/style.css' rel='stylesheet'>";
 
-?>
-<div class="pagetitle">
-  <h1>Cetak Label</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
-      <li class="breadcrumb-item"><a href="?po&p=terima_barang">Cari PO</a></li>
-      <li class="breadcrumb-item"><a href="?po&p=terima_barang&no_po=<?=$no_po?>&id_bbm=<?=$id_bbm?>">BBM</a></li>
-      <li class="breadcrumb-item active">Cetak Label</li>
-    </ol>
-  </nav>
-</div>
+  $kode_barang = $_POST['kode_barang'];
+  $no_po_dll = $_POST['no_po_dll'];
+  $jenis_bahan = $_POST['jenis_bahan'];
+  $nama_barang = $_POST['nama_barang'];
+}
 
+if(isset($kode_barang)){
+  echo "
+    <div >
+      <div class='bordered p2 tengah' style='width:10cm; height:6cm'>
+        <div class=mt4>
+          <table>
+            <tr>
+              <td width=180px align=center>
+    ";
+  
+              include 'include/qrcode.php';
+              $qr = QRCode::getMinimumQRCode($kode_barang, QR_ERROR_CORRECT_LEVEL_L);
+              $qr->printHTML('6px');
+  
+    echo "
+              <div class='f20 mt2' >$kode_barang</div>
+            </td>
+            <td>
+              <div class=f12>$no_po_dll</div>
+              <div class='f16 mt2 mb1'>$jenis_bahan</div>
+              <div class=f12>$nama_barang</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  ";
 
-<?php
-# =======================================================================
-# PROCESSORS 
-# =======================================================================
-
-?>
-<h2>Data BBM</h2>
-<table class="table">
-  <tr>
-    <td>Nomor PO</td>
-    <td><?=$no_po?></td>
-  </tr>
-  <tr>
-    <td>Nomor MMB</td>
-    <td><?=$id_bbm?></td>
-  </tr>
-  <tr>
-    <td>BBM Item</td>
-    <td><?=$id_bbm_item?></td>
-  </tr>
-  <tr>
-    <td>QTY BBM Item</td>
-    <td><?=$id_bbm_item?></td>
-  </tr>
-</table>
+}else{
+  echo '<h1>Page ini tidak dapat diakses secara langsung.</h1>';
+  ?><script>
+    setTimeout(function(){
+      location.replace('index.php');
+    },3000);
+  </script><?php
+}
