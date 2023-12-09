@@ -11,7 +11,7 @@ $hideit = 'hideit';
 $view_mode = $_GET['view_mode'] ?? '';
 
 // set auto login
-$_SESSION['wms_username'] = 'whas';
+// $_SESSION['wms_username'] = 'whas';
 
 // set logout
 // unset($_SESSION['wms_username']);
@@ -61,16 +61,21 @@ include 'include/crud_icons.php';
 include 'include/arr_master.php';
 
 
-
 # ================================================
 # GET URL PARAMETER
 # ================================================
 $parameter = '';
-if(isset($_GET)){
-  foreach ($_GET as $key => $value) {
-    $parameter = $key;
-    break;
-  }
+foreach ($_GET as $key => $value) {
+  $parameter = $key;
+  break;
+}
+
+# ================================================
+# LOGOUT
+# ================================================
+if($parameter=='logout'){
+  include 'pages/login/logout.php';
+  exit;
 }
 ?>
 
@@ -137,31 +142,40 @@ if(isset($_GET)){
 </head>
 
 <body>
-  <?php if($view_mode!='cetak') include 'pages/header.php'; ?>
-  <?php if($view_mode!='cetak') include 'pages/sidebar.php'; ?>
-  
-  
-  <main id="main" class="main">
-    <?php include 'routing.php'; ?>
-  </main>
-  
-  <?php if($view_mode!='cetak') include 'pages/footer.php'; ?>
+  <?php 
+  if(!$is_login){
+    include 'pages/login/login.php';
+  }else{
+    if($view_mode!='cetak'){
+      include 'pages/header.php'; 
+      include 'pages/sidebar.php';
+    } 
+    ?>
+    
+    
+    <main id="main" class="main">
+      <?php include 'routing.php'; ?>
+    </main>
+    
+    <?php if($view_mode!='cetak') include 'pages/footer.php'; ?>
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <!-- <script src="assets/vendor/chart.js/chart.umd.js"></script> -->
-  <!-- <script src="assets/vendor/echarts/echarts.min.js"></script> -->
-  <!-- <script src="assets/vendor/quill/quill.min.js"></script>
-  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script> -->
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="assets/vendor/chart.js/chart.umd.js"></script> -->
+    <!-- <script src="assets/vendor/echarts/echarts.min.js"></script> -->
+    <!-- <script src="assets/vendor/quill/quill.min.js"></script>
+    <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+    <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script> -->
 
-  <!-- Template Main JS File -->
-  <script src="assets/js/main2.js"></script>
-  <?php include 'include/js_btn_aksi.php'; ?>
+    <!-- Template Main JS File -->
+    <script src="assets/js/main2.js"></script>
+    <?php include 'include/js_btn_aksi.php'; ?>
+
+  <?php } ?>
 
 </body>
 

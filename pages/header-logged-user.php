@@ -15,7 +15,7 @@
     </li>
 
     <li>
-      <a class="dropdown-item d-flex align-items-center" href="#">
+      <a class="dropdown-item d-flex align-items-center" href="?my_profile">
         <i class="bi bi-person"></i>
         <span>My Profile</span>
       </a>
@@ -24,7 +24,7 @@
       <hr class="dropdown-divider">
     </li>
 
-    <li>
+    <!-- <li>
       <a class="dropdown-item d-flex align-items-center" href="#">
         <i class="bi bi-gear"></i>
         <span>Account Settings</span>
@@ -42,10 +42,10 @@
     </li>
     <li>
       <hr class="dropdown-divider">
-    </li>
+    </li> -->
 
     <li>
-      <a class="dropdown-item d-flex align-items-center" href="#">
+      <a class="dropdown-item d-flex align-items-center" href="?logout" onclick='return confirm("Yakin untuk Logout?")'>
         <i class="bi bi-box-arrow-right"></i>
         <span>Sign Out</span>
       </a>

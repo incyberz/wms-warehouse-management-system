@@ -144,15 +144,27 @@ if(isset($_POST['btn_update'])){
         # =========================================
         # CREATE INPUT SELECT
         # =========================================
-        $arr = explode('_', $colField[$key]);
-        $link_fkey = ($id_role!=9 and $p=='user') ? '<span class="kecil miring">hanya admin yang dapat mengubah field ini</span>' : "<a href='?master&p=$arr[1]' onclick='return confirm(\"Menuju manage $arr[1]?\")'>$img_manage</a>";
-        $s2 = "SELECT id,nama FROM tb_$arr[1] WHERE status=1";
+        if($colField[$key]=='satuan'){
+          $s2 = "SELECT satuan FROM tb_satuan";
+        }else{
+          $arr = explode('_', $colField[$key]);
+          $link_fkey = ($id_role!=9 and $p=='user') 
+          ? '<span class="kecil miring">hanya admin yang dapat mengubah field ini</span>' 
+          : "<a href='?master&p=$arr[1]' onclick='return confirm(\"Menuju manage $arr[1]?\")'>$img_manage</a>";
+          $s2 = "SELECT id,nama FROM tb_$arr[1] WHERE status=1";
+        }
         // echo "$s2";
         $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
         $opt = '';
         while($d2=mysqli_fetch_assoc($q2)){
-          $selected = $d2['id'] == $d[$colField[$key]] ? 'selected' : '';
-          $opt .= "<option value='$d2[id]' $selected>$d2[nama]</option>";
+          if($colField[$key]=='satuan'){
+            $selected = $d2['satuan'] == $d[$colField[$key]] ? 'selected' : '';
+            $opt .= "<option value='$d2[satuan]' $selected>$d2[satuan]</option>";
+          }else{
+            $selected = $d2['id'] == $d[$colField[$key]] ? 'selected' : '';
+            $opt .= "<option value='$d2[id]' $selected>$d2[nama]</option>";
+          }
+
         }
 
         $disabled_change_role = ($id_role!=9 and $p=='user') ? 'disabled' : '';

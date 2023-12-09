@@ -73,7 +73,7 @@
         }
       }else if(aksi=='tambah'){
         console.log(aksi,elemen);
-        link_ajax = `ajax/crud.php?tb=${elemen}&aksi=insert`;
+        link_ajax = `ajax/crud.php?tb=${elemen}&aksi=insert&id=new`;
         $.ajax({
           url:link_ajax,
           success:function(a){

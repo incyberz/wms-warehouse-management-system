@@ -23,7 +23,7 @@ if(isset($_POST['btn_simpan'])){
   exit;
 }
 if(isset($_POST['btn_tambah_subitem'])){
-  $s = "INSERT INTO tb_bbm_subitem (id_bbm_item) VALUES ($_POST[id_bbm_item])";
+  $s = "INSERT INTO tb_bbm_subitem (id_bbm_item,nomor) VALUES ($_POST[id_bbm_item],$_POST[nomor])";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
   $pesan_tambah = div_alert('success','Tambah Sub item sukses.');
@@ -132,16 +132,26 @@ FROM tb_bbm_subitem a
 WHERE a.id_bbm_item=$id_bbm_item
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-
+$jumlah_sub_item = mysqli_num_rows($q);
 $div = '';
 $i=0;
 $ada_kosong=0;
 $get_id_bbm_subitem = $_GET['id_bbm_subitem'] ?? '';
+$last_no_lot = '';
+$last_no_roll = '';
+$last_jenis_bahan = '';
+$last_kode_rak = '';
 while($d=mysqli_fetch_assoc($q)){
   $i++;
   $id_bbm_subitem=$d['id_bbm_subitem'];
   $qty=$d['qty'];
+
   if($qty){
+    $last_no_lot = $d['no_lot'];
+    $last_no_roll = $d['no_roll'];
+    $last_jenis_bahan = $d['jenis_bahan'];
+    $last_kode_rak = $d['kode_rak'];
+
     $qty = str_replace('.0000','',$qty);
     $qty_show = "<span class=green>QTY: <span class=qty_subitem id=qty_subitem__$id_bbm_subitem>$qty</span></span>";
     $pesan_kosong = '';
@@ -162,6 +172,14 @@ while($d=mysqli_fetch_assoc($q)){
   </div>";
 }
 
+echo "<h1>
+$last_no_lot = '';
+$last_no_roll = '';
+$last_jenis_bahan = '';
+$last_kode_rak = '';
+
+</h1>";
+
 
 if($qty_diterima==$qty_subitem || $ada_kosong){
   // qty habis || ada yg kosong
@@ -170,10 +188,12 @@ if($qty_diterima==$qty_subitem || $ada_kosong){
 
 }else{
   // boleh nambah
+  $nomor = $jumlah_sub_item+1;
   $form = "
   <form method=post>
     <button class='btn btn-primary btn-sm' name=btn_tambah_subitem>Tambah Sub item</button>
     <input type='hidden' name=id_bbm_item value='$id_bbm_item'>
+    <input type='hidden' name=nomor value='$nomor'>
   </form>
   ";
 }
@@ -224,10 +244,10 @@ if($get_id_bbm_subitem!=''){
 
   $d = mysqli_fetch_assoc($q);
   $qty = $d['qty'];
-  $no_lot = $d['no_lot'];
-  $no_roll = $d['no_roll'];
-  $jenis_bahan = $d['jenis_bahan'];
-  $kode_rak = $d['kode_rak'];
+  $no_lot = $d['no_lot'] ?? $last_no_lot;
+  $no_roll = $d['no_roll'] ?? $last_no_roll;
+  $jenis_bahan = $d['jenis_bahan'] ?? $last_jenis_bahan;
+  $kode_rak = $d['kode_rak'] ?? $last_kode_rak;
   $this_brand = $d['brand'];
 
   $qty = str_replace('.0000','',$qty);
@@ -283,9 +303,15 @@ if($get_id_bbm_subitem!=''){
     if($i==$rows) $div_rak .= '</div>';
   }
 
-  $btn_simpan = ($qty and $kode_rak) 
-  ? "<button class='btn btn-primary' name=btn_simpan >Update</button>" 
-  : "<button class='btn btn-primary' id=btn_simpan name=btn_simpan disabled>Simpan</button>";
+  if($qty and $kode_rak){
+    $btn_simpan = "<button class='btn btn-primary' name=btn_simpan >Update</button>";
+  }else{
+    if($last_kode_rak){
+      $btn_simpan = "<button class='btn btn-primary' name=btn_simpan >Simpan</button>";
+    }else{
+      $btn_simpan = "<button class='btn btn-primary' id=btn_simpan disabled>Simpan</button>";
+    }
+  }
 
   echo "
   <div class='wadah mt2'>
@@ -324,6 +350,16 @@ if($get_id_bbm_subitem!=''){
     $no_po_dll = "$no_po $no_lot ($qty)$satuan $no_roll ($kode_rak $this_brand) $tgl";
     echo "<div id=blok_cetak class=hideit>";
     include 'cetak_label.php';
+
+    $cetak_semua = $sisa_qty==0 ? "
+      <form action=cetak.php method=post target=_blank>
+        <button class='btn btn-success btn-sm' name=btn_cetak_semua_label value=$id_bbm_item>Cetak Semua Label</button>
+      </form>
+    ":"
+      <div class='kecil miring darkred'>Semua QTY harus dialokasikan dahulu. (sisa QTY: $sisa_qty)</div>
+      <button class='btn btn-success btn-sm' disabled>Cetak Semua Label</button>
+    ";
+
     echo "
         <form method=post action=cetak.php target=_blank>
           <input type=hidden name=kode_barang value='$kode_barang'>
@@ -332,6 +368,8 @@ if($get_id_bbm_subitem!=''){
           <input type=hidden name=no_po_dll value='$no_po_dll'>
           <button class='btn btn-success btn-sm mt2' name=btn_cetak_label>Cetak</button>
         </form>
+        <hr>
+        $cetak_semua
       </div>
     ";
 

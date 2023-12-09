@@ -1,15 +1,6 @@
 <?php
 
-if(isset($_POST['btn_cetak_label'])){
-  include 'insho_styles.php';
-  echo "<link href='assets/vendor/bootstrap/css/bootstrap.min.css' rel='stylesheet'>";
-  echo "<link href='assets/css/style.css' rel='stylesheet'>";
 
-  $kode_barang = $_POST['kode_barang'];
-  $no_po_dll = $_POST['no_po_dll'];
-  $jenis_bahan = $_POST['jenis_bahan'];
-  $nama_barang = $_POST['nama_barang'];
-}
 
 if(isset($kode_barang)){
   echo "
@@ -21,7 +12,7 @@ if(isset($kode_barang)){
               <td width=180px align=center>
     ";
   
-              include 'include/qrcode.php';
+              require_once 'include/qrcode.php';
               $qr = QRCode::getMinimumQRCode($kode_barang, QR_ERROR_CORRECT_LEVEL_L);
               $qr->printHTML('6px');
   
@@ -39,11 +30,4 @@ if(isset($kode_barang)){
     </div>
   ";
 
-}else{
-  echo '<h1>Page ini tidak dapat diakses secara langsung.</h1>';
-  ?><script>
-    setTimeout(function(){
-      location.replace('index.php');
-    },3000);
-  </script><?php
 }

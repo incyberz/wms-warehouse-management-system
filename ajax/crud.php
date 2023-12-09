@@ -5,6 +5,8 @@ $tb = $_GET['tb'] ?? die(erid('tb'));
 $aksi = $_GET['aksi'] ?? die(erid('aksi'));
 $id = $_GET['id'] ?? die(erid('id'));
 
+$tb = str_replace('edit_','',$tb);
+
 if($aksi=='update'){
   $kolom = $_GET['kolom'] ?? die(erid('kolom'));
   $value = $_GET['value'] ?? die(erid('value'));
@@ -14,7 +16,7 @@ if($aksi=='update'){
   $s = "UPDATE tb_$tb SET $kolom = $value WHERE id = $id";
 }elseif($aksi=='insert'){
   $koloms = 'kode,nama';
-  $values = "'AAA-NEW','NEW $p'";
+  $values = "'AAA-NEW','NEW $tb'";
   $s = "INSERT INTO tb_$tb ($koloms) VALUES ($values) ";
 
 }elseif($aksi=='insert_item'){
