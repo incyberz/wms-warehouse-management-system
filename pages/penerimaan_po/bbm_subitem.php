@@ -235,7 +235,7 @@ if($get_id_bbm_subitem!=''){
   $kode_rak = '';
   
   $s = "SELECT a.*,
-  (SELECT brand FROM tb_rak WHERE kode=a.kode_rak) brand 
+  (SELECT brand FROM tb_lokasi WHERE kode=a.kode_rak) brand 
   FROM tb_bbm_subitem a 
   WHERE a.id=$get_id_bbm_subitem";
   // echo $s;
@@ -253,7 +253,7 @@ if($get_id_bbm_subitem!=''){
   $qty = str_replace('.0000','',$qty);
 
   $div = '';
-  $s = "SELECT * FROM tb_rak WHERE jenis='$kategori' ORDER BY id_gudang, blok";
+  $s = "SELECT * FROM tb_lokasi WHERE jenis='$kategori' ORDER BY id_gudang, blok";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $rows = mysqli_num_rows($q);
 

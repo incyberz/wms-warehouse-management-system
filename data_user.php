@@ -1,4 +1,5 @@
 <?php
+$profile_na = "assets/img/profile_na.jpg";
 if($username==''){
   // belum login
   $id_user = '';
@@ -6,6 +7,7 @@ if($username==''){
   $id_role = 0;
   $sebagai = 'Pengunjung';
   $nama_user = '';
+  $src_profile = $profile_na;
 }else{
   //telah login
   $s = "SELECT a.*, 
@@ -32,4 +34,7 @@ if($username==''){
 
   $nama_user = ucwords(strtolower($nama_user));
   $jabatan = ucwords(strtolower($jabatan));
+
+  $src_profile = "assets/img/user/$id_user.jpg";
+  if(!file_exists($src_profile)) $src_profile = $profile_na;
 }

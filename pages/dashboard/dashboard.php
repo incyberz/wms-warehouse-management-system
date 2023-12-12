@@ -1,25 +1,28 @@
 <div class="pagetitle">
   <h1>Dashboard</h1>
-  <nav>
+  <!-- <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?">Home</a></li>
-      <li class="breadcrumb-item active">Dashboard</li>
+      <li class="breadcrumb-item active">Proses Bisnis WMS</li>
     </ol>
-  </nav>
+  </nav> -->
 </div>
 
 <section class="section dashboard">
   <div class="row">
 
     <!-- Left side columns -->
-    <div class="col-lg-8">
+    <div class="col-lg-12">
       <div class="row">
 
-        <?php include 'dashboard-penerimaan.php'; ?>
-        <?php include 'dashboard-pengiriman.php'; ?>
-        <?php include 'dashboard-retur-po.php'; ?>
-        <?php include 'dashboard-retur-do.php'; ?>
-        <?php include 'dashboard-stok-menipis.php'; ?>
+        <?php 
+        include 'dashboard-proses-bisnis.php';
+        // include 'dashboard-penerimaan.php';
+        // include 'dashboard-pengiriman.php';
+        // include 'dashboard-retur-po.php';
+        // include 'dashboard-retur-do.php';
+        // include 'dashboard-stok-menipis.php'; 
+        ?>
         
         <!-- <div class="col-12">
           <div class="card top-selling overflow-auto">
@@ -95,12 +98,12 @@
         </div> -->
       </div>
 
-      <?php include 'dashboard-stok-gudang.php'; ?>
+      <?php // include 'dashboard-stok-gudang.php'; ?>
 
     </div>
 
     <div class="col-lg-4">
-      <?php include 'pages/recent_activity.php'; ?>
+      <?php //include 'pages/recent_activity.php'; ?>
     </div>
 
   </div>

@@ -17,7 +17,9 @@ b.nama as nama_supplier
 FROM tb_po a 
 JOIN tb_supplier b ON a.id_supplier=b.id 
 WHERE status=1 
-LIMIT 10";
+AND a.kode NOT LIKE 'STOCK%'
+LIMIT 10
+";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 $tr = '';

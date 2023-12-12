@@ -59,6 +59,7 @@ include 'include/insho_functions.php';
 include 'include/data_perusahaan.php';
 include 'include/crud_icons.php';
 include 'include/arr_master.php';
+include 'include/arr_sheet.php';
 
 
 # ================================================
@@ -86,14 +87,13 @@ if($parameter=='logout'){
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Dashboard - Sistem Informasi Akreditasi</title>
+  <title>WMS Login</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <!-- <link href="assets/img/favicon.png" rel="icon"> -->
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-  <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
+  <link rel="shortcut icon" href="assets/img/favicon2.png" type="image/x-icon">
 
   <!-- Google Fonts -->
   <!-- <link href="https://fonts.gstatic.com" rel="preconnect">

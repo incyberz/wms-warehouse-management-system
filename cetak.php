@@ -32,7 +32,7 @@ if(isset($_POST['btn_cetak_semua_label'])){
   JOIN tb_barang d ON c.id_barang=d.id 
   JOIN tb_po e ON c.id_po=e.id 
   JOIN tb_bbm f ON b.id_bbm=f.id 
-  JOIN tb_rak g ON a.kode_rak=g.kode 
+  JOIN tb_lokasi g ON a.kode_rak=g.kode 
 
   WHERE a.id_bbm_item=$_POST[btn_cetak_semua_label]";
 

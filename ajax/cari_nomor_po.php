@@ -15,7 +15,8 @@ a.tanggal_pengiriman,
 1
 FROM tb_po a 
 WHERE 1 
-AND (a.kode LIKE '%$keyword%' )
+AND (a.kode LIKE '%$keyword%' ) 
+AND a.kode NOT LIKE 'STOCK%' 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);

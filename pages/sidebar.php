@@ -28,6 +28,20 @@
     <li class="nav-heading">Transaksi</li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="?penerimaan">
+        <i class="bi bi-arrow-down-square"></i>
+        <span>Penerimaan</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?pengeluaran">
+        <i class="bi bi-send-check"></i>
+        <span>Pengeluaran</span>
+      </a>
+    </li>
+
+    <!-- <li class="nav-item">
       <a class="nav-link collapsed" href="?po">
         <i class="bi bi-arrow-down-square"></i>
         <span>Penerimaan (PO)</span>
@@ -51,14 +65,20 @@
         <i class="bi bi-arrow-return-right"></i>
         <span>Retur DO</span>
       </a>
-    </li>
+    </li> -->
 
     <li class="nav-heading">Laporan</li>
 
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a class="nav-link collapsed" href="?laporan">
         <i class="bi bi-file-earmark-spreadsheet"></i>
         <span>Laporan</span>
+      </a>
+    </li> -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?stok">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Kartu Stok</span>
       </a>
     </li>
   </ul>
