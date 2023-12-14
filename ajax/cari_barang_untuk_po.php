@@ -59,7 +59,7 @@ if($jumlah_row==0){
   }
 }
 
-$limited = $jumlah_row>$i ? "<div class='alert alert-info bordered br5 p2'>$i row ditampilkan dari $jumlah_row records. <span class=blue>Silahkan perjelas keyword Anda!</span></div>" : '';
+$limited = $jumlah_row>$i ? "<div class='alert alert-info bordered br5 p2'>$i data dari $jumlah_row records. <span class=blue>Silahkan perjelas keyword Anda!</span></div>" : '';
 
 echo "<table class='table'>$limited$tr</table>";
 ?>

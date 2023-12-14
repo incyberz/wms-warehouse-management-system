@@ -7,7 +7,8 @@ include '../include/crud_icons.php';
 // $keyword = $_GET['keyword'] ?? die(erid('keyword'));
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 
-$tr = "<tr><td colspan=100% class='alert alert-danger'>PO tidak ditemukan.</td></tr>";
+// $tr = "<tr><td colspan=100% class='alert alert-danger'>PO tidak ditemukan.</td></tr>";
+$tr = '';
 $s = "SELECT  
 a.id as id_po,
 a.kode as no_po ,
@@ -22,7 +23,7 @@ $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
 
 if($jumlah_row==0){
-  die("<div class='alert alert-danger'>PO tidak ditemukan. Silahkan memakai <i><u>keyword</u></i> lainnya.</div>");
+  die('');
 }else{
   $tr = '';
   $i = 0;
@@ -46,14 +47,14 @@ if($jumlah_row==0){
         <td>
           <span class='kecil miring abu'>Nomor PO:</span> <span class='darkblue tebal'>$d[no_po]</span>
         </td>
-        <td><a href='?po&p=terima_barang&no_po=$no_po' class='btn btn-success btn-sm'>Pilih</a></td>
+        <td><a href='?po&p=terima_barang&no_po=$no_po' class='btn btn-success btn-sm'>Pilih PO ini</a></td>
       </tr>
     ";
-    if($i==10) break;
+    if($i==5) break;
   }
 }
 
-$limited = $jumlah_row>$i ? "<div class='alert alert-info bordered br5 p2'>$i row ditampilkan dari $jumlah_row records. <span class=blue>Silahkan perjelas keyword Anda!</span></div>" : '';
+$limited = $jumlah_row>$i ? "<div class='alert alert-info bordered br5 p2'>$i data dari $jumlah_row records. <span class=blue>Silahkan perjelas keyword Anda!</span></div>" : '';
 
 echo "<table class='table table-hover'>$limited$tr</table>";
 ?>

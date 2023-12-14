@@ -28,6 +28,12 @@
     <li class="nav-heading">Transaksi</li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="?terima_po">
+        <i class="bi bi-arrow-down-square"></i>
+        <span>Terima PO</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link collapsed" href="?penerimaan">
         <i class="bi bi-arrow-down-square"></i>
         <span>Penerimaan</span>
@@ -76,7 +82,7 @@
       </a>
     </li> -->
     <li class="nav-item">
-      <a class="nav-link collapsed" href="?stok">
+      <a class="nav-link collapsed" href="?stock">
         <i class="bi bi-file-earmark-spreadsheet"></i>
         <span>Kartu Stok</span>
       </a>

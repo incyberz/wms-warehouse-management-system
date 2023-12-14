@@ -137,6 +137,7 @@ if($parameter=='logout'){
       box-shadow: 1px 1px 3px gray;
     }
     .formulir input,.formulir textarea {text-transform: uppercase}
+    .bg-hijau{background:#0f0}
   </style>
 
 </head>
