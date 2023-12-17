@@ -40,7 +40,7 @@ b.nomor as pengiriman_ke,
 b.id as id_bbm,
 b.kode as no_bbm,
 b.tanggal_terima,
-d.kode as no_po,
+d.kode as kode_po,
 e.nama as nama_barang,
 e.kode as kode_barang,
 e.satuan,
@@ -64,7 +64,7 @@ $d = mysqli_fetch_assoc($q);
 $nama_barang = $d['nama_barang'];
 $kode_barang = $d['kode_barang'];
 $id_bbm_item = $d['id_bbm_item'];
-$no_po = $d['no_po'];
+$kode_po = $d['kode_po'];
 $no_bbm = $d['no_bbm'];
 $qty_diterima = $d['qty_diterima'];
 $qty_subitem = $d['qty_subitem'];
@@ -83,7 +83,7 @@ $qty_diterima = str_replace('.0000','',$qty_diterima);
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
       <li class="breadcrumb-item"><a href="?po&p=terima_barang">Cari PO</a></li>
-      <li class="breadcrumb-item"><a href="?po&p=terima_barang&no_po=<?=$no_po?>&id_bbm=<?=$id_bbm?>">BBM</a></li>
+      <li class="breadcrumb-item"><a href="?po&p=terima_barang&kode_po=<?=$kode_po?>&id_bbm=<?=$id_bbm?>">BBM</a></li>
       <li class="breadcrumb-item active">Sub Items</li>
     </ol>
   </nav>
@@ -105,7 +105,7 @@ $qty_diterima = str_replace('.0000','',$qty_diterima);
   </tr>
   <tr>
     <td>Nomor PO</td>
-    <td><?=$no_po?></td>
+    <td><?=$kode_po?></td>
   </tr>
   <tr>
     <td>Nomor BBM</td>
@@ -347,7 +347,7 @@ if($get_id_bbm_subitem!=''){
     $tgl = date('d-m-Y',strtotime($tanggal_terima));
 
     $bar = "<img width=300px alt='barcode' src='include/barcode.php?codetype=code39&size=50&text=".$kode_barang."&print=false'/>";
-    $no_po_dll = "$no_po $no_lot ($qty)$satuan $no_roll ($kode_rak $this_brand) $tgl";
+    $no_po_dll = "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_rak $this_brand) $tgl";
     echo "<div id=blok_cetak class=hideit>";
     include 'cetak_label.php';
 

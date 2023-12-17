@@ -1,7 +1,11 @@
 <?php
+
+
+
 # ==========================================
 # KET ITEM PO
 # ==========================================
+$jumlah_item = 0;
 $ket_item_po = 'Lorem ipsum dolor sit amet consectetur, adipisicing elit___Distinctio doloribus corporis ducimus, veniam officiis expedita quidem voluptates sed, magni veritatis odio officia___Praesentium ipsum iusto tenetur facilis odio accusamus temporibus';
 
 $arr_ket_item_po = explode('___',$ket_item_po);
@@ -53,12 +57,11 @@ b.nama as nama_barang,
 (SELECT tanggal FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) last_trx
 
 FROM tb_po_item a 
-JOIN tb_barang b ON a.id_barang=b.id 
-WHERE a.id_po=$id_po";
+JOIN tb_barang b ON a.kode_barang=b.kode 
+WHERE a.kode_po='$kode_po'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)){
   $tr = '';
-  $jumlah_item=0;
   while($d=mysqli_fetch_assoc($q)){
     $jumlah_item++;
     $id=$d['id_po_item'];
@@ -71,8 +74,11 @@ if(mysqli_num_rows($q)){
     $stok=$d['stok'];
     $tmp_stok=$d['tmp_stok'];
 
+    $qty = floatval($qty);
+    $harga_manual = floatval($harga_manual);
+
     $harga = $harga ?? $harga_manual;
-    $harga = $harga ?? $null;
+    $harga = $harga ?? 0;
 
     $stok = $stok ?? $tmp_stok;
     $stok = $stok ?? 0;
@@ -87,12 +93,17 @@ if(mysqli_num_rows($q)){
 
     $age = round((strtotime('now') - strtotime($d['last_trx'])) / (60*60*24),0);
 
-    if($age<30){
-      $age_show = "$age<span class='miring abu'>d</span>";
-    }elseif($age<365){
-      $age_show = round($age/30,0)."<span class='miring abu'>m</span>";
+    if($qty){
+      if($age<30){
+        $age_show = "$age<span class='miring abu'>d</span>";
+      }elseif($age<365){
+        $age_show = round($age/30,0)."<span class='miring abu'>m</span>";
+      }else{
+        $age_show = round($age/365,0)."<span class='miring abu'>y</span>";
+      }
+      $age_show = "<span class='abu miring'>Age:</span> $age_show";
     }else{
-      $age_show = round($age/365,0)."<span class='miring abu'>y</span>";
+      $age_show = '';
     }
 
 
@@ -109,7 +120,7 @@ if(mysqli_num_rows($q)){
         <td>
           <div class='kecil'>
             <div><span class='abu miring'>Stok-lama:</span> <span id=stok_lama__$id>$stok</span> $satuan</div>
-            <div><span class='abu miring'>Age:</span> $age_show $img_detail</div>
+            <div>$age_show</div>
           </div>
         </td>
         <td class=kanan>
@@ -135,7 +146,7 @@ if(mysqli_num_rows($q)){
     <th>NO</th>
     <th>KODE</th>
     <th>KETERANGAN</th>
-    <th>QUANTITY</th>
+    <th>QTY-PO</th>
     <th>HARGA</th>
     <th>JUMLAH</th>
   </thead>
@@ -227,7 +238,7 @@ if(mysqli_num_rows($q)){
       return;
     } 
     if($('#harga__'+id).val()<=0){
-      $('#harga__'+id).val('');
+      $('#harga__'+id).val(0);
       return;
     } 
 
@@ -254,7 +265,7 @@ if(mysqli_num_rows($q)){
       qtys += $('#qty__'+id).val() + ';';
       hargas += $('#harga__'+id).val() + ';';
 
-      if($('#harga__'+id).val()=='') is_lengkap=0;
+      if($('#harga__'+id).val()=='') $('#harga__'+id).val(0);
       if($('#qty__'+id).val()=='') is_lengkap=0;
 
     }
@@ -270,7 +281,7 @@ if(mysqli_num_rows($q)){
       $('#btn_simpan_item_po').text('Simpan');
       $('#btn_simpan_item_po').prop("disabled",false);
       if(is_save){
-        console.log('sace to db', ids, qtys,hargas);
+        console.log('save to db', ids, qtys,hargas);
         link_ajax = `ajax/crud.php?tb=po_item&aksi=insert_item&id=array&ids=${ids}&qtys=${qtys}&hargas=${hargas}`;
         $.ajax({
           url:link_ajax,
@@ -319,7 +330,7 @@ if(mysqli_num_rows($q)){
         return;
     }
 
-    link_ajax = "ajax/cari_barang_untuk_po.php?keyword="+keyword;
+    link_ajax = "ajax/cari_barang_untuk_sj.php?keyword="+keyword;
     $.ajax({
       url:link_ajax,
       success:function(a){

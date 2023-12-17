@@ -30,7 +30,8 @@ if($aksi=='update'){
 
   foreach ($rid as $key => $id) {
     if(strlen($id)>0){
-      $s = "UPDATE tb_$tb SET qty=$rqty[$key], harga_manual=$rharga[$key] WHERE id=$rid[$key] ";
+      $harga_manual = $rharga[$key] ?? 'NULL';
+      $s = "UPDATE tb_$tb SET qty=$rqty[$key], harga_manual=$harga_manual WHERE id=$rid[$key] ";
       $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 

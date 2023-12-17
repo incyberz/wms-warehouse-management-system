@@ -15,14 +15,14 @@ a.nama as nama_supplier,
 a.kode as kode_supplier 
 FROM tb_supplier a 
 WHERE 1 
-AND (a.kode LIKE '%$keyword%' ) 
+AND (a.kode LIKE '%$keyword%' OR a.nama LIKE '%$keyword%' ) 
 AND a.kode NOT LIKE 'STOCK%' 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
 
 if($jumlah_row==0){
-  die("<div class='alert alert-danger'>Data Supplier tidak ada. Silahkan pakai keyword lainnya.</div>");
+  die("<div class='alert alert-danger'>Data Supplier tidak ada. Silahkan pakai keyword lainnya. | <a href='?master&p=supplier' target=_blank>Lihat Master Supplier</a></div>");
 }else{
   $tr = '';
   $i = 0;

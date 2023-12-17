@@ -26,17 +26,18 @@ b.no_telfon as telp_supplier,
 
 FROM tb_po a 
 JOIN tb_supplier b ON a.id_supplier=b.id 
-WHERE a.kode='$no_po'
+WHERE a.kode='$kode_po'
 ";
 // echo "<pre>$s</pre>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
-  die(div_alert('danger',"Nomor PO : $no_po tidak ditermukan."));
+  die(div_alert('danger',"Nomor PO : $kode_po tidak ditermukan."));
 }else{
   $d = mysqli_fetch_assoc($q);
 
   $id_bbm_count = $d['id_bbm_count'];
   $id_po = $d['id_po'];
+  $kode_supplier = $d['kode_supplier'];
 
   if($id_bbm_count){
     # =======================================================================
@@ -86,7 +87,7 @@ if(mysqli_num_rows($q)==0){
           <div class='flex-between' style=gap:10px>
             <div>
               <div class='f12 miring abu'>$d2[nomor]</div>
-              <a class='btn btn-sm btn-$secondary' href='?po&p=terima_barang&no_po=$no_po&id_bbm=$d2[id]'>$d2[kode]</a>
+              <a class='btn btn-sm btn-$secondary' href='?po&p=terima_barang&kode_po=$kode_po&id_bbm=$d2[id]'>$d2[kode]</a>
             </div>
             <div>
               $delete
@@ -124,7 +125,7 @@ if(mysqli_num_rows($q)==0){
 
 
 
-    jsurl("?po&p=terima_barang&no_po=$no_po");
+    jsurl("?po&p=terima_barang&kode_po=$kode_po");
     exit;
   }
 
@@ -158,10 +159,17 @@ if(mysqli_num_rows($q)==0){
     <table class=table>
       <thead>
         <th width=30%>Nomor PO</th>
-        <th>$no_po <span id=identitas_po_toggle>$img_detail</span></th>
+        <th>$kode_po <span id=identitas_po_toggle>$img_detail</span></th>
       </thead>
       <tbody class=hideit id=identitas_po>
         $tr
+        <tr>
+          <td colspan=100% class='kecil tengah'>
+            <a href='?master&p=supplier&keyword=$kode_supplier'>Ubah Data Supplier</a> | 
+            <a href=''>Ubah Detail PO</a>
+
+          </td>
+        </tr>
       </tbody>
     </table>
   ";

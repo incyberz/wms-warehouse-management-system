@@ -18,7 +18,7 @@ if(isset($_POST['btn_cetak_semua_label'])){
   include 'conn.php';
   $s = "SELECT 
   a.*,
-  e.kode as no_po,
+  e.kode as kode_po,
   d.kode as kode_barang,
   d.nama as nama_barang,
   d.satuan,
@@ -48,7 +48,7 @@ if(isset($_POST['btn_cetak_semua_label'])){
     $nama_barang = $d['nama_barang'];
     $kode_barang = $d['kode_barang'];
     // $id_bbm_item = $d['id_bbm_item'];
-    $no_po = $d['no_po'];
+    $kode_po = $d['kode_po'];
     $no_lot = $d['no_lot'];
     $no_roll = $d['no_roll'];
     $kode_rak = $d['kode_rak'];
@@ -68,7 +68,7 @@ if(isset($_POST['btn_cetak_semua_label'])){
 
     // $id=$d['id'];
     $arr_kode_barang[$i] = $kode_barang;
-    $arr_no_po_dll[$i] =  "$no_po $no_lot ($qty)$satuan $no_roll ($kode_rak $this_brand) $tgl";
+    $arr_no_po_dll[$i] =  "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_rak $this_brand) $tgl";
     $arr_jenis_bahan[$i] = $jenis_bahan;
     $arr_nama_barang[$i] = $nama_barang;
     $i++;

@@ -11,12 +11,12 @@
 <?php
 $s = "SELECT 
 a.id as id_po, 
-a.kode as no_po ,
+a.kode as kode_po ,
 b.kode as kode_supplier ,
 b.nama as nama_supplier 
 FROM tb_po a 
 JOIN tb_supplier b ON a.id_supplier=b.id 
-WHERE status=1 
+WHERE 1  
 AND a.kode NOT LIKE 'STOCK%'
 LIMIT 10
 ";
@@ -31,7 +31,7 @@ while($d=mysqli_fetch_assoc($q)){
   $tr .= "
     <tr>
       <td>$i</td>
-      <td><a href='?po&p=po_manage&no_po=$d[no_po]'>$d[no_po]</a></td>
+      <td><a href='?po&p=po_manage&kode_po=$d[kode_po]'>$d[kode_po]</a></td>
       <td>$d[nama_supplier]</td>
       <td>edit | hapus</td>
     </tr>

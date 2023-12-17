@@ -5,7 +5,7 @@ if(isset($_POST['btn_simpan_ket_item'])){
   // var_dump($s);
   
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl("?po&p=po_manage&no_po=$no_po");
+  jsurl("?po&p=po_manage&kode_po=$kode_po");
 
 }
 

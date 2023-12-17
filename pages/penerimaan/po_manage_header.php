@@ -39,6 +39,7 @@ $select_supplier = "<select class='form-control' name=id_supplier>$opt</select>"
   <div class="row">
     <div class="col-4">
       <div class="bordered p1 h-100">
+        <div class="abu miring">Supplier:</div>
         <div class="tebal"><?=$nama_buyer?></div>
         <div class="kecil">
           <?=$alamat_buyer?> 
@@ -47,11 +48,12 @@ $select_supplier = "<select class='form-control' name=id_supplier>$opt</select>"
         </div>
       </div>
     </div>
-    <div class="col-4 tengah f30">
+    <div class="col-4 tengah">
       <div class="bordered p1 h-100" style="margin: 0 -25px">
-        Purchase Order
+        <span class="f30">SURAT JALAN</span>
         <hr style='margin: 5px 0'>
-        <span id="no_po"><?=$no_po?></span>
+        <span class="abu f14">No PO:</span>
+        <span id="kode_po" class=f24><?=$kode_po?></span>
       </div>
     </div>
     <div class="col-4">
@@ -180,7 +182,7 @@ $select_supplier = "<select class='form-control' name=id_supplier>$opt</select>"
   </div>
 
   Nomor PO:
-  <input class="form-control mb2" value='<?=$no_po?>'>
+  <input class="form-control mb2" value='<?=$kode_po?>'>
 
   <div class="wadah ">
     Buyer:

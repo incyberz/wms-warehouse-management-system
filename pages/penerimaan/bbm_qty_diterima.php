@@ -25,7 +25,9 @@ $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
   $tr = "<tr><td colspan=100% ><div class='alert alert-danger'>Belum ada item barang pada PO ini</div></td></tr>";
   $saya_menyatakan_disabled = 'disabled';
+  $hide_saya_menyatakan = 'hideit';
 }else{
+  $hide_saya_menyatakan = '';
   $tr = '';
   $i=0;
   while($d=mysqli_fetch_assoc($q)){
@@ -132,7 +134,7 @@ echo "
     <input type='hidden' name=id_bbm value=$id_bbm>
     $tb_items
 
-    <div class=hide_cetak>
+    <div class='hide_cetak $hide_saya_menyatakan'>
       <div class='flexy'>
         <div class='pt1'>
           <input type='checkbox' id=saya_menyatakan $saya_menyatakan_disabled>

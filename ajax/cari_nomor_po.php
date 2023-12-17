@@ -11,7 +11,7 @@ $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 $tr = '';
 $s = "SELECT  
 a.id as id_po,
-a.kode as no_po ,
+a.kode as kode_po ,
 a.tanggal_pengiriman,
 1
 FROM tb_po a 
@@ -31,7 +31,7 @@ if($jumlah_row==0){
     $i++;
     $id=$d['id_po'];
     $id_po=$d['id_po'];
-    $no_po=$d['no_po'];
+    $kode_po=$d['kode_po'];
     $age = round((strtotime('now') - strtotime($d['tanggal_pengiriman'])) / (60*60*24),0);
 
     if($age<30){
@@ -45,9 +45,9 @@ if($jumlah_row==0){
     $tr .= "
       <tr>
         <td>
-          <span class='kecil miring abu'>Nomor PO:</span> <span class='darkblue tebal'>$d[no_po]</span>
+          <span class='kecil miring abu'>Nomor PO:</span> <span class='darkblue tebal'>$d[kode_po]</span>
         </td>
-        <td><a href='?po&p=terima_barang&no_po=$no_po' class='btn btn-success btn-sm'>Pilih PO ini</a></td>
+        <td><a href='?po&p=terima_barang&kode_po=$kode_po' class='btn btn-success btn-sm'>Pilih PO ini</a></td>
       </tr>
     ";
     if($i==5) break;

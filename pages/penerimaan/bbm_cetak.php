@@ -39,7 +39,7 @@ if($tanggal_verifikasi==''||$diverifikasi_oleh==''){
 }
 
 if($terverifikasi && $sudah_upload){
-  $btn_cetak_bbm = "<a href='?po&p=terima_barang&no_po=$no_po&id_bbm=$id_bbm&view_mode=cetak' class='btn btn-success w-100' target=_blank'>Cetak Bukti Barang Masuk</a>";
+  $btn_cetak_bbm = "<a href='?po&p=terima_barang&kode_po=$kode_po&id_bbm=$id_bbm&view_mode=cetak' class='btn btn-success w-100' target=_blank'>Cetak Bukti Barang Masuk</a>";
 }else{
   $btn_cetak_bbm = "<button class='btn btn-success w-100' disabled'>Belum bisa Cetak BBM</button>";
 }

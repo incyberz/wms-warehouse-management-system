@@ -55,7 +55,7 @@ if($id_bbm==''){
   WHERE a.id=$id_bbm";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) {
-    jsurl("?po&p=terima_barang&no_po=$no_po");
+    jsurl("?po&p=terima_barang&kode_po=$kode_po");
     exit;
   }else{
     $d = mysqli_fetch_assoc($q);
