@@ -29,6 +29,6 @@ if(isset($_POST['btn_simpan'])){
   $s = "UPDATE tb_bbm SET tanggal_terima=CURRENT_TIMESTAMP WHERE id=$id_bbm";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
-  jsurl("?po&p=terima_barang&kode_po=$kode_po");
+  jsurl("?penerimaan&p=terima_barang&kode_po=$kode_po");
   exit;
 }

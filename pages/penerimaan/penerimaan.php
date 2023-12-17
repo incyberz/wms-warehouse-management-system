@@ -5,6 +5,7 @@ include 'pages/must_login.php';
 
 // $p = $_GET['p'] ?? '';
 $p = isset($_GET['p']) ? $_GET['p'] : '';
+$kode_po = isset($_GET['kode_po']) ? $_GET['kode_po'] : '';
 if($p!=''){
   if(file_exists("pages/penerimaan/$p.php")){
     include "$p.php";

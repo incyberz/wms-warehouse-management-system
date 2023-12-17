@@ -10,10 +10,10 @@ echo $s;
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 
-$s = "INSERT INTO tb_po_item (kode_barang,kode_po) VALUES ('$_POST[kode]','$kode_po') ";
+$s = "INSERT INTO tb_sj_item (kode_barang,kode_po) VALUES ('$_POST[kode]','$kode_po') ";
 echo $s;
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 echo div_alert('success','Tambah barang dan tambah PO item berhasil.');
-jsurl("?po&p=po_manage&kode_po=$kode_po");
+jsurl("?penerimaan&p=sj_manage&kode_po=$kode_po");
 exit;

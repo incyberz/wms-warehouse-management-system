@@ -12,7 +12,7 @@ if($sisa_qty<0){
   if($ada_bbm_kosong){
     $tambah_penerimaan = "Sisa QTY : $sisa_qty  <div class='kecil miring abu mt2'>Silahkan isi dahulu BBM dengan QTY masih kosong.</div>";
   }else{
-    $tambah_penerimaan = "Sisa QTY : $sisa_qty | <a href='?po&p=terima_barang&kode_po=$kode_po&penerimaan=selanjutnya' onclick='return confirm(\"Tambah Penerimaan untuk PO ini?\")' >$img_add Tambah Penerimaan </a>";
+    $tambah_penerimaan = "Sisa QTY : $sisa_qty | <a href='?penerimaan&p=terima_barang&kode_po=$kode_po&penerimaan=selanjutnya' onclick='return confirm(\"Tambah Penerimaan untuk PO ini?\")' >$img_add Tambah Penerimaan </a>";
   }
   $tambah_penerimaan = "<div class='bordered br5 p2'>$tambah_penerimaan</div>";
 }

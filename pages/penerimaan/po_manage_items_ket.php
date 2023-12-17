@@ -1,11 +1,11 @@
 <?php
 if(isset($_POST['btn_simpan_ket_item'])){
   $ket_item = clean_sql(strip_tags($_POST['ket_item']));
-  $s = "UPDATE tb_po SET ket_item = '$ket_item' WHERE id=$_POST[id_po]";
+  $s = "UPDATE tb_sj SET ket_item = '$ket_item' WHERE id=$_POST[id_po]";
   // var_dump($s);
   
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl("?po&p=po_manage&kode_po=$kode_po");
+  jsurl("?penerimaan&p=sj_manage&kode_po=$kode_po");
 
 }
 

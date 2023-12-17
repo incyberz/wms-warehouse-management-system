@@ -6,9 +6,9 @@ if(isset($_POST['btn_create'])){
   $kode_po = clean_sql($_POST['kode_po']);
   $id_supplier = clean_sql($_POST['id_supplier']);
 
-  $s = "INSERT INTO tb_po (kode,id_supplier) VALUES ('$kode_po', '$id_supplier') ";
+  $s = "INSERT INTO tb_sj (kode,id_supplier) VALUES ('$kode_po', '$id_supplier') ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl("?po&p=terima_barang&kode_po=$kode_po");
+  jsurl("?penerimaan&p=terima_barang&kode_po=$kode_po");
   exit;
 
 }
@@ -19,7 +19,7 @@ if(isset($_POST['btn_create'])){
   <h1>Terima Barang</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
       <li class="breadcrumb-item active">Terima Barang</li>
     </ol>
   </nav>

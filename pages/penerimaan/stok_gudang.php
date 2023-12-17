@@ -2,7 +2,7 @@
   <h1>Stok Gudang</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
       <li class="breadcrumb-item active">Stok Gudang</li>
     </ol>
   </nav>

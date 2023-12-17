@@ -28,9 +28,9 @@ if(isset($_POST['btn_cetak_semua_label'])){
 
   FROM tb_bbm_subitem a 
   JOIN tb_bbm_item b ON a.id_bbm_item=b.id 
-  JOIN tb_po_item c ON b.id_po_item=c.id 
+  JOIN tb_sj_item c ON b.id_po_item=c.id 
   JOIN tb_barang d ON c.id_barang=d.id 
-  JOIN tb_po e ON c.id_po=e.id 
+  JOIN tb_sj e ON c.id_po=e.id 
   JOIN tb_bbm f ON b.id_bbm=f.id 
   JOIN tb_lokasi g ON a.kode_rak=g.kode 
 

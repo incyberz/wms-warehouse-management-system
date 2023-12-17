@@ -14,17 +14,17 @@ b.nama as nama_supplier,
 b.alamat as alamat_supplier,
 b.contact_person as contact_person,
 b.no_telfon as telp_supplier, 
-(SELECT count(1) FROM tb_po_item WHERE id_po=a.id) jumlah_item_barang, 
+(SELECT count(1) FROM tb_sj_item WHERE id_po=a.id) jumlah_item_barang, 
 (SELECT count(1) FROM tb_bbm WHERE id_po=a.id) id_bbm_count, 
 (SELECT COUNT(1) FROM tb_bbm WHERE tanggal_terima > '$today')+1 as  id_counter,
-(SELECT SUM(qty) FROM tb_po_item WHERE id_po=a.id) sum_qty_po, 
+(SELECT SUM(qty) FROM tb_sj_item WHERE id_po=a.id) sum_qty_po, 
 (
   SELECT SUM(p.qty_diterima) 
   FROM tb_bbm_item p 
   JOIN tb_bbm q ON p.id_bbm=q.id 
   WHERE q.id_po=a.id) sum_qty_diterima 
 
-FROM tb_po a 
+FROM tb_sj a 
 JOIN tb_supplier b ON a.id_supplier=b.id 
 WHERE a.kode='$kode_po'
 ";
@@ -87,7 +87,7 @@ if(mysqli_num_rows($q)==0){
           <div class='flex-between' style=gap:10px>
             <div>
               <div class='f12 miring abu'>$d2[nomor]</div>
-              <a class='btn btn-sm btn-$secondary' href='?po&p=terima_barang&kode_po=$kode_po&id_bbm=$d2[id]'>$d2[kode]</a>
+              <a class='btn btn-sm btn-$secondary' href='?penerimaan&p=terima_barang&kode_po=$kode_po&id_bbm=$d2[id]'>$d2[kode]</a>
             </div>
             <div>
               $delete
@@ -125,7 +125,7 @@ if(mysqli_num_rows($q)==0){
 
 
 
-    jsurl("?po&p=terima_barang&kode_po=$kode_po");
+    jsurl("?penerimaan&p=terima_barang&kode_po=$kode_po");
     exit;
   }
 

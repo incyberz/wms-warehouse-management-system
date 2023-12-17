@@ -43,7 +43,7 @@ $tr = "
 ";
 
 $s = "SELECT 
-a.id as id_po_item,
+a.id as id_sj_item,
 a.qty,
 a.harga_manual,
 b.tmp_harga as harga,
@@ -56,7 +56,7 @@ b.nama as nama_barang,
 (SELECT stok FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) stok,   
 (SELECT tanggal FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) last_trx
 
-FROM tb_po_item a 
+FROM tb_sj_item a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
 WHERE a.kode_po='$kode_po'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -64,8 +64,8 @@ if(mysqli_num_rows($q)){
   $tr = '';
   while($d=mysqli_fetch_assoc($q)){
     $jumlah_item++;
-    $id=$d['id_po_item'];
-    $id_po_item=$d['id_po_item'];
+    $id=$d['id_sj_item'];
+    $id_sj_item=$d['id_sj_item'];
     $qty=$d['qty'];
     $harga=$d['harga'];
     $satuan=$d['satuan'];
@@ -141,6 +141,7 @@ if(mysqli_num_rows($q)){
 
 
 ?>
+<div class="f20 darkblue tebal mb2">Item Surat Jalan</div>
 <table class="table table-striped">
   <thead class=gradasi-hijau>
     <th>NO</th>
@@ -210,6 +211,7 @@ if(mysqli_num_rows($q)){
 
 </table>
 
+<div class="f20 darkblue tebal mb2">Next: <a href="?penerimaan&p=bbm&kode_po=<?=$kode_po?>">Bukti Barang Masuk</a></div>
 
 
 
@@ -282,7 +284,7 @@ if(mysqli_num_rows($q)){
       $('#btn_simpan_item_po').prop("disabled",false);
       if(is_save){
         console.log('save to db', ids, qtys,hargas);
-        link_ajax = `ajax/crud.php?tb=po_item&aksi=insert_item&id=array&ids=${ids}&qtys=${qtys}&hargas=${hargas}`;
+        link_ajax = `ajax/crud.php?tb=sj_item&aksi=insert_item&id=array&ids=${ids}&qtys=${qtys}&hargas=${hargas}`;
         $.ajax({
           url:link_ajax,
           success:function(a){

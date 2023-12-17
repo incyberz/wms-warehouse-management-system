@@ -70,22 +70,22 @@ if($p!=''){
       </div>
       <div id="blok_steps">
         <div>
-          <a href="?po&p=data_po">Data PO</a> 
+          <a href="?penerimaan&p=data_sj">Data PO</a> 
           <br><span class="jumlah_podo"><?=12 ?> <span class=satuan_podo>PO</span></span>
           <br><span class="jumlah_item_podo"><?=3412 ?> <span class=satuan_podo>item</span></span>
         </div>
         <div>
-          <a href="?po&p=terima_barang">Terima Barang</a> 
+          <a href="?penerimaan&p=terima_barang">Terima Barang</a> 
           <br><span class="jumlah_podo"><?=11 ?> <span class=satuan_podo>PO</span></span>
           <br><span class="jumlah_item_podo"><?=3411 ?> <span class=satuan_podo>item</span></span>
         </div>
         <div>
-          <a href="?po&p=penempatan">Penempatan</a> 
+          <a href="?penerimaan&p=penempatan">Penempatan</a> 
           <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
           <br><span class="jumlah_item_podo"><?=3051 ?> <span class=satuan_podo>item</span></span>
         </div>
         <div>
-          <a href="?po&p=stok_gudang">Stok Gudang</a> 
+          <a href="?penerimaan&p=stok_gudang">Stok Gudang</a> 
           <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
           <br><span class="jumlah_item_podo"><?=2912 ?> <span class=satuan_podo>item</span></span>
         </div>

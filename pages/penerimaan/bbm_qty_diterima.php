@@ -16,7 +16,7 @@ b.nama as nama_barang,
   WHERE id_po_item=a.id 
   AND q.tanggal_terima < '$tanggal_terima' ) qty_sebelumnya
 
-FROM tb_po_item a 
+FROM tb_sj_item a 
 JOIN tb_barang b ON a.id_barang=b.id 
 WHERE a.id_po=$id_po 
 ";
@@ -91,7 +91,7 @@ if(mysqli_num_rows($q)==0){
           </div>
         </td>
         <td class=hide_cetak>
-          <a href='?po&p=bbm_subitem&id_bbm=$id_bbm&id_po_item=$id'>$img_next</a>
+          <a href='?penerimaan&p=bbm_subitem&id_bbm=$id_bbm&id_po_item=$id'>$img_next</a>
         </td>
       </tr>
     ";

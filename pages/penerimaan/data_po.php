@@ -2,7 +2,7 @@
   <h1>Data PO</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
       <li class="breadcrumb-item active">Data PO</li>
     </ol>
   </nav>
@@ -14,7 +14,7 @@ a.id as id_po,
 a.kode as kode_po ,
 b.kode as kode_supplier ,
 b.nama as nama_supplier 
-FROM tb_po a 
+FROM tb_sj a 
 JOIN tb_supplier b ON a.id_supplier=b.id 
 WHERE 1  
 AND a.kode NOT LIKE 'STOCK%'
@@ -31,15 +31,15 @@ while($d=mysqli_fetch_assoc($q)){
   $tr .= "
     <tr>
       <td>$i</td>
-      <td><a href='?po&p=po_manage&kode_po=$d[kode_po]'>$d[kode_po]</a></td>
+      <td><a href='?penerimaan&p=sj_manage&kode_po=$d[kode_po]'>$d[kode_po]</a></td>
       <td>$d[nama_supplier]</td>
       <td>edit | hapus</td>
     </tr>
   ";
 }
 
-echo $tr=='' ? div_alert('danger', 'Belum ada data PO | <a href="?po&p=po_manage&aksi=tambah">Buat PO baru</a>') : "
-  <div class='mb2 kanan'><a class='btn btn-success btn-sm' href='?po&p=po_manage&aksi=tambah'>Buat PO baru</a></div>
+echo $tr=='' ? div_alert('danger', 'Belum ada data PO | <a href="?penerimaan&p=sj_manage&aksi=tambah">Buat PO baru</a>') : "
+  <div class='mb2 kanan'><a class='btn btn-success btn-sm' href='?penerimaan&p=sj_manage&aksi=tambah'>Buat PO baru</a></div>
   <table class=table>
     <thead>
       <th>NO</th>

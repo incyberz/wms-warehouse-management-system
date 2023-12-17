@@ -2,8 +2,9 @@
   <h1>Bukti Barang Masuk</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
-      <li class="breadcrumb-item"><a href="?po&p=terima_barang">Cari PO</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=sj_manage&kode_po=<?=$kode_po?>">Manage SJ</a></li>
       <li class="breadcrumb-item active">BBM</li>
     </ol>
   </nav>
@@ -55,7 +56,7 @@ if($id_bbm==''){
   WHERE a.id=$id_bbm";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) {
-    jsurl("?po&p=terima_barang&kode_po=$kode_po");
+    jsurl("?penerimaan&p=terima_barang&kode_po=$kode_po");
     exit;
   }else{
     $d = mysqli_fetch_assoc($q);

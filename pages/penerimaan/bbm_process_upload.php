@@ -39,6 +39,6 @@ if(isset($_POST['btn_upload'])){
   }
 
   echo div_alert('success',"Upload sukses.");
-  jsurl("?po&p=terima_barang&kode_po=$_GET[kode_po]&id_bbm=$_GET[id_bbm]");
+  jsurl("?penerimaan&p=terima_barang&kode_po=$_GET[kode_po]&id_bbm=$_GET[id_bbm]");
   exit;
 }

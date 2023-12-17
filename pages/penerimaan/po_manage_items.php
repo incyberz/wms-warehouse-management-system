@@ -56,7 +56,7 @@ b.nama as nama_barang,
 (SELECT stok FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) stok,   
 (SELECT tanggal FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) last_trx
 
-FROM tb_po_item a 
+FROM tb_sj_item a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
 WHERE a.kode_po='$kode_po'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));

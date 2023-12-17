@@ -14,7 +14,7 @@ a.id as id_po,
 a.kode as kode_po ,
 a.tanggal_pengiriman,
 1
-FROM tb_po a 
+FROM tb_sj a 
 WHERE 1 
 AND (a.kode LIKE '%$keyword%' ) 
 AND a.kode NOT LIKE 'STOCK%' 
@@ -47,7 +47,7 @@ if($jumlah_row==0){
         <td>
           <span class='kecil miring abu'>Nomor PO:</span> <span class='darkblue tebal'>$d[kode_po]</span>
         </td>
-        <td><a href='?po&p=terima_barang&kode_po=$kode_po' class='btn btn-success btn-sm'>Pilih PO ini</a></td>
+        <td><a href='?penerimaan&p=terima_barang&kode_po=$kode_po' class='btn btn-success btn-sm'>Pilih PO ini</a></td>
       </tr>
     ";
     if($i==5) break;

@@ -19,7 +19,7 @@ if(isset($_POST['btn_simpan'])){
 
 
 
-  jsurl("?po&p=bbm_subitem&id_bbm=$_GET[id_bbm]&id_po_item=$_GET[id_po_item]&id_bbm_subitem=$id");
+  jsurl("?penerimaan&p=bbm_subitem&id_bbm=$_GET[id_bbm]&id_po_item=$_GET[id_po_item]&id_bbm_subitem=$id");
   exit;
 }
 if(isset($_POST['btn_tambah_subitem'])){
@@ -51,8 +51,8 @@ f.nama as nama_kategori,
 
 FROM tb_bbm_item a 
 JOIN tb_bbm b ON a.id_bbm=b.id 
-JOIN tb_po_item c ON a.id_po_item=c.id 
-JOIN tb_po d ON c.id_po=d.id 
+JOIN tb_sj_item c ON a.id_po_item=c.id 
+JOIN tb_sj d ON c.id_po=d.id 
 JOIN tb_barang e ON c.id_barang=e.id 
 JOIN tb_kategori f ON e.id_kategori=f.id 
 WHERE a.id_po_item=$id_po_item 
@@ -81,9 +81,9 @@ $qty_diterima = str_replace('.0000','',$qty_diterima);
   <h1>BBM Sub Items</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
-      <li class="breadcrumb-item"><a href="?po&p=terima_barang">Cari PO</a></li>
-      <li class="breadcrumb-item"><a href="?po&p=terima_barang&kode_po=<?=$kode_po?>&id_bbm=<?=$id_bbm?>">BBM</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=terima_barang">Cari PO</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=terima_barang&kode_po=<?=$kode_po?>&id_bbm=<?=$id_bbm?>">BBM</a></li>
       <li class="breadcrumb-item active">Sub Items</li>
     </ol>
   </nav>
@@ -165,7 +165,7 @@ while($d=mysqli_fetch_assoc($q)){
   $sty_border = $get_id_bbm_subitem==$id_bbm_subitem ? 'style="border: solid 3px blue"' : 'style="border: solid 3px #ccc"';
 
   $div.= "<div class='btn gradasi-$gradasi' $sty_border>
-    <a href='?po&p=bbm_subitem&id_bbm=$id_bbm&id_po_item=$id_po_item&id_bbm_subitem=$id_bbm_subitem'>
+    <a href='?penerimaan&p=bbm_subitem&id_bbm=$id_bbm&id_po_item=$id_po_item&id_bbm_subitem=$id_bbm_subitem'>
       <div class='f12'>Subitem-$i</div>
       <div class=kecil>$qty_show</div>
     </a>

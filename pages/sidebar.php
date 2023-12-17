@@ -48,7 +48,7 @@
     </li>
 
     <!-- <li class="nav-item">
-      <a class="nav-link collapsed" href="?po">
+      <a class="nav-link collapsed" href="?penerimaan">
         <i class="bi bi-arrow-down-square"></i>
         <span>Penerimaan (PO)</span>
       </a>

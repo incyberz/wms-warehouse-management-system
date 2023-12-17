@@ -15,5 +15,5 @@
 <div class='alert alert-info'>
   Saat ini belum ada Retur PO yang harus Anda tangani. 
   <hr>
-  <a href="?po&p=data_po">Lihat Data PO</a> | <a href="?po&p=histori_retur_po">Histori Retur PO</a>
+  <a href="?penerimaan&p=data_sj">Lihat Data PO</a> | <a href="?penerimaan&p=histori_retur_po">Histori Retur PO</a>
 </div>

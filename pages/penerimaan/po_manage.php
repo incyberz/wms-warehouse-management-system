@@ -5,8 +5,8 @@
   <h1>Tambah Penerimaan PO</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?po">PO Home</a></li>
-      <li class="breadcrumb-item"><a href="?po&p=data_po">Data PO</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data PO</a></li>
       <li class="breadcrumb-item active">Manage PO</li>
     </ol>
   </nav>
@@ -33,9 +33,9 @@ if($kode_po==''){
   if(isset($_POST['btn_buat_po'])){
     $kode = clean_sql($_POST['kode']);
     $id_supplier = clean_sql($_POST['id_supplier']);
-    $s = "INSERT INTO tb_po (kode,id_supplier) VALUES ('$kode',$id_supplier)";
+    $s = "INSERT INTO tb_sj (kode,id_supplier) VALUES ('$kode',$id_supplier)";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-    jsurl("?po&p=po_manage&kode_po=$kode");
+    jsurl("?penerimaan&p=sj_manage&kode_po=$kode");
     exit;
   }
 
@@ -72,12 +72,12 @@ if($kode_po==''){
   b.no_telfon as telp_supplier ,
   b.alamat as alamat_supplier 
 
-  FROM tb_po a   
+  FROM tb_sj a   
   JOIN tb_supplier b ON a.id_supplier=b.id 
   WHERE a.kode='$kode_po' ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0){
-    die(div_alert('danger',"Data PO tidak ditemukan. <hr>Silahkan cek pada <a href='?po&p=data_po'>List Data PO</a>"));
+    die(div_alert('danger',"Data PO tidak ditemukan. <hr>Silahkan cek pada <a href='?penerimaan&p=data_sj'>List Data PO</a>"));
   }
 
   $d = mysqli_fetch_assoc($q);
