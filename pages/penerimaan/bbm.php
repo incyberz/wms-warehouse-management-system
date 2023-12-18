@@ -4,7 +4,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
-      <li class="breadcrumb-item"><a href="?penerimaan&p=sj_manage&kode_po=<?=$kode_po?>">Manage SJ</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?=$kode_sj?>">Manage SJ</a></li>
       <li class="breadcrumb-item active">BBM</li>
     </ol>
   </nav>
@@ -35,43 +35,43 @@ $arr_no_bbm = [];
 
 
 # =======================================================================
-# GET IDENTITAS PO 
+# SURAT JALAN
 # =======================================================================
-include 'bbm_identitas_po.php';
+include 'bbm_surat_jalan.php';
 
 # =======================================================================
-# TOTAL QTY PENERIMAAN
+# BBM INFO
 # =======================================================================
-include 'bbm_total_qty_penerimaan.php';
+include 'bbm_info.php';
 
-if($id_bbm==''){
-  echo ('Silahkan pilih nomor BBM diatas!');
+// if($id_bbm==''){
+//   echo ('Silahkan pilih nomor BBM diatas!');
+// }else{
+// } 
+# =======================================================================
+# CHECK IS VALID ID-BBM | GET TANGGAL TERIMA
+# =======================================================================
+$s = "SELECT a.*,
+(SELECT nama FROM tb_user WHERE id=a.diverifikasi_oleh) verifikator  
+FROM tb_bbm a 
+WHERE a.kode_sj='$kode_sj'";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0) {
+  echo 'numrows zero :' . $s;
+  // jsurl("?penerimaan&p=terima_barang&kode_sj=$kode_sj");
+  exit;
 }else{
-  # =======================================================================
-  # CHECK IS VALID ID-BBM | GET TANGGAL TERIMA
-  # =======================================================================
-  $s = "SELECT a.*,
-  (SELECT nama FROM tb_user WHERE id=a.diverifikasi_oleh) verifikator  
-  FROM tb_bbm a 
-  WHERE a.id=$id_bbm";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0) {
-    jsurl("?penerimaan&p=terima_barang&kode_po=$kode_po");
-    exit;
-  }else{
-    $d = mysqli_fetch_assoc($q);
-    $tanggal_terima = $d['tanggal_terima'];
-    $nomor = $d['nomor'];
-    $diverifikasi_oleh = $d['diverifikasi_oleh'];
-    $tanggal_verifikasi = $d['tanggal_verifikasi'];
-    $verifikator = ucwords(strtolower($d['verifikator']));
-    // echo "<h1>DEBUG $verifikator $diverifikasi_oleh</h1>";
-  }
-  
-  # =======================================================================
-  # GET ITEM PO
-  # =======================================================================
-  include 'bbm_qty_diterima.php';
-} 
+  $d = mysqli_fetch_assoc($q);
+  $tanggal_masuk = $d['tanggal_masuk'];
+  $diverifikasi_oleh = $d['diverifikasi_oleh'];
+  $tanggal_verifikasi = $d['tanggal_verifikasi'];
+  $verifikator = ucwords(strtolower($d['verifikator']));
+  // echo "<h1>DEBUG $verifikator $diverifikasi_oleh</h1>";
+}
+
+# =======================================================================
+# GET ITEM PO
+# =======================================================================
+include 'bbm_qty_diterima.php';
 include 'bbm_js.php';
 ?>

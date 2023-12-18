@@ -38,7 +38,7 @@ $ket_item_po_show = "<ul>$li</ul>";
 
 $tr = "
   <tr class='alert alert-danger'>
-    <td colspan=100%>Belum ada item PO.</td>
+    <td colspan=100%>Belum ada item Surat Jalan.</td>
   </tr>
 ";
 
@@ -58,7 +58,7 @@ b.nama as nama_barang,
 
 FROM tb_sj_item a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
-WHERE a.kode_po='$kode_po'";
+WHERE a.kode_sj='$kode_sj'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)){
   $tr = '';
@@ -106,6 +106,8 @@ if(mysqli_num_rows($q)){
       $age_show = '';
     }
 
+    $satuan = $satuan=='' ? "<a href='?master&p=barang&keyword=$d[kode_barang]' target=_blank class='merah tebal'>SATUAN UNSET</a>" : $satuan;
+
 
     $tr .= "
       <tr id=source_edit_item_po__1>
@@ -141,77 +143,80 @@ if(mysqli_num_rows($q)){
 
 
 ?>
-<div class="f20 darkblue tebal mb2">Item Surat Jalan</div>
-<table class="table table-striped">
-  <thead class=gradasi-hijau>
-    <th>NO</th>
-    <th>KODE</th>
-    <th>KETERANGAN</th>
-    <th>QTY-PO</th>
-    <th>HARGA</th>
-    <th>JUMLAH</th>
-  </thead>
-
-  <?=$tr?>
+<div class="wadah">
+  <div class="f20 darkblue tebal mb2">Item Surat Jalan</div>
+  <table class="table table-striped">
+    <thead class=gradasi-hijau>
+      <th>NO</th>
+      <th>KODE</th>
+      <th>KETERANGAN</th>
+      <th>QTY</th>
+      <th>HARGA</th>
+      <th>JUMLAH</th>
+    </thead>
   
-  <tr>
-    <td><span class='miring abu kecil'><?php echo ($jumlah_item+1);?></span></td>
-    <td colspan=5 >
-      <span class="green pointer">
-        <span class="btn_aksi" id="edit_item_po__toggle">
-        Tambah item <?=$img_add?></span>
-      </span>
-      <div id="edit_item_po" class="border-merah gradasi-kuning br5 p2 mb2 mt2 hideit" style="display: block;">
-          <div class="row">
-            <div class="col-11">
-              <div class="flexy">
-                <div class="darkblue">Cari barang:</div>
-                <div class="darkblue">
-                  <input type="text" class="form-control form-control-sm" id=keyword>
+    <?=$tr?>
+    
+    <tr>
+      <td><span class='miring abu kecil'><?php echo ($jumlah_item+1);?></span></td>
+      <td colspan=5 >
+        <span class="green pointer">
+          <span class="btn_aksi" id="edit_item_po__toggle">
+          Tambah item <?=$img_add?></span>
+        </span>
+        <div id="edit_item_po" class="border-merah gradasi-kuning br5 p2 mb2 mt2 hideit" style="display: block;">
+            <div class="row">
+              <div class="col-11">
+                <div class="flexy">
+                  <div class="darkblue">Cari barang:</div>
+                  <div class="darkblue">
+                    <input type="text" class="form-control form-control-sm" id=keyword>
+                  </div>
                 </div>
               </div>
+              <div class="col-1 kanan">
+                <span class="btn_aksi" id="edit_item_po__close"><img class="zoom pointer" src="assets/img/icons/close.png" alt="close" height="20px"></span>
+              </div>
             </div>
-            <div class="col-1 kanan">
-              <span class="btn_aksi" id="edit_item_po__close"><img class="zoom pointer" src="assets/img/icons/close.png" alt="close" height="20px"></span>
-            </div>
+  
+            <!-- ======================================================== -->
+            <!-- HASIL AJAX ITEM BARANG PO -->
+            <!-- ======================================================== -->
+            <div class='mt2' id=hasil_ajax></div>
           </div>
-
-          <!-- ======================================================== -->
-          <!-- HASIL AJAX ITEM BARANG PO -->
-          <!-- ======================================================== -->
-          <div class='mt2' id=hasil_ajax></div>
-        </div>
-    </td>
-  </tr> 
-  <tfoot class=gradasi-kuning>
-    <tr>
-      <td colspan=3 class=kanan>Total</td>
-      <td class=kanan id=total_qty>?</td>
-      <td>&nbsp;</td>
-      <td class=kanan id=total>?</td>
-    </tr>
-    <tr>
-      <td colspan=3 class=kanan>PPN 11%</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td class=kanan id=ppn>?</td>
-    </tr>
-    <tr>
-      <td colspan=3 class=kanan>Total + PPN</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td class=kanan id=total_ppn>?</td>
-    </tr>
-    <tr>
-      <td colspan=100%>
-        <button class="btn btn-success w-100 btn-sm" id="btn_simpan_item_po" disabled>Simpan</button>
       </td>
-    </tr>
-  </tfoot>
+    </tr> 
+    <tfoot class=gradasi-kuning>
+      <tr>
+        <td colspan=3 class=kanan>Total</td>
+        <td class=kanan id=total_qty>?</td>
+        <td>&nbsp;</td>
+        <td class=kanan id=total>?</td>
+      </tr>
+      <tr>
+        <td colspan=3 class=kanan>PPN 11%</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td class=kanan id=ppn>?</td>
+      </tr>
+      <tr>
+        <td colspan=3 class=kanan>Total + PPN</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td class=kanan id=total_ppn>?</td>
+      </tr>
+      <tr>
+        <td colspan=100%>
+          <button class="btn btn-success w-100 btn-sm" id="btn_simpan_item_po" disabled>Simpan</button>
+        </td>
+      </tr>
+    </tfoot>
+  
+  </table>
 
-</table>
+</div>
 
-<div class="f20 darkblue tebal mb2">Next: <a href="?penerimaan&p=bbm&kode_po=<?=$kode_po?>">Bukti Barang Masuk</a></div>
+<div class="f20 abu tebal mb2">Next: <a href="?penerimaan&p=bbm&kode_sj=<?=$kode_sj?>">Bukti Barang Masuk</a></div>
 
 
 

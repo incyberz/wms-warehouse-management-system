@@ -27,12 +27,12 @@
 
     <li class="nav-heading">Transaksi</li>
 
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a class="nav-link collapsed" href="?terima_po">
         <i class="bi bi-arrow-down-square"></i>
         <span>Terima PO</span>
       </a>
-    </li>
+    </li> -->
     <li class="nav-item">
       <a class="nav-link collapsed" href="?penerimaan">
         <i class="bi bi-arrow-down-square"></i>

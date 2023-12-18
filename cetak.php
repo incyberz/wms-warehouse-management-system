@@ -22,19 +22,18 @@ if(isset($_POST['btn_cetak_semua_label'])){
   d.kode as kode_barang,
   d.nama as nama_barang,
   d.satuan,
-  f.tanggal_terima,
+  f.tanggal_masuk,
   g.brand as this_brand
 
 
-  FROM tb_bbm_subitem a 
-  JOIN tb_bbm_item b ON a.id_bbm_item=b.id 
-  JOIN tb_sj_item c ON b.id_po_item=c.id 
-  JOIN tb_barang d ON c.id_barang=d.id 
-  JOIN tb_sj e ON c.id_po=e.id 
-  JOIN tb_bbm f ON b.id_bbm=f.id 
-  JOIN tb_lokasi g ON a.kode_rak=g.kode 
+  FROM tb_sj_subitem a 
+  JOIN tb_sj_item c ON a.id_sj_item=c.id 
+  JOIN tb_barang d ON c.kode_barang=d.kode 
+  JOIN tb_sj e ON c.kode_sj=e.kode 
+  JOIN tb_bbm f ON e.kode=f.kode_sj 
+  JOIN tb_lokasi g ON a.kode_lokasi=g.kode 
 
-  WHERE a.id_bbm_item=$_POST[btn_cetak_semua_label]";
+  WHERE a.id_sj_item=$_POST[btn_cetak_semua_label]";
 
 
 
@@ -51,7 +50,7 @@ if(isset($_POST['btn_cetak_semua_label'])){
     $kode_po = $d['kode_po'];
     $no_lot = $d['no_lot'];
     $no_roll = $d['no_roll'];
-    $kode_rak = $d['kode_rak'];
+    $kode_lokasi = $d['kode_lokasi'];
     $this_brand = $d['this_brand'];
     $jenis_bahan = $d['jenis_bahan'];
     // $no_bbm = $d['no_bbm'];
@@ -60,15 +59,15 @@ if(isset($_POST['btn_cetak_semua_label'])){
     // $pengiriman_ke = $d['pengiriman_ke'];
     // $kategori = $d['kategori'];
     // $nama_kategori = $d['nama_kategori'];
-    $tanggal_terima = $d['tanggal_terima'];
-    $tgl = date('d-m-y',strtotime($tanggal_terima));
+    $tanggal_masuk = $d['tanggal_masuk'];
+    $tgl = date('d-m-y',strtotime($tanggal_masuk));
 
     $qty = str_replace('.0000','',$qty);
 
 
     // $id=$d['id'];
     $arr_kode_barang[$i] = $kode_barang;
-    $arr_no_po_dll[$i] =  "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_rak $this_brand) $tgl";
+    $arr_no_po_dll[$i] =  "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_lokasi $this_brand) $tgl";
     $arr_jenis_bahan[$i] = $jenis_bahan;
     $arr_nama_barang[$i] = $nama_barang;
     $i++;

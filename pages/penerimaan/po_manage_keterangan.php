@@ -5,7 +5,7 @@ if(isset($_POST['btn_simpan_ket_po'])){
   var_dump($s);
   
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl("?penerimaan&p=sj_manage&kode_po=$kode_po");
+  jsurl("?penerimaan&p=manage_sj&kode_sj=$kode_po");
 
 }
 

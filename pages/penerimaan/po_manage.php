@@ -5,7 +5,7 @@
   <h1>Tambah Penerimaan PO</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data PO</a></li>
       <li class="breadcrumb-item active">Manage PO</li>
     </ol>
@@ -35,7 +35,7 @@ if($kode_po==''){
     $id_supplier = clean_sql($_POST['id_supplier']);
     $s = "INSERT INTO tb_sj (kode,id_supplier) VALUES ('$kode',$id_supplier)";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-    jsurl("?penerimaan&p=sj_manage&kode_po=$kode");
+    jsurl("?penerimaan&p=manage_sj&kode_sj=$kode");
     exit;
   }
 

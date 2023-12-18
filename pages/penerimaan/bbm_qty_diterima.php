@@ -4,21 +4,15 @@
 # =======================================================================
 $s = "SELECT *,
 a.id as id_po_item,
+0 as qty_sebelumnya,
 b.id as id_barang,
 b.kode as kode_barang,
 b.nama as nama_barang,
-(SELECT step FROM tb_satuan WHERE satuan=b.satuan) step,
-(SELECT qty_diterima FROM tb_bbm_item WHERE id_po_item=a.id AND id_bbm=$id_bbm) qty_diterima,
-(
-  SELECT SUM(p.qty_diterima) 
-  FROM tb_bbm_item p 
-  JOIN tb_bbm q ON p.id_bbm=q.id 
-  WHERE id_po_item=a.id 
-  AND q.tanggal_terima < '$tanggal_terima' ) qty_sebelumnya
+(SELECT step FROM tb_satuan WHERE satuan=b.satuan) step
 
 FROM tb_sj_item a 
-JOIN tb_barang b ON a.id_barang=b.id 
-WHERE a.id_po=$id_po 
+JOIN tb_barang b ON a.kode_barang=b.kode 
+WHERE a.kode_sj='$kode_sj' 
 ";
 // echo "<h1>GET ITEM PO</h1><pre>$s</pre>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -38,6 +32,10 @@ if(mysqli_num_rows($q)==0){
     $qty_diterima = $d['qty_diterima'];
     $qty_sebelumnya = $d['qty_sebelumnya'];
     $satuan = $d['satuan'];
+
+    $qty = floatval($qty);
+    $qty_diterima = floatval($qty_diterima);
+    $qty_sebelumnya = floatval($qty_sebelumnya);
 
     // pernah terima maka set partial
     if($qty_diterima) $pernah_terima = 1;
@@ -61,10 +59,7 @@ if(mysqli_num_rows($q)==0){
 
     $qty_sebelumnya_show = $d['qty_sebelumnya'] ? "<div class='kecil miring abu'>-<span id=qty_sebelumnya__$id>$d[qty_sebelumnya]</span></div>" : '';
 
-    $qty_sebelumnya_show = str_replace('.0000','',$qty_sebelumnya_show);
-    $qty_diterima = str_replace('.0000','',$qty_diterima);
-    $qty = str_replace('.0000','',$qty);
-    
+    $qty_max = $qty * 2;
     
     $tr .= "
       <tr>
@@ -81,7 +76,7 @@ if(mysqli_num_rows($q)==0){
         <td>
           <div class=flexy>
             <div>
-              <input id='qty_diterima__$id' class='form-control form-control-sm qty_diterima' type=number step='$step' required name=qty_diterima__$id min=0 max=$qty_final value=$qty_diterima>
+              <input id='qty_diterima__$id' class='form-control form-control-sm qty_diterima' type=number step='$step' required name=qty_diterima__$id min=0 max=$qty_max value=$qty_diterima>
               <div class='mt1 abu kecil' id=selisih__$id>$sisa_show</div>
             </div>
             <div>
@@ -91,7 +86,7 @@ if(mysqli_num_rows($q)==0){
           </div>
         </td>
         <td class=hide_cetak>
-          <a href='?penerimaan&p=bbm_subitem&id_bbm=$id_bbm&id_po_item=$id'>$img_next</a>
+          <a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_next</a>
         </td>
       </tr>
     ";
@@ -131,7 +126,6 @@ include 'bbm_process_simpan_item.php';
 
 echo "
   <form method=post >
-    <input type='hidden' name=id_bbm value=$id_bbm>
     $tb_items
 
     <div class='hide_cetak $hide_saya_menyatakan'>

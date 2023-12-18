@@ -18,7 +18,8 @@ a.nama as nama_barang,
 (SELECT tanggal FROM tb_trx WHERE id_barang = a.id ORDER BY tanggal DESC LIMIT 1) last_trx
 
 FROM tb_barang a 
-WHERE 1 
+LEFT JOIN tb_sj_item b ON a.kode=b.kode_barang 
+WHERE b.id is null 
 AND (a.kode LIKE '%$keyword%' OR a.nama LIKE '%$keyword%')
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -31,7 +32,7 @@ if($jumlah_row==0){
       <a target=_blank href='?master&p=barang'>Lihat Master Barang</a>
     </div>
     <form method=post>
-      <input type=hiddena name=kode value='$keyword'>
+      <input type=hidden name=kode value='$keyword'>
       Kode Barang
       <input class='form-control mb2 mt1' disabled value='$keyword'>
       Nama Barang
@@ -77,7 +78,11 @@ if($jumlah_row==0){
           <div><span class='abu miring'>Stok Gudang:</span> $stok $d[satuan]</div>
           <div>$age_show</div>
         </td>
-        <td><button class='btn btn-success btn-sm add_item' id=add_item__$kode_barang>Add Item SJ</button></td>
+        <td>
+          <form method=post>
+            <button class='btn btn-success btn-sm add_item' value=$kode_barang name=btn_add_sj_item>Add Item SJ</button>
+          </form>
+        </td>
       </tr>
     ";
     if($i==5) break;

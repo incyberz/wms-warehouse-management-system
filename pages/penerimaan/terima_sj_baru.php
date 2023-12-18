@@ -16,11 +16,12 @@ if(isset($_POST['btn_create'])){
 
 ?>
 <div class="pagetitle">
-  <h1>Terima Barang</h1>
+  <h1>Terima Surat Jalan</h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
-      <li class="breadcrumb-item active">Terima Barang</li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
+      <li class="breadcrumb-item active">Terima SJ</li>
     </ol>
   </nav>
 </div>
@@ -40,7 +41,7 @@ if(isset($_POST['btn_create'])){
 
 </div> -->
 <div class=wadah>
-  <h3 class='f18 darkblue mb4' id=judul>Cari Data PO</h3>
+  <h3 class='f18 darkblue mb4' id=judul>Cari Data Surat Jalan</h3>
   Nomor PO
   <input type="text" class="form-control mb2" id=keyword maxlength=20>
   
@@ -76,16 +77,16 @@ if(isset($_POST['btn_create'])){
           return;
       }
 
-      link_ajax = "ajax/cari_nomor_po.php?keyword="+keyword;
+      link_ajax = "ajax/cari_nomor_sj.php?keyword="+keyword;
       $.ajax({
         url:link_ajax,
         success:function(a){
           $('#hasil_ajax_po').html(a);
           if(a==''){
             $('#form_simpan').show();
-            $('#judul').text("Buat Penerimaan PO Baru");
+            $('#judul').text("Buat Penerimaan Surat Jalan Baru");
           }else{
-            $('#judul').text("Cari Data PO");
+            $('#judul').text("Cari Data Surat Jalan");
             $('#form_simpan').hide();
 
           }

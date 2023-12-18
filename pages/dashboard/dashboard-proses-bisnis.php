@@ -38,33 +38,33 @@ $arr_proses = [
   ],
   'po' => [
     2,
-    'Terima Surat Jalan',
+    'Data Surat Jalan',
     'Menambahkan data PO, barang, supplier, dan data lain jika belum tersedia di database WMS',
-    '?penerimaan&p=terima_barang'
+    '?penerimaan&p=data_sj'
   ],
   'accepting' => [
     2,
-    'Penerimaan Barang',
+    'Terima Surat Jalan',
     'Melakukan penimbangan ulang QTY sesuai dengan Surat Jalan yang diterima hingga mencetak BBM',
-    '?penerimaan&p=terima_barang'
+    '?penerimaan&p=terima_sj_baru'
   ],
   'managing' => [
     2,
     'Manage Sub Item',
     'Mengalokasikan QTY diterima menjadi Sub Item berdasarkan kemasan, roll, atau nomor lot',
-    '?penerimaan&p=terima_barang'
+    '?penerimaan&p=penempatan'
   ],
   'putting' => [
     2,
-    'Pemilihan Rak',
+    'Pemilihan Lokasi',
     'Memilih rak yang tersedia untuk tiap-tiap Sub Item',
-    '?penerimaan&p=terima_barang'
+    '?penerimaan&p=pemilihan_lokasi'
   ],
   'labeling' => [
     2,
     'Cetak Label',
     'Mencetak label untuk tiap-tiap Sub Item',
-    '?penerimaan&p=terima_barang'
+    '?penerimaan&p=cetak_label_info'
   ],
   'picking' => [
     3,

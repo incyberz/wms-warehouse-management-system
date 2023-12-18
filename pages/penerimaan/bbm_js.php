@@ -13,6 +13,7 @@
       $('#qty_diterima__'+id).val($('#qty_po__'+id).text());
       $('#btn_sesuai__'+id).hide();
       $('#img_check__'+id).show();
+      $('#selisih__'+id).hide();
 
     });
 
@@ -35,12 +36,15 @@
       let qty_po = parseFloat($('#qty_po__'+id).text());
       let qty_sebelumnya = parseFloat($('#qty_sebelumnya__'+id).text());
 
+      if(isNaN(qty_sebelumnya)) qty_sebelumnya = 0;
+
       $('#img_check__'+id).hide();
       if(isNaN(qty_diterima)||isNaN(qty_po)){
         $('#selisih__'+id).html('masukan QTY yang benar..');
         $('#btn_sesuai__'+id).fadeOut();
       }else{
         // $('#btn_sesuai__'+id).fadeIn();
+        console.log('qty_po, qty_diterima, qty_sebelumnya: ',qty_po, qty_diterima, qty_sebelumnya);
         let selisih = Math.round((qty_po - qty_diterima - qty_sebelumnya)*10000) / 10000;
         if(selisih==0){
           $('#btn_sesuai__'+id).hide();

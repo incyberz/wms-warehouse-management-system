@@ -13,78 +13,78 @@ if(isset($_POST['btn_simpan'])){
   }
   $pairs = str_replace('__,','',$pairs);
 
-  $s = "UPDATE tb_bbm_subitem SET $pairs WHERE id=$id";
+  $s = "UPDATE tb_sj_subitem SET $pairs WHERE id=$id";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
-
-
-
-  jsurl("?penerimaan&p=bbm_subitem&id_bbm=$_GET[id_bbm]&id_po_item=$_GET[id_po_item]&id_bbm_subitem=$id");
+  $arr = explode('?',$_SERVER['REQUEST_URI']);
+  jsurl("?$arr[1]");
   exit;
 }
 if(isset($_POST['btn_tambah_subitem'])){
-  $s = "INSERT INTO tb_bbm_subitem (id_bbm_item,nomor) VALUES ($_POST[id_bbm_item],$_POST[nomor])";
+  $s = "INSERT INTO tb_sj_subitem (id_sj_item,nomor) VALUES ($_POST[id_sj_item],$_POST[nomor])";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
   $pesan_tambah = div_alert('success','Tambah Sub item sukses.');
+  
+  $arr = explode('?',$_SERVER['REQUEST_URI']);
+  jsurl("?$arr[1]");
+  exit;
 }
 
-
-
-
-$id_po_item = $_GET['id_po_item'] ?? die(erid('id_po_item'));
-$id_bbm = $_GET['id_bbm'] ?? die(erid('id_bbm'));
+$id_sj_item = $_GET['id_sj_item'] ?? die(erid('id_sj_item'));
 $s = "SELECT a.*,
-a.id as id_bbm_item,
-b.nomor as pengiriman_ke,
-b.id as id_bbm,
-b.kode as no_bbm,
-b.tanggal_terima,
-d.kode as kode_po,
-e.nama as nama_barang,
-e.kode as kode_barang,
-e.satuan,
-f.kode as kategori,
-f.nama as nama_kategori,
+a.id as id_sj_item,
+a.kode_sj,
+b.kode_po,
+c.id as id_bbm,
+c.kode as no_bbm,
+c.tanggal_masuk,
+d.nama as nama_barang,
+d.kode as kode_barang,
+d.satuan,
+e.kode as kategori,
+e.nama as nama_kategori,
 (
-  SELECT SUM(qty) FROM tb_bbm_subitem WHERE id_bbm_item=a.id) qty_subitem
+  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id) qty_subitem
 
-FROM tb_bbm_item a 
-JOIN tb_bbm b ON a.id_bbm=b.id 
-JOIN tb_sj_item c ON a.id_po_item=c.id 
-JOIN tb_sj d ON c.id_po=d.id 
-JOIN tb_barang e ON c.id_barang=e.id 
-JOIN tb_kategori f ON e.id_kategori=f.id 
-WHERE a.id_po_item=$id_po_item 
-AND a.id_bbm=$id_bbm
+FROM tb_sj_item a 
+JOIN tb_sj b ON a.kode_sj=b.kode 
+JOIN tb_bbm c ON b.kode=c.kode_sj 
+JOIN tb_barang d ON a.kode_barang=d.kode 
+JOIN tb_kategori e ON d.id_kategori=e.id 
+WHERE a.id=$id_sj_item 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d = mysqli_fetch_assoc($q);
 
 $nama_barang = $d['nama_barang'];
 $kode_barang = $d['kode_barang'];
-$id_bbm_item = $d['id_bbm_item'];
+$id_sj_item = $d['id_sj_item'];
 $kode_po = $d['kode_po'];
+$kode_sj = $d['kode_sj'];
 $no_bbm = $d['no_bbm'];
 $qty_diterima = $d['qty_diterima'];
 $qty_subitem = $d['qty_subitem'];
 $satuan = $d['satuan'];
-$pengiriman_ke = $d['pengiriman_ke'];
+// $pengiriman_ke = $d['pengiriman_ke'];
 $kategori = $d['kategori'];
 $nama_kategori = $d['nama_kategori'];
-$tanggal_terima = $d['tanggal_terima'];
+$tanggal_masuk = $d['tanggal_masuk'];
 
 $qty_diterima = str_replace('.0000','',$qty_diterima);
+
+$nama_kategori = ucwords(strtolower($nama_kategori));
 
 ?>
 <div class="pagetitle">
   <h1>BBM Sub Items</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
-      <li class="breadcrumb-item"><a href="?penerimaan&p=terima_barang">Cari PO</a></li>
-      <li class="breadcrumb-item"><a href="?penerimaan&p=terima_barang&kode_po=<?=$kode_po?>&id_bbm=<?=$id_bbm?>">BBM</a></li>
-      <li class="breadcrumb-item active">Sub Items</li>
+      <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?=$kode_sj?>">Manage SJ</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=bbm&kode_sj=<?=$kode_sj?>">BBM</a></li>
+      <li class="breadcrumb-item active">BBM Subitems</li>
     </ol>
   </nav>
 </div>
@@ -97,15 +97,11 @@ $qty_diterima = str_replace('.0000','',$qty_diterima);
 # =======================================================================
 
 ?>
-<h2>Item: <?=$kode_barang?></h2>
+<h2>Item: <?=$kode_barang?> | <?=$nama_kategori?></h2>
 <table class="table table-hover">
   <tr>
-    <td>Pengiriman ke</td>
-    <td><?=$pengiriman_ke ?></td>
-  </tr>
-  <tr>
-    <td>Nomor PO</td>
-    <td><?=$kode_po?></td>
+    <td>Surat Jalan</td>
+    <td><?=$kode_sj?></td>
   </tr>
   <tr>
     <td>Nomor BBM</td>
@@ -128,8 +124,8 @@ $qty_diterima = str_replace('.0000','',$qty_diterima);
 echo $pesan_tambah;
 
 $s = "SELECT a.*,a.id as id_bbm_subitem 
-FROM tb_bbm_subitem a  
-WHERE a.id_bbm_item=$id_bbm_item
+FROM tb_sj_subitem a  
+WHERE a.id_sj_item=$id_sj_item
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_sub_item = mysqli_num_rows($q);
@@ -150,7 +146,7 @@ while($d=mysqli_fetch_assoc($q)){
     $last_no_lot = $d['no_lot'];
     $last_no_roll = $d['no_roll'];
     $last_jenis_bahan = $d['jenis_bahan'];
-    $last_kode_rak = $d['kode_rak'];
+    $last_kode_rak = $d['kode_lokasi'];
 
     $qty = str_replace('.0000','',$qty);
     $qty_show = "<span class=green>QTY: <span class=qty_subitem id=qty_subitem__$id_bbm_subitem>$qty</span></span>";
@@ -165,43 +161,50 @@ while($d=mysqli_fetch_assoc($q)){
   $sty_border = $get_id_bbm_subitem==$id_bbm_subitem ? 'style="border: solid 3px blue"' : 'style="border: solid 3px #ccc"';
 
   $div.= "<div class='btn gradasi-$gradasi' $sty_border>
-    <a href='?penerimaan&p=bbm_subitem&id_bbm=$id_bbm&id_po_item=$id_po_item&id_bbm_subitem=$id_bbm_subitem'>
+    <a href='?penerimaan&p=bbm_subitem&id_sj_item=$id_sj_item&id_bbm_subitem=$id_bbm_subitem'>
       <div class='f12'>Subitem-$i</div>
       <div class=kecil>$qty_show</div>
     </a>
   </div>";
 }
 
-echo "<h1>
-$last_no_lot = '';
-$last_no_roll = '';
-$last_jenis_bahan = '';
-$last_kode_rak = '';
+// echo "<h1>DEBUG
+// last_no_lot:$last_no_lot = '';
+// last_no_roll:$last_no_roll = '';
+// last_jenis_bahan:$last_jenis_bahan = '';
+// last_kode_rak:$last_kode_rak = '';
 
-</h1>";
+// </h1>";
 
 
 if($qty_diterima==$qty_subitem || $ada_kosong){
   // qty habis || ada yg kosong
   // tidak boleh nambah
   $form = '';
-
 }else{
   // boleh nambah
   $nomor = $jumlah_sub_item+1;
   $form = "
   <form method=post>
     <button class='btn btn-primary btn-sm' name=btn_tambah_subitem>Tambah Sub item</button>
-    <input type='hidden' name=id_bbm_item value='$id_bbm_item'>
+    <input type='hidden' name=id_sj_item value='$id_sj_item'>
     <input type='hidden' name=nomor value='$nomor'>
   </form>
   ";
 }
 
 $sisa_qty = $qty_diterima-$qty_subitem;
-$sisa_qty_show = "Sisa QTY: <span id=sisa_qty>$sisa_qty</span>";
+$sisa_qty_show = "Sisa QTY: <span id=sisa_qty>$sisa_qty</span> $satuan";
 
-echo $div=='' ? div_alert('danger', 'Belum ada sub-item.') : "
+$form_pertama = "
+  <form method=post>
+    <button class='btn btn-primary btn-sm' name=btn_tambah_subitem>Tambah Sub item</button>
+    <input type='hidden' name=id_sj_item value='$id_sj_item'>
+    <input type='hidden' name=nomor value='1'>
+  </form>
+";
+
+echo $div=='' ? div_alert('danger', "<div class=mb2>Belum ada sub-item.</div>  $form_pertama") : "
   <div class=flexy>
     $div
     <div>
@@ -232,11 +235,11 @@ if($get_id_bbm_subitem!=''){
   $no_lot = '';
   $no_roll = '';
   $jenis_bahan = '';
-  $kode_rak = '';
+  $kode_lokasi = '';
   
   $s = "SELECT a.*,
-  (SELECT brand FROM tb_lokasi WHERE kode=a.kode_rak) brand 
-  FROM tb_bbm_subitem a 
+  (SELECT brand FROM tb_lokasi WHERE kode=a.kode_lokasi) brand 
+  FROM tb_sj_subitem a 
   WHERE a.id=$get_id_bbm_subitem";
   // echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -247,7 +250,7 @@ if($get_id_bbm_subitem!=''){
   $no_lot = $d['no_lot'] ?? $last_no_lot;
   $no_roll = $d['no_roll'] ?? $last_no_roll;
   $jenis_bahan = $d['jenis_bahan'] ?? $last_jenis_bahan;
-  $kode_rak = $d['kode_rak'] ?? $last_kode_rak;
+  $kode_lokasi = $d['kode_lokasi'] ?? $last_kode_rak;
   $this_brand = $d['brand'];
 
   $qty = str_replace('.0000','',$qty);
@@ -303,15 +306,17 @@ if($get_id_bbm_subitem!=''){
     if($i==$rows) $div_rak .= '</div>';
   }
 
-  if($qty and $kode_rak){
+  if($qty and $kode_lokasi){
     $btn_simpan = "<button class='btn btn-primary' name=btn_simpan >Update</button>";
   }else{
     if($last_kode_rak){
       $btn_simpan = "<button class='btn btn-primary' name=btn_simpan >Simpan</button>";
     }else{
-      $btn_simpan = "<button class='btn btn-primary' id=btn_simpan disabled>Simpan</button>";
+      $btn_simpan = "<button class='btn btn-primary' name=btn_simpan id=btn_simpan disabled>Simpan</button>";
     }
   }
+
+  $max_input_qty = $qty - $sisa_qty;
 
   echo "
   <div class='wadah mt2'>
@@ -319,17 +324,17 @@ if($get_id_bbm_subitem!=''){
       <input type='hidden' name=id_bbm_subitem value=$get_id_bbm_subitem>
 
       QTY ($satuan) $bintang
-      <input class='form-control mb2' type=number min=0 max=$sisa_qty step=0.0001 required name=qty value=$qty>
+      <input class='form-control mb2' type=number min=0 max=$max_input_qty step=0.0001 required name=qty value=$qty>
       Lot Number
       <input class='form-control mb2' maxlength=20 name=no_lot value='$no_lot'>
       Roll Number
       <input class='form-control mb2' maxlength=20 name=no_roll value='$no_roll'>
       Jenis bahan
       <input class='form-control mb2' maxlength=100 name=jenis_bahan value='$jenis_bahan'>
-      Kode Rak ($kategori) $bintang
-      <input class='form-control mb2' id=kode_rak_show value='$kode_rak' disabled>
-      <input class='form-control mb2 hideit' minlength=2 maxlength=20 name=kode_rak id=kode_rak value='$kode_rak' required>
-      <span class='btn btn-secondary btn-sm' id=pilih_kode_rak>Pilih Kode Rak</span>
+      Kode Lokasi ($kategori) $bintang
+      <input class='form-control mb2' id=kode_rak_show value='$kode_lokasi' disabled>
+      <input class='form-control mb2 hideit' minlength=2 maxlength=20 name=kode_lokasi id=kode_lokasi value='$kode_lokasi' required>
+      <span class='btn btn-secondary btn-sm' id=pilih_kode_rak>Pilih Kode Lokasi</span>
       <div id='div_rak' class='hideit'>
         $div_rak
       </div>
@@ -342,18 +347,18 @@ if($get_id_bbm_subitem!=''){
   </div>
   ";
 
-  if($qty && $no_lot && $no_roll && $kode_rak){
+  if($qty && $no_lot && $no_roll && $kode_lokasi){
 
-    $tgl = date('d-m-Y',strtotime($tanggal_terima));
+    $tgl = date('d-m-Y',strtotime($tanggal_masuk));
 
     $bar = "<img width=300px alt='barcode' src='include/barcode.php?codetype=code39&size=50&text=".$kode_barang."&print=false'/>";
-    $no_po_dll = "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_rak $this_brand) $tgl";
+    $no_po_dll = "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_lokasi $this_brand) $tgl";
     echo "<div id=blok_cetak class=hideit>";
     include 'cetak_label.php';
 
     $cetak_semua = $sisa_qty==0 ? "
       <form action=cetak.php method=post target=_blank>
-        <button class='btn btn-success btn-sm' name=btn_cetak_semua_label value=$id_bbm_item>Cetak Semua Label</button>
+        <button class='btn btn-success btn-sm' name=btn_cetak_semua_label value=$id_sj_item>Cetak Semua Label</button>
       </form>
     ":"
       <div class='kecil miring darkred'>Semua QTY harus dialokasikan dahulu. (sisa QTY: $sisa_qty)</div>
@@ -375,8 +380,8 @@ if($get_id_bbm_subitem!=''){
 
   }else{
     echo "
-    <div class='tengah alert alert-danger hideit'>
-      Silahkan isi dahulu kolom QTY, No. Lot, No. Roll, dan Pilih Kode Rak !
+    <div id=blok_cetak class='tengah alert alert-danger hideit'>
+      Agar dapat mencetak label, silahkan lengkapi dahulu kolom QTY, No. Lot, No. Roll, dan Pilih Kode Lokasi !
     </div>
     ";
   }  
@@ -395,7 +400,7 @@ if($get_id_bbm_subitem!=''){
     $('.item_rak').click(function(){
       let val = $(this).text().trim().split("\n");
       console.log(val[0]);
-      $('#kode_rak').val(val[0]);
+      $('#kode_lokasi').val(val[0]);
       $('#kode_rak_show').val(val[0]);
       $('#btn_simpan').prop('disabled',false);
 

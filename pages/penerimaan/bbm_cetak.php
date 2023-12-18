@@ -52,7 +52,7 @@ if($terverifikasi && $sudah_upload){
   <p class=p1>Syarat untuk mencetak BBM yaitu:</p>
   <ol>
     <li>
-      Silahkan Upload Surat Jalan untuk BBM No. <span class="darkblue"><?=$no_bbm?></span>
+      Silahkan Upload Surat Jalan No. <span class="darkblue"><?=$kode_sj?></span>
 
       <div>
         <?=$status_upload?>

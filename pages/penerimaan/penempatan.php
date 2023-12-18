@@ -1,17 +1,26 @@
 <div class="pagetitle">
-  <h1>Penempatan</h1>
+  <h1>Penempatan / Manage Subitems</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?penerimaan">PO Home</a></li>
-      <li class="breadcrumb-item active">Penempatan</li>
+      <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
+      <li class="breadcrumb-item active">Penempatan (Manage Subitems)</li>
     </ol>
   </nav>
 </div>
 
-<p>Page penempatan barang digunakan untuk:</p>
+<p>Page penempatan barang (Manage Subitems) digunakan untuk:</p>
 <ul>
-  <li>Barcode System</li>
-  <li>Klasifikasi Barang</li>
+  <li>Detail Penerimaan QTY Barang berdasarkan Lot Number, Roll Number, dan Keterangan Bahan</li>
+  <li>Penentuan Lokasi Barang (Rak)</li>
+  <li>QRcode System</li>
 </ul>
 
-<div class="alert alert-danger">Page ini masih dalam tahap pengembangan. Terimakasih.</div>
+<div class="alert alert-info">
+  Tahapan sebelumnya: 
+  <ol>
+    <li><a href="?penerimaan&p=terima_sj_baru"><?=$img_prev?> Pencarian atau Penerimaan Surat Jalan Baru</a></li>
+    <li>Manage Surat Jalan (Pengisian QTY sesuai PO)</li>
+    <li>Cetak BBM dan Pengisian QTY Diterima</li>
+    <li>Penempatan (Manage Subitems)</li>
+  </ol>
+</div>
