@@ -6,6 +6,7 @@ session_start();
 $dm = 1;
 $debug = '';
 $unset = '<span class="kecil miring red consolas">unset</span>';
+$unverified = '<span class="kecil miring red consolas" onclick="alert(\'Proses verifikasi harus mengikuti alur pengisisan data.\')">unverified</span>';
 $null = '<span class="kecil miring red consolas">null</span>';
 $hideit = 'hideit';
 $view_mode = $_GET['view_mode'] ?? '';

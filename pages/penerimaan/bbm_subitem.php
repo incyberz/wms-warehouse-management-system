@@ -316,7 +316,8 @@ if($get_id_bbm_subitem!=''){
     }
   }
 
-  $max_input_qty = $qty - $sisa_qty;
+  // echo "<h1>$qty - $sisa_qty</h1>";
+  $max_input_qty = $qty ? ($qty - $sisa_qty) : $sisa_qty;
 
   echo "
   <div class='wadah mt2'>

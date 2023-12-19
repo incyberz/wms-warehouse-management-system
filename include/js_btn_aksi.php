@@ -7,34 +7,34 @@
     $('.btn_aksi').click(function(){
       let tid = $(this).prop('id');
       let rid = tid.split('__');
-      let elemen = rid[0];
+      let tb = rid[0];
       let aksi = rid[1];
       let id_item = rid[2] ?? '';
       let kolom = rid[3] ?? '';
 
-      console.log(elemen,aksi,id_item);
+      console.log(tb,aksi,id_item);
 
       if(aksi=='delete'){
         let y = confirm('Yakin untuk hapus?');
         if(!y) return;
 
-        console.log('#source_'+elemen+'__'+id_item);
+        console.log('#source_'+tb+'__'+id_item);
         if(id_item==''){
-          $('#source_'+elemen).fadeOut();
-          console.log('hide '+'#source_'+elemen);
-          $('#'+elemen).fadeOut();
-          console.log('#'+elemen+' NO AJAX DELETE');
+          $('#source_'+tb).fadeOut();
+          console.log('hide '+'#source_'+tb);
+          $('#'+tb).fadeOut();
+          console.log('#'+tb+' NO AJAX DELETE');
         }else{
-          $('#source_'+elemen+'__'+id_item).fadeOut();
-          console.log('hide '+'#source_'+elemen+'__'+id_item);
-          $('#'+elemen+'__'+id_item).fadeOut();
-          console.log('hide '+'#'+elemen+'__'+id_item);
+          $('#source_'+tb+'__'+id_item).fadeOut();
+          console.log('hide '+'#source_'+tb+'__'+id_item);
+          $('#'+tb+'__'+id_item).fadeOut();
+          console.log('hide '+'#'+tb+'__'+id_item);
           // ====================================================
           // AJAX DELETE
           // ====================================================
           if(kolom!=''){
-            console.log(' delete with AJAX');
-            link_ajax = `ajax/crud.php?tb=${elemen}&aksi=delete&id=${id_item}`;
+            link_ajax = `ajax/crud.php?tb=${tb}&aksi=delete&id=${id_item}`;
+            console.log(' delete with AJAX: ', link_ajax);
 
             $.ajax({
               url:link_ajax,
@@ -42,7 +42,7 @@
                 if(a.trim()=='sukses'){
                   location.reload(); //zzz
                 }else{
-                  alert(`Tidak dapat menghapus data ${elemen}.`);
+                  alert(`Tidak dapat menghapus data ${tb}.`);
                   console.log(a);
                 }
               }
@@ -56,34 +56,34 @@
 
       }else if(aksi=='toggle' || aksi=='pra_tambah'){
         if(id_item!=''){
-          $('#'+elemen+'__'+id_item).slideToggle();
-          console.log('toggle #'+elemen+'__'+id_item);
+          $('#'+tb+'__'+id_item).slideToggle();
+          console.log('toggle #'+tb+'__'+id_item);
         }else{
-          $('#'+elemen).slideToggle(); 
-          console.log('toggle'+'#'+elemen);
+          $('#'+tb).slideToggle(); 
+          console.log('toggle'+'#'+tb);
         }
       }else if(aksi=='close' || aksi=='cancel'){
         if(id_item!=''){
           let id = rid[2];
-          $('#'+elemen+'__'+id).slideUp();
-          console.log('#'+elemen+'__'+id+' slideUp');
+          $('#'+tb+'__'+id).slideUp();
+          console.log('#'+tb+'__'+id+' slideUp');
         }else{
-          $('#'+elemen).slideUp();
-          console.log('#'+elemen+' slideUp');
+          $('#'+tb).slideUp();
+          console.log('#'+tb+' slideUp');
         }
       }else if(aksi=='tambah'){
-        console.log(aksi,elemen);
-        link_ajax = `ajax/crud.php?tb=${elemen}&aksi=insert&id=new`;
+        console.log(aksi,tb);
+        link_ajax = `ajax/crud.php?tb=${tb}&aksi=insert&id=new`;
         $.ajax({
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
               location.reload();
             }else if(a.toLowerCase().search('Duplicate entry')){
-              alert(`Data NEW-${elemen} sudah ada. Silahkan edit kontennya!`)
+              alert(`Data NEW-${tb} sudah ada. Silahkan edit kontennya!`)
               console.log(a);
             }else{
-              alert(`Tidak dapat menambah ${elemen} baru.`);
+              alert(`Tidak dapat menambah ${tb} baru.`);
               console.log(a);
             }
           }

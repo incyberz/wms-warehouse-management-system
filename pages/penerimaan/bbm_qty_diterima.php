@@ -1,5 +1,23 @@
 <?php
 # =======================================================================
+# SELECT PROYEKSI
+# =======================================================================
+$arr_bln = ['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGS','SEP','OKT','NOV','DES',];
+$arr_thn = [2023,2024];
+$opt_proyeksi = '<option value=null>--Pilih--</option>';
+foreach ($arr_thn as $thn) {
+  foreach ($arr_bln as $bln) {
+    $opt_proyeksi.= "<option>$bln-$thn</option>";
+  }
+}
+
+$opt_ppic = '<option value=null>--Pilih--</option>';
+$opt_ppic .= '<option>PPIC 1</option>';
+$opt_ppic .= '<option>PPIC 2</option>';
+$opt_ppic .= '<option>PPIC 3</option>';
+
+
+# =======================================================================
 # GET ITEM PO
 # =======================================================================
 $s = "SELECT *,
@@ -8,7 +26,8 @@ a.id as id_po_item,
 b.id as id_barang,
 b.kode as kode_barang,
 b.nama as nama_barang,
-(SELECT step FROM tb_satuan WHERE satuan=b.satuan) step
+(SELECT step FROM tb_satuan WHERE satuan=b.satuan) step,
+(SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id) qty_subitem
 
 FROM tb_sj_item a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
@@ -29,11 +48,13 @@ if(mysqli_num_rows($q)==0){
     $id = $d['id_po_item'];
     $step = $d['step'] ?? 0.0001;
     $qty = $d['qty'];
+    $qty_subitem = $d['qty_subitem'];
     $qty_diterima = $d['qty_diterima'];
     $qty_sebelumnya = $d['qty_sebelumnya'];
     $satuan = $d['satuan'];
 
     $qty = floatval($qty);
+    $qty_subitem = floatval($qty_subitem);
     $qty_diterima = floatval($qty_diterima);
     $qty_sebelumnya = floatval($qty_sebelumnya);
 
@@ -58,6 +79,8 @@ if(mysqli_num_rows($q)==0){
 
 
     $qty_sebelumnya_show = $d['qty_sebelumnya'] ? "<div class='kecil miring abu'>-<span id=qty_sebelumnya__$id>$d[qty_sebelumnya]</span></div>" : '';
+
+    $qty_subitem_color = $qty_diterima==$qty_subitem ? 'hijau' : 'red';
 
     $qty_max = $qty * 2;
     
@@ -85,8 +108,17 @@ if(mysqli_num_rows($q)==0){
             </div>
           </div>
         </td>
-        <td class=hide_cetak>
-          <a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_next</a>
+        <td>
+          <a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>
+            <span class='kecil $qty_subitem_color'>$qty_subitem $satuan</span>
+            $img_next
+          </a>
+        </td>
+        <td>
+          <select class='form-control form-control-sm select_save' name=proyeksi__$id id=proyeksi__$id>$opt_proyeksi</select>
+        </td>
+        <td>
+          <select class='form-control form-control-sm select_save' name=kode_ppic__$id id=kode_ppic__$id>$opt_ppic</select>
         </td>
       </tr>
     ";
@@ -100,7 +132,9 @@ $tb_items = "
       <th>Kode / Item</th>
       <th>QTY-PO</th>
       <th>QTY Diterima</th>
-      <th class=hide_cetak>Aksi</th>
+      <th>QTY Subitems</th>
+      <th>Proyeksi</th>
+      <th>PPIC</th>
     </thead>
     $tr
   </table>
@@ -150,3 +184,13 @@ echo "
 ";
 
 include 'bbm_cetak.php';
+
+
+?>
+<script>
+  $(function(){
+    $('.select_save').change(function(){
+      alert('Fitur Select and Save akan segera diaktifkan. Terimakasih sudah mencoba!');
+    })
+  })
+</script>

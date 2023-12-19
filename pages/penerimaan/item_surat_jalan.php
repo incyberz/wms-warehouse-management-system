@@ -164,7 +164,7 @@ if(mysqli_num_rows($q)){
           <span class="btn_aksi" id="edit_item_po__toggle">
           Tambah item <?=$img_add?></span>
         </span>
-        <div id="edit_item_po" class="border-merah gradasi-kuning br5 p2 mb2 mt2 hideit" style="display: block;">
+        <div id="edit_item_po" class="border-merah gradasi-kuning br5 p2 mb2 mt2 hideit" style="display: blocasdk;">
             <div class="row">
               <div class="col-11">
                 <div class="flexy">

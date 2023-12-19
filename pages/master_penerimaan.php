@@ -4,6 +4,7 @@
 include 'include/date_managements.php';
 $p = 'penerimaan'; // untuk navigasi
 $cat= $_GET['cat'] ?? 'aks'; //default AKS
+$jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
 
 $arr_waktu = [
   'hari_ini' => 'Hari ini',
@@ -46,15 +47,15 @@ $bg_ppic = $filter_ppic=='' ? '' : 'bg-hijau';
 $id_kategori = $cat=='aks' ? 1 : 2;
 
 if($filter_waktu=='all_time'){$where_date = '1';}else 
-if($filter_waktu=='hari_ini'){$where_date = "a.tanggal_masuk >= '$today' ";}else 
-if($filter_waktu=='kemarin'){$where_date = "a.tanggal_masuk >= '$kemarin' AND a.tanggal_masuk < '$today' ";}else 
-if($filter_waktu=='minggu_ini'){$where_date = "a.tanggal_masuk >= '$ahad_skg' AND a.tanggal_masuk < '$ahad_depan' ";}else 
-if($filter_waktu=='bulan_ini'){$where_date = "a.tanggal_masuk >= '$awal_bulan' ";}else
-if($filter_waktu=='tahun_ini'){$where_date = "a.tanggal_masuk >= '$awal_tahun' ";} 
+if($filter_waktu=='hari_ini'){$where_date = "c.tanggal_masuk >= '$today' ";}else 
+if($filter_waktu=='kemarin'){$where_date = "c.tanggal_masuk >= '$kemarin' AND c.tanggal_masuk < '$today' ";}else 
+if($filter_waktu=='minggu_ini'){$where_date = "c.tanggal_masuk >= '$ahad_skg' AND c.tanggal_masuk < '$ahad_depan' ";}else 
+if($filter_waktu=='bulan_ini'){$where_date = "c.tanggal_masuk >= '$awal_bulan' ";}else
+if($filter_waktu=='tahun_ini'){$where_date = "c.tanggal_masuk >= '$awal_tahun' ";} 
 
 
-$where_po = $filter_po=='' ? '1' : "a.kode_po LIKE '%$filter_po%' ";
-$where_id = $filter_id=='' ? '1' : "(a.kode_barang LIKE '%$filter_id%' OR b.nama LIKE '%$filter_id%' OR b.keterangan LIKE '%$filter_id%' )";
+$where_po = $filter_po=='' ? '1' : "b.kode_po LIKE '%$filter_po%' ";
+$where_id = $filter_id=='' ? '1' : "(a.kode_barang LIKE '%$filter_id%' OR e.nama LIKE '%$filter_id%' OR e.keterangan LIKE '%$filter_id%' )";
 $where_proyeksi = $filter_proyeksi=='' ? '1' : "a.proyeksi LIKE '%$filter_proyeksi%' ";
 $where_ppic = $filter_ppic=='' ? '1' : "a.kode_ppic LIKE '%$filter_ppic%' ";
 
@@ -64,7 +65,7 @@ JOIN tb_barang b ON a.kode_barang=b.kode
 ";
 
 $sql_where = "
-WHERE b.id_kategori=$id_kategori 
+WHERE e.id_kategori=$id_kategori 
 AND $where_date 
 AND $where_po 
 AND $where_id 
@@ -103,6 +104,7 @@ a.qty,
 a.proyeksi,
 a.kode_ppic,
 a.qty_reject,
+a.kode_sj,
 b.kode_po,
 b.awal_terima,
 b.akhir_terima,
@@ -128,6 +130,8 @@ JOIN tb_sj b ON a.kode_sj=b.kode
 JOIN tb_bbm c ON b.kode=c.kode_sj
 JOIN tb_supplier d ON b.id_supplier=d.id 
 JOIN tb_barang e ON a.kode_barang=e.kode 
+
+$sql_where
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
@@ -139,6 +143,7 @@ $tr_hasil = $jumlah_row==0 ? "<tr><td colspan=100%><div class='alert alert-dange
 while($d=mysqli_fetch_assoc($q)){
   $id=$d['id'];
   $satuan=$d['satuan'];
+  $kode_sj=$d['kode_sj'];
   $kode_ppic=$d['kode_ppic'] ?? $unset;
   $proyeksi=$d['proyeksi'] ?? $unset;
 
@@ -189,13 +194,13 @@ while($d=mysqli_fetch_assoc($q)){
 
     $li = '';
     foreach ($arr as $kode_lokasi => $brand) {
-      $li.= "<li>$kode_lokasi - $brand</li>";
+      $li.= "<li>$kode_lokasi  <span class='f14 abu'>$brand</span></li>";
     }
 
     $locations = "<ul style='padding-left:15px'>$li</ul>";
   }else{
 
-    $locations = $img_warning. ' <span class=red>Belum ada subitem</span>';
+    $locations = "<a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
   }
   
 
@@ -243,7 +248,7 @@ while($d=mysqli_fetch_assoc($q)){
 $form_cari = "
   <form method=post>
     <tr>
-      <td>Filter:</td>
+      <td class=kecil>$clear_filter</td>
       <td><input type='text' class='form-control form-control-sm $bg_po' placeholder='PO' name=filter_po value='$filter_po' ></td>
       <td><input type='text' class='form-control form-control-sm $bg_id' placeholder='ID' name=filter_id value='$filter_id' ></td>
       <td>
@@ -258,14 +263,18 @@ $form_cari = "
   </form>
 
 ";
+
+$bread = "<li class='breadcrumb-item'><a href='?master_penerimaan&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
+if($cat=='fab')
+$bread = "<li class='breadcrumb-item'><a href='?master_penerimaan&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
 ?>
 
 <div class="pagetitle">
-  <h1>History Penerimaan</h1>
+  <h1>Master Penerimaan <?=$jenis_barang?></h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
-      <li class="breadcrumb-item active">History</li>
+      <?=$bread?>
     </ol>
   </nav>
 </div>
@@ -276,9 +285,6 @@ $form_cari = "
   <div id="blok_penerimaan" class='mt2'>
 
     <table class='table'>
-      <tr>
-        <td colspan=100% class='kecil abu'><?=$clear_filter?></td>
-      </tr>
       <?=$form_cari?>
       <tr>
         <td colspan=100%><span class="darkblue"><?=$jumlah_row?></span> <span class="abu kecil">data dari <b><?=$total_row ?></b> records</span></td>
@@ -293,10 +299,6 @@ $form_cari = "
         <td>PPIC</td>
       </tr>
       <?=$tr_hasil?>
-      <tr>
-        <td colspan=100% class='kecil abu'>Tambah Penerimaan:</td>
-      </tr>
-      <?php //include 'penerimaan-new.php'; ?>
 
 
 

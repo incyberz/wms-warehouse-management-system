@@ -41,6 +41,13 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="?master_penerimaan">
+        <i class="bi bi-arrow-down-square"></i>
+        <span>Master Penerimaan</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
       <a class="nav-link collapsed" href="?pengeluaran">
         <i class="bi bi-send-check"></i>
         <span>Pengeluaran</span>

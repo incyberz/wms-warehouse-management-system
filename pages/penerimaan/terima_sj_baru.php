@@ -1,16 +1,33 @@
 <?php
-if(isset($_POST['btn_create'])){
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
-  $kode_po = clean_sql($_POST['kode_po']);
-  $id_supplier = clean_sql($_POST['id_supplier']);
+// echo '<pre>';
+// var_dump($_POST);
+// echo '</pre>';
+# ========================================================
+# HANDLER PENERIMAAN PERTAMA, KEDUA DST
+# ========================================================
+if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
 
-  $s = "INSERT INTO tb_sj (kode,id_supplier) VALUES ('$kode_po', '$id_supplier') ";
+  if(isset($_POST['btn_create'])){
+    $kode_po = clean_sql($_POST['kode_po']);
+    $kode = "$kode_po-001";
+    $id_supplier = clean_sql($_POST['id_supplier']);
+
+  }else{
+
+    $arr = explode('-',$_POST['btn_tambah_sj_selanjutnya']);
+    $kode = "$arr[0]-$arr[1]";
+    $kode_po = $arr[0];
+    $id_supplier = $arr[2];
+
+  }
+  $s = "INSERT INTO tb_sj 
+  (kode,kode_po,id_supplier) VALUES 
+  ('$kode','$kode_po','$id_supplier') 
+  ";
+
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl("?penerimaan&p=terima_barang&kode_po=$kode_po");
+  jsurl("?penerimaan&p=manage_sj&kode_sj=$kode");
   exit;
-
 }
 
 

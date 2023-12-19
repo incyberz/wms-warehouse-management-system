@@ -14,6 +14,7 @@ a.id as id_sj,
 a.kode as kode_sj ,
 a.kode_po,
 a.tanggal_terima,
+a.id_supplier,
 (SELECT SUM(qty) FROM tb_sj_item WHERE kode_sj=a.kode) as total_qty
 FROM tb_sj a 
 WHERE 1 
@@ -57,11 +58,11 @@ if($jumlah_row==0){
         $jumlah_sj_str = $jumlah_sj;
       }
 
-      $new_kode_sj = "$kode_po-$jumlah_sj_str";
+      $new_kode_sj = "$kode_po-$jumlah_sj_str-$d[id_supplier]";
 
       $btn_add = "
       <form method=post style='display: inline-block'>
-        <button class='btn btn-primary btn-sm' name=btn_tambah_sj value='$new_kode_sj' onclick='return confirm(\"Tambah SJ Baru dari PO ini?\")'>Tambah SJ Baru</button>
+        <button class='btn btn-primary btn-sm' name=btn_tambah_sj_selanjutnya value='$new_kode_sj' onclick='return confirm(\"Tambah SJ Baru dari PO ini?\")'>Tambah SJ Baru</button>
       </form>
       ";
       

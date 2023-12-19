@@ -91,7 +91,7 @@ if(mysqli_num_rows($q)==0){
   $tb_sj = "
     <table class=table>
       <thead>
-        <th width=30%>Nomor Surat Jalan</th>
+        <th width=200px>Nomor Surat Jalan</th>
         <th>$kode_sj <span id=identitas_po_toggle>$img_detail</span></th>
       </thead>
       <tbody class=hideit id=identitas_po>
@@ -99,7 +99,7 @@ if(mysqli_num_rows($q)==0){
         <tr>
           <td colspan=100% class='kecil tengah'>
             <a href='?master&p=supplier&keyword=$kode_supplier'>Ubah Data Supplier</a> | 
-            <a href=''>Ubah Detail SJ</a>
+            <a href='?penerimaan&p=manage_sj&kode_sj=201500001-001'>Manage SJ</a>
 
           </td>
         </tr>
