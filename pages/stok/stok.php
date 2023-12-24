@@ -1,7 +1,7 @@
 
 <?php 
 include 'include/date_managements.php';
-$p = 'stock'; // untuk navigasi
+$p = 'stok'; // untuk navigasi
 $cat= $_GET['cat'] ?? 'aks'; //default AKS
 $jumlah_row = 0;
 
@@ -63,7 +63,7 @@ $where_proyeksi = $filter_proyeksi=='' ? '1' : "a.proyeksi LIKE '%$filter_proyek
 $where_ppic = $filter_ppic=='' ? '1' : "a.kode_ppic LIKE '%$filter_ppic%' ";
 
 
-$sql_from = "FROM tb_stock a 
+$sql_from = "FROM tb_stok a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
 ";
 
@@ -88,7 +88,7 @@ $s = "SELECT 1 $sql_from $sql_where ";
 // b.satuan,
 // b.nama as nama_barang,  
 // b.keterangan as ket_barang 
-// FROM tb_stock a 
+// FROM tb_stok a 
 // JOIN tb_barang b ON a.kode_barang=b.kode 
 // JOIN tb_lokasi c ON a.kode_lokasi=c.kode 
 
@@ -212,7 +212,7 @@ $form_cari = "
 ?>
 <section class='section'>
   <?php include 'pages/sheet_nav.php'; ?>
-  <div id="blok_stock" class='mt2'>
+  <div id="blok_stok" class='mt2'>
 
     <div class="alert alert-danger">Page ini sedang dalam tahap pengembangan.</div>
 
@@ -235,7 +235,7 @@ $form_cari = "
       </tr>
       <?=$tr_hasil?>
       <tr>
-        <td colspan=100% class='kecil abu'>Tambah stock:</td>
+        <td colspan=100% class='kecil abu'>Tambah stok:</td>
       </tr>
       <?=$tr_new?>
 

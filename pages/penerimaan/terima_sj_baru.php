@@ -15,8 +15,31 @@ if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
   }else{
 
     $arr = explode('-',$_POST['btn_tambah_sj_selanjutnya']);
-    $kode = "$arr[0]-$arr[1]";
     $kode_po = $arr[0];
+    $no = 0;
+    if($arr[1]=='new'){
+      // get max nomor
+      $s = "SELECT kode FROM tb_sj WHERE kode_po='$kode_po'";
+      $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+      while($d=mysqli_fetch_assoc($q)){
+        $arr2 = explode('-',$d['kode']);
+        $no_db = intval($arr2[1]);
+        if($no_db>$no) $no = $no_db; 
+      }
+
+      //max nomor++
+      $no++;
+      if($no<10){
+        $no = "00$no";
+      }elseif($no<100){
+        $no = "0$no";
+      }else{
+        $no = $no;
+      }
+    }else{
+      die('Not `new` parameter at btn_new value.');
+    }
+    $kode = "$arr[0]-$no";
     $id_supplier = $arr[2];
 
   }

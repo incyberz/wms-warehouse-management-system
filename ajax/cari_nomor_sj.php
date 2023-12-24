@@ -47,18 +47,18 @@ if($jumlah_row==0){
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
 
       $d2 = mysqli_fetch_assoc($q2);
-      $jumlah_sj = $d2['jumlah_sj'];
-      $jumlah_sj++; // surat jalan tidak boleh dihapus
+      // $jumlah_sj = $d2['jumlah_sj'];
+      // $jumlah_sj++; // surat jalan tidak boleh dihapus
 
-      if($jumlah_sj<10){
-        $jumlah_sj_str = "00$jumlah_sj";
-      }elseif($jumlah_sj<100){
-        $jumlah_sj_str = "0$jumlah_sj";
-      }else{
-        $jumlah_sj_str = $jumlah_sj;
-      }
+      // if($jumlah_sj<10){
+      //   $jumlah_sj_str = "00$jumlah_sj";
+      // }elseif($jumlah_sj<100){
+      //   $jumlah_sj_str = "0$jumlah_sj";
+      // }else{
+      //   $jumlah_sj_str = $jumlah_sj;
+      // }
 
-      $new_kode_sj = "$kode_po-$jumlah_sj_str-$d[id_supplier]";
+      $new_kode_sj = "$kode_po-new-$d[id_supplier]";
 
       $btn_add = "
       <form method=post style='display: inline-block'>

@@ -32,25 +32,41 @@
           // ====================================================
           // AJAX DELETE
           // ====================================================
-          if(kolom!=''){
-            link_ajax = `ajax/crud.php?tb=${tb}&aksi=delete&id=${id_item}`;
-            console.log(' delete with AJAX: ', link_ajax);
+          link_ajax = `ajax/crud.php?tb=${tb}&aksi=delete&id=${id_item}`;
+          console.log(' delete with AJAX: ', link_ajax);
 
-            $.ajax({
-              url:link_ajax,
-              success:function(a){
-                if(a.trim()=='sukses'){
-                  location.reload(); //zzz
-                }else{
-                  alert(`Tidak dapat menghapus data ${tb}.`);
-                  console.log(a);
-                }
+          $.ajax({
+            url:link_ajax,
+            success:function(a){
+              if(a.trim()=='sukses'){
+                // location.reload(); //zzz
+                console.log('delete with AJAX sukses.');
+              }else{
+                alert(`Tidak dapat menghapus data ${tb}.`);
+                console.log(a);
               }
-            })
-          }else{
-            console.log('not delete to from_db');
+            }
+          })
 
-          }
+          // if(kolom!=''){
+          //   link_ajax = `ajax/crud.php?tb=${tb}&aksi=delete&id=${id_item}`;
+          //   console.log(' delete with AJAX: ', link_ajax);
+
+          //   $.ajax({
+          //     url:link_ajax,
+          //     success:function(a){
+          //       if(a.trim()=='sukses'){
+          //         location.reload(); //zzz
+          //       }else{
+          //         alert(`Tidak dapat menghapus data ${tb}.`);
+          //         console.log(a);
+          //       }
+          //     }
+          //   })
+          // }else{
+          //   console.log('not delete to from_db');
+
+          // }
         }
 
 

@@ -30,11 +30,11 @@ $arr_proses = [
     'Mengisi keterangan Rak dan Gudang untuk tiap barang agar diketahui lokasinya melalui searching',
     '?awal&p=set_tanggal_terima'
   ],
-  'stock-opname' => [
+  'stok-opname' => [
     1,
     'Stock Opname Awal',
-    'Melihat stock dan aging untuk setiap barang dan atau setiap sub item barang di awal proses',
-    '?awal&p=stock_opname'
+    'Melihat stok dan aging untuk setiap barang dan atau setiap sub item barang di awal proses',
+    '?awal&p=stok_opname'
   ],
   'po' => [
     2,

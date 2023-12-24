@@ -4,6 +4,12 @@
 
     <li class="nav-heading">Login as <b class="darkred"><?=$sebagai?></b></li>
     <li class="nav-item">
+      <a class="nav-link collapsed" href="?stok_awal">
+        <i class="bi bi-arrow-down-square"></i>
+        <span>Stok Awal</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link " href="?">
         <i class="bi bi-grid"></i>
         <span>Dashboard</span>
@@ -89,7 +95,7 @@
       </a>
     </li> -->
     <li class="nav-item">
-      <a class="nav-link collapsed" href="?stock">
+      <a class="nav-link collapsed" href="?stok">
         <i class="bi bi-file-earmark-spreadsheet"></i>
         <span>Kartu Stok</span>
       </a>
