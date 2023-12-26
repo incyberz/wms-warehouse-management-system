@@ -13,21 +13,26 @@ if(file_exists($filePath)){
 }
 
 if($tanggal_verifikasi==''||$diverifikasi_oleh==''){
+
+  $disabled_check = $all_qty_allocated ? '' : 'disabled';
+  $unallocated_info = $all_qty_allocated ? '' : '<div class="red kecil mt1">QTY diterima belum semua dialokasikan.</div>';
+
   $status_verif = "
     <div class='mt2'>
       Status: <span class='abu miring'>belum diverifikasi</span> $img_warning
     </div>
 
     <div class='mt2' style='display:grid;grid-template-columns:30px auto'>
-      <div class=pt1><input type='checkbox' class=cek_bbm id=cek1></div>
+      <div class=pt1><input type='checkbox' class=cek_bbm id=cek1 $disabled_check></div>
       <div><label for='cek1'>Saya <span class='tebal miring darkblue'>$nama_user</span>, jabatan <span class='tebal miring darkblue'>$jabatan</span>, menyatakan bahwa seluruh QTY pada BBM ini sudah benar-benar fix sesuai dengan kenyataan.</label></div>
-      <div class=pt1><input type='checkbox' class=cek_bbm id=cek2></div>
+      <div class=pt1><input type='checkbox' class=cek_bbm id=cek2 $disabled_check></div>
       <div><label for='cek2'>Tidak akan ada lagi perubahan pada data BBM ini.</label></div>
       <div class=pt1>&nbsp;</div>
       <div>
         <form method=post>
           <input type='hidden' name=id_bbm value=$id_bbm>
           <button class='btn btn-primary btn-sm mt2' disabled id=btn_verifikasi name=btn_verifikasi>Verifikasi BBM</button>
+          $unallocated_info
         </form>
       </div>
     </div>  
@@ -44,6 +49,7 @@ if($terverifikasi && $sudah_upload){
   $btn_cetak_bbm = "<button class='btn btn-success w-100' disabled'>Belum bisa Cetak BBM</button>";
 }
 
+$status_total_qty = $total_qty_diterima==$total_qty_subitem ? "<span class=hijau>All allocated.</span>" : "<span class=red>Belum semua dialokasikan.</span>";
 
 ?>
 <div id='blok_cetak' style='margin-top:40px' class='hide_cetak hideit'>
@@ -70,6 +76,13 @@ if($terverifikasi && $sudah_upload){
         </form>
       </div>
 
+    </li>
+    <li>Semua QTY Diterima sudah dialokasikan menjadi QTY Subitem
+      <ul class='kecil mb2'>
+        <li>Total QTY diterima: <?=$total_qty_diterima?></li>
+        <li>Total QTY subitem: <?=$total_qty_subitem?></li>
+        <li><?=$status_total_qty?></li>
+      </ul>
     </li>
     <li>
       BBM Sudah diverifikasi oleh <i>Assist. Head Warehouse</i> 

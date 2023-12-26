@@ -21,7 +21,7 @@ $opt_ppic .= '<option>PPIC 3</option>';
 # GET ITEM PO
 # =======================================================================
 $s = "SELECT *,
-a.id as id_po_item,
+a.id as id_sj_item,
 0 as qty_sebelumnya,
 b.id as id_barang,
 b.kode as kode_barang,
@@ -45,7 +45,7 @@ if(mysqli_num_rows($q)==0){
   $i=0;
   while($d=mysqli_fetch_assoc($q)){
     $i++;
-    $id = $d['id_po_item'];
+    $id = $d['id_sj_item'];
     $step = $d['step'] ?? 0.0001;
     $qty = $d['qty'];
     $qty_subitem = $d['qty_subitem'];
@@ -73,16 +73,29 @@ if(mysqli_num_rows($q)==0){
     if($qty_sama_final){
       $sisa_show='';
     }else{
-      $selisih = $qty-$qty_diterima;
-      $sisa_show = "Kurang $selisih $satuan";
+      $selisih = $qty_diterima-$qty;
+      if($selisih<0){
+        $selisih_abs = abs($selisih);
+        $sisa_show = "Kurang $selisih_abs $satuan";
+      }else{
+        $sisa_show = "<span class=' blue'>Lebih $selisih $satuan | <span class=miring>Free Supplier</span></span>";
+
+      }
     }
 
 
     $qty_sebelumnya_show = $d['qty_sebelumnya'] ? "<div class='kecil miring abu'>-<span id=qty_sebelumnya__$id>$d[qty_sebelumnya]</span></div>" : '';
 
     $qty_subitem_color = $qty_diterima==$qty_subitem ? 'hijau' : 'red';
+    if($qty_diterima!=$qty_subitem) $all_qty_allocated = 0;
+
+    $total_qty_diterima += $qty_diterima;
+    $total_qty_subitem += $qty_subitem;
 
     $qty_max = $qty * 2;
+
+    //disabled edit qty diterima jika sudah ada subitem
+    $qty_diterima_disabled = $qty_subitem ? 'disabled' : '';
     
     $tr .= "
       <tr>
@@ -99,7 +112,7 @@ if(mysqli_num_rows($q)==0){
         <td>
           <div class=flexy>
             <div>
-              <input id='qty_diterima__$id' class='form-control form-control-sm qty_diterima' type=number step='$step' required name=qty_diterima__$id min=0 max=$qty_max value=$qty_diterima>
+              <input id='qty_diterima__$id' class='form-control form-control-sm qty_diterima' type=number step='$step' required name=qty_diterima__$id min=0 max=$qty_max value='$qty_diterima' $qty_diterima_disabled>
               <div class='mt1 abu kecil' id=selisih__$id>$sisa_show</div>
             </div>
             <div>
@@ -161,6 +174,7 @@ include 'bbm_process_simpan_item.php';
 echo "
   <form method=post >
     $tb_items
+    <div class='mb2 f12'><b>Catatan:</b> QTY diterima tidak bisa diubah jika sudah ada subitem.</div>
 
     <div class='hide_cetak $hide_saya_menyatakan'>
       <div class='flexy'>
@@ -168,7 +182,7 @@ echo "
           <input type='checkbox' id=saya_menyatakan $saya_menyatakan_disabled>
         </div>
         <div>
-          <label for='saya_menyatakan'>Saya menyatakan telah menerima dan mengukur semua kuantitas item dari PO ini.</label>
+          <label for='saya_menyatakan'>Saya menyatakan telah menerima dan mengukur semua QTY PO ini</label>
         </div>
       </div>
       <div class='flexy mt4'>
@@ -176,7 +190,7 @@ echo "
           <button class='btn btn-primary btn-sm w-100' disabled id=btn_simpan name=btn_simpan>$btn_simpan_caption</button>
         </div>
         <div style=flex:1>
-          <span class='btn btn-success btn-sm w-100 btn_aksi' id=blok_cetak__toggle disabled>Prasyarat Cetak BBM</span>
+          <span class='btn btn-success btn-sm w-100 btn_aksi' id=blok_cetak__toggle disabled>Verifikasi dan Cetak BBM</span>
         </div>
       </div>
     </div>

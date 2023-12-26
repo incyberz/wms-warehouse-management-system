@@ -144,9 +144,10 @@ while($d=mysqli_fetch_assoc($q)){
   $id=$d['id'];
   $satuan=$d['satuan'];
   $kode_sj=$d['kode_sj'];
-  $kode_ppic=$d['kode_ppic'] ?? $unset;
-  $proyeksi=$d['proyeksi'] ?? $unset;
+  $kode_ppic=$d['kode_ppic'] ?? "PIC: $unset";
+  $proyeksi=$d['proyeksi'] ?? "Proyeksi: $unset";
 
+  $id_sj_item = $id;
 
   $tgl = date('d M Y',strtotime($d['tanggal_masuk']));
   $awal_terima = $d['awal_terima'] ?? '';
@@ -232,9 +233,11 @@ while($d=mysqli_fetch_assoc($q)){
       </td>
       <td>
         <div class=kecil>$proyeksi</div>
+        <div class=kecil>$kode_ppic</div>
       </td>
       <td>
-        <div class=kecil>$kode_ppic</div>
+        <div><a href='?retur&id_sj_item=$id_sj_item'>Retur</a></div>
+        <div><a href='?retur_balik&id_sj_item=$id_sj_item'>Retur-Balik</a></div>
       </td>
     </tr>
   ";
@@ -295,8 +298,8 @@ $bread = "<li class='breadcrumb-item'><a href='?master_penerimaan&cat=aks'>Akses
         <td>ID / Item / Keterangan</td>
         <td>Tanggal Masuk</td>
         <td>QTY / Data Lebih</td>
-        <td>Proyeksi</td>
-        <td>PPIC</td>
+        <td>Keterangan</td>
+        <td>Aksi</td>
       </tr>
       <?=$tr_hasil?>
 

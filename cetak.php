@@ -9,8 +9,8 @@ echo "<link href='assets/css/style.css' rel='stylesheet'>";
 if(isset($_POST['btn_cetak_label'])){
   $kode_barang = $_POST['kode_barang'];
   $no_po_dll = $_POST['no_po_dll'];
-  $jenis_bahan = $_POST['jenis_bahan'];
   $nama_barang = $_POST['nama_barang'];
+  $keterangan_barang = $_POST['keterangan_barang'];
 }
 
 
@@ -21,6 +21,7 @@ if(isset($_POST['btn_cetak_semua_label'])){
   e.kode as kode_po,
   d.kode as kode_barang,
   d.nama as nama_barang,
+  d.keterangan as keterangan_barang,
   d.satuan,
   f.tanggal_masuk,
   g.brand as this_brand
@@ -46,13 +47,13 @@ if(isset($_POST['btn_cetak_semua_label'])){
 
     $nama_barang = $d['nama_barang'];
     $kode_barang = $d['kode_barang'];
+    $keterangan_barang = $d['keterangan_barang'];
     // $id_bbm_item = $d['id_bbm_item'];
     $kode_po = $d['kode_po'];
     $no_lot = $d['no_lot'];
     $no_roll = $d['no_roll'];
     $kode_lokasi = $d['kode_lokasi'];
     $this_brand = $d['this_brand'];
-    $jenis_bahan = $d['jenis_bahan'];
     // $no_bbm = $d['no_bbm'];
     $qty = $d['qty'];
     $satuan = $d['satuan'];
@@ -66,9 +67,10 @@ if(isset($_POST['btn_cetak_semua_label'])){
 
 
     // $id=$d['id'];
+    $arr_is_fs[$i] = $d['is_fs'] ?? 0;
     $arr_kode_barang[$i] = $kode_barang;
     $arr_no_po_dll[$i] =  "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_lokasi $this_brand) $tgl";
-    $arr_jenis_bahan[$i] = $jenis_bahan;
+    $arr_keterangan_barang[$i] = $keterangan_barang;
     $arr_nama_barang[$i] = $nama_barang;
     $i++;
   }
@@ -78,8 +80,9 @@ if(isset($arr_kode_barang)){
   foreach ($arr_kode_barang as $key => $value) {
     $kode_barang = $arr_kode_barang[$key];
     $no_po_dll = $arr_no_po_dll[$key];
-    $jenis_bahan = $arr_jenis_bahan[$key];
+    $keterangan_barang = $arr_keterangan_barang[$key];
     $nama_barang = $arr_nama_barang[$key];
+    $is_fs = $arr_is_fs[$key];
 
     include 'pages/penerimaan/cetak_label.php';
   }

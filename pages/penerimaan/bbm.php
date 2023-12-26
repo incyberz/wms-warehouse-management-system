@@ -32,7 +32,9 @@ $sisa_qty = 0;
 $ada_bbm_kosong = 0;
 $btn_simpan_caption = "Simpan BBM";
 $arr_no_bbm = [];
-
+$all_qty_allocated = 1;
+$total_qty_diterima = 0;
+$total_qty_subitem = 0;
 
 # =======================================================================
 # SURAT JALAN
@@ -44,10 +46,6 @@ include 'bbm_surat_jalan.php';
 # =======================================================================
 include 'bbm_info.php';
 
-// if($id_bbm==''){
-//   echo ('Silahkan pilih nomor BBM diatas!');
-// }else{
-// } 
 # =======================================================================
 # CHECK IS VALID ID-BBM | GET TANGGAL TERIMA
 # =======================================================================
@@ -73,5 +71,16 @@ if(mysqli_num_rows($q)==0) {
 # GET ITEM PO
 # =======================================================================
 include 'bbm_qty_diterima.php';
+
+# =======================================================================
+# BBM NEXT ACTIONS AFTER VERIFIKASI
+# =======================================================================
+if($all_qty_allocated){
+  echo "<a class='btn btn-info btn-sm'>Next: Retur</a>";
+}
+
+# =======================================================================
+# BBM JS
+# =======================================================================
 include 'bbm_js.php';
 ?>

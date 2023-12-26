@@ -18,10 +18,10 @@ a.tanggal_verifikasi,
 FROM tb_bbm a 
 WHERE a.kode_sj='$kode_sj'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$d = mysqli_fetch_assoc($q);
+$d_bbm = mysqli_fetch_assoc($q);
 
 $tr = '';
-foreach ($d as $key => $value) {
+foreach ($d_bbm as $key => $value) {
   $value_show = '';
   if($key=='id'||$key=='kode') continue;
   $kolom = ucwords(str_replace('_',' ',$key));
@@ -55,7 +55,7 @@ echo "
     <thead>
       <th width=200px>Nomor BBM</th>
       <th>
-        $d[kode] 
+        $d_bbm[kode] 
         <span class='btn_aksi' id=sj_info__toggle>$img_detail</span> 
       </th>
     </thead>
@@ -70,6 +70,7 @@ echo "
 <script>
   $(function(){
     $('.btn_set_here').click(function(){
+      //zzz
       alert('Fitur Select and Save akan segera diaktifkan. Terimakasih sudah mencoba!');
     })
   })
