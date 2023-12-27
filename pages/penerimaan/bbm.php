@@ -76,7 +76,29 @@ include 'bbm_qty_diterima.php';
 # BBM NEXT ACTIONS AFTER VERIFIKASI
 # =======================================================================
 if($all_qty_allocated){
-  echo "<a class='btn btn-info btn-sm'>Next: Retur</a>";
+  echo "
+  <div class='mt3 hide_cetak wadah'>
+    <div class=flexy>
+      <div>Jam masuk</div>
+      <div>
+        <input class='editable form-control form-control-sm' type=time placeholder='Awal Masuk' id=awal_masuk__bbm__$id_bbm value=$awal_masuk>
+      </div>
+      <div>
+        <span id='awal_masuk__check__$id_bbm' class=hideit>$img_check</span>
+      </div>
+      <div>
+        s.d
+      </div>
+      <div>
+        <input class='editable form-control form-control-sm' type=time placeholder='Akhir Masuk' id=akhir_masuk__bbm__$id_bbm value=$akhir_masuk> 
+      </div>
+      <div>
+        <span id='akhir_masuk__check__$id_bbm' class=hideit>$img_check</span>
+      </div>
+    </div>    
+    <div class=mt2>Next: <a href='?master_penerimaan&cat=aks&po=$kode_po&waktu=all_time'>Proses Retur dari Master Penerimaan</a></div>
+  </div>
+  ";
 }
 
 # =======================================================================

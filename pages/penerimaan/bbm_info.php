@@ -3,13 +3,12 @@
 # TOTAL QTY PENERIMAAN
 # =======================================================================
 echo "
-  <h2>BBM Info</h2>
+  <h2 class=hide_cetak>BBM Info</h2>
 ";
 
 $s = "SELECT 
+a.id as id_bbm,
 a.kode,
-a.kode_sj as nomor_surat_jalan,
-a.kode_sj_supplier as No_SJ_dari_Supplier,
 a.tanggal_masuk,
 a.awal_masuk,
 a.akhir_masuk,
@@ -20,10 +19,19 @@ WHERE a.kode_sj='$kode_sj'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d_bbm = mysqli_fetch_assoc($q);
 
+$id_bbm = $d_bbm['id_bbm'];
+$awal_masuk = $d_bbm['awal_masuk'];
+$akhir_masuk = $d_bbm['akhir_masuk'];
+
 $tr = '';
 foreach ($d_bbm as $key => $value) {
   $value_show = '';
-  if($key=='id'||$key=='kode') continue;
+  if(
+    $key=='id'
+    ||$key=='kode'
+    ||$key=='awal_masuk'
+    ||$key=='akhir_masuk'
+    ) continue;
   $kolom = ucwords(str_replace('_',' ',$key));
 
   if($key=='verifikator'||$key=='tanggal_verifikasi'){
@@ -56,7 +64,7 @@ echo "
       <th width=200px>Nomor BBM</th>
       <th>
         $d_bbm[kode] 
-        <span class='btn_aksi' id=sj_info__toggle>$img_detail</span> 
+        <span class='btn_aksi hide_cetak' id=sj_info__toggle>$img_detail</span> 
       </th>
     </thead>
     <tbody id=sj_info class=hideit>

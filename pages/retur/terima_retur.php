@@ -1,7 +1,7 @@
 <?php
 $pesan_tambah = '';
-if(isset($_POST['btn_retur'])){
-  unset($_POST['btn_retur']);
+if(isset($_POST['btn_terima_retur'])){
+  unset($_POST['btn_terima_retur']);
   echo '<pre>';
   var_dump($_POST);
   echo '</pre>';
@@ -20,7 +20,7 @@ if(isset($_POST['btn_retur'])){
   $koloms = str_replace('__,','',$koloms);
   $values = str_replace('__,','',$values);
 
-  $s = "INSERT INTO tb_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
+  $s = "INSERT INTO tb_terima_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
   echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
@@ -49,7 +49,7 @@ f.step,
 (
   SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is null) qty_subitem,
 (
-  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is not null) qty_subitem_fs
+  SELECT qty FROM tb_retur WHERE id=a.id) qty_retur
 
 FROM tb_sj_item a 
 JOIN tb_sj b ON a.kode_sj=b.kode 
@@ -72,7 +72,7 @@ $no_bbm = $d['no_bbm'];
 $qty_po = $d['qty_po'];
 $qty_diterima = $d['qty_diterima'];
 $qty_subitem = $d['qty_subitem'];
-$qty_subitem_fs = $d['qty_subitem_fs'];
+$qty_retur = $d['qty_retur'];
 $satuan = $d['satuan'];
 $step = $d['step'];
 // $pengiriman_ke = $d['pengiriman_ke'];
@@ -83,7 +83,7 @@ $tanggal_masuk = $d['tanggal_masuk'];
 $qty_po = floatval($qty_po);
 $qty_diterima = floatval($qty_diterima);
 $qty_subitem = floatval($qty_subitem);
-$qty_subitem_fs = floatval($qty_subitem_fs);
+$qty_retur = floatval($qty_retur);
 
 
 $nama_kategori = ucwords(strtolower($nama_kategori));
@@ -107,19 +107,20 @@ if($is_lebih){
 # =======================================================================
 ?>
 <div class="pagetitle">
-  <h1>Retur Barang</h1>
+  <h1>Penerimaan Retur</h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?=$kode_sj?>">Manage SJ</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=bbm&kode_sj=<?=$kode_sj?>">BBM</a></li>
-      <li class="breadcrumb-item"><a href="?master_penerimaan&&id=<?=$kode_barang?>&waktu=all_time">Master Penerimaan</a></li>
-      <li class="breadcrumb-item active">Retur</li>
+      <li class="breadcrumb-item"><a href="?master_penerimaan&id=<?=$kode_barang?>&waktu=all_time">Master Penerimaan</a></li>
+      <li class="breadcrumb-item"><a href="?retur&id_sj_item=<?=$id_sj_item?>">Retur</a></li>
+      <li class="breadcrumb-item active">Penerimaan Retur</li>
     </ol>
   </nav>
 </div>
-<p>Page ini digunakan untuk Proses Retur Barang.</p>
+<p>Page ini digunakan untuk Proses Penerimaan Retur Barang.</p>
 
 
 <?php
@@ -127,7 +128,7 @@ if($is_lebih){
 # ITEM BARANG INFO 
 # =======================================================================
 ?>
-<h2>Info Penerimaan</h2>
+<h2>Info Retur</h2>
 <table class="table table-hover">
   <tr>
     <td>Surat Jalan</td>
@@ -161,6 +162,12 @@ if($is_lebih){
       <span id="qty_subitem"><?=$qty_subitem?></span> <?=$satuan?> 
     </td>
   </tr>
+  <tr>
+    <td>QTY Retur</td>
+    <td>
+      <span id="qty_retur"><?=$qty_retur?></span> <?=$satuan?> 
+    </td>
+  </tr>
 
 </table>
 
@@ -168,7 +175,7 @@ if($is_lebih){
 # =======================================================================
 # RETUR ITEM 
 # =======================================================================
-echo "<h2 class='mb3 mt4'>Retur Item: $kode_barang | $nama_kategori</h2>";
+echo "<h2 class='mb3 mt4'>Penerimaan Retur: $kode_barang | $nama_kategori</h2>";
 
 $get_id_sj_item = $_GET['id_sj_item'] ?? '';
 
@@ -178,7 +185,7 @@ if($get_id_sj_item!=''){
   c.kode as kode_barang,
   c.keterangan as keterangan_barang
 
-  FROM tb_retur a 
+  FROM tb_terima_retur a 
   JOIN tb_sj_item b ON a.id=b.id 
   JOIN tb_barang c ON b.kode_barang=c.kode 
   WHERE a.id=$get_id_sj_item";
@@ -189,21 +196,11 @@ if($get_id_sj_item!=''){
     $qty = $d['qty'];
     $kode_barang = $d['kode_barang'];
     $keterangan_barang = $d['keterangan_barang'];
-    $info_lot = $d['info_lot'] ?? '-';
-    $info_roll = $d['info_roll'] ?? '-';
-    $metode_qc = $d['metode_qc'] ?? '-';
-    $alasan_retur = $d['alasan_retur'] ?? '-';
     $qty = floatval($qty);
-    $btn_retur = "<button class='btn btn-secondary' name=btn_retur >Update Retur</button>";
-    $link_terima_retur = "<hr>Next: <a href='?terima_retur&id_sj_item=$get_id_sj_item'>Penerimaan untuk Retur ini</a>";
+    $btn_terima_retur = "<button class='btn btn-secondary' name=btn_terima_retur >Update Penerimaan Retur</button>";
   }else{
-    $link_terima_retur = '';
-    $btn_retur = "<button class='btn btn-primary' name=btn_retur >Retur</button>";
+    $btn_terima_retur = "<button class='btn btn-primary' name=btn_terima_retur >Simpan Penerimaan Retur</button>";
     $qty = '';
-    $info_lot = '-';
-    $info_roll = '-';
-    $metode_qc = '-';
-    $alasan_retur = '-';
   }
 
 
@@ -231,33 +228,24 @@ if($get_id_sj_item!=''){
 
 
 
-  $max_input_qty = $qty_subitem;
+  $max_input_qty = $qty_retur;
 
   echo "
   <div id=source_sj_item__$id_sj_item class='wadah mt2'>
     <form method=post>
       <input type='hidden' name=id value=$get_id_sj_item>
 
-      QTY Retur ($satuan) $bintang ~ <u class='pointer darkblue kecil' id=set_max_qty>Set Max: <span id=max_input_qty>$max_input_qty</span></u>
+      QTY Penerimaan Retur ($satuan) $bintang ~ <u class='pointer darkblue kecil' id=set_max_qty>Set Max: <span id=max_input_qty>$max_input_qty</span></u>
       <input class='form-control mb1' type=number min=0 max=$max_input_qty step=$step required name=qty id=qty value=$qty>
       <div class='mb2 abu f12'><b>Catatan:</b> QTY Retur akan terkunci jika sudah ada Penerimaan Retur untuk retur ini.</div>
-      Metode QC
-      <input class='form-control mb2' maxlength=100 name=metode_qc value='$metode_qc'>
-      Alasan Retur
-      <input class='form-control mb2' maxlength=100 name=alasan_retur value='$alasan_retur'>
-      Info Lot Number
-      <input class='form-control mb2' maxlength=100 name=info_lot value='$info_lot'>
-      Info Roll Number
-      <input class='form-control mb2' maxlength=100 name=info_roll value='$info_roll'>
       Keterangan Barang | <a target=_blank href='?master&p=barang&keyword=$kode_barang'>Ubah</a>
       <input class='form-control mb2' maxlength=100 name=keterangan_barang value='$nama_barang / $keterangan_barang' disabled>
       Info Lokasi ($kategori) / Brand
       <input class='form-control mb2' id=kode_rak_show value='$info_kode_lokasi / $info_brand' disabled>
       <div class=mt3>
-        $btn_retur
+        $btn_terima_retur
       </div>
     </form>
-    $link_terima_retur
   </div>
   ";
 }

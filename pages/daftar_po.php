@@ -127,7 +127,6 @@ $tr_hasil = $jumlah_row==0 ? "<tr><td colspan=100%><div class='alert alert-dange
 //   $qty = floatval($d['qty']);
 //   $qty_lebih = $d['qty_lebih']>0 ? '<img src=assets/img/icons/wms/qty_lebih.png height=14px> '.floatval($d['qty_lebih']) : '';
 //   $qty_kurang = $d['qty_kurang']>0 ? '<img src=assets/img/icons/wms/qty_kurang.png height=14px> '.floatval($d['qty_kurang']) : '';
-//   $qty_reject = $d['qty_reject']>0 ? '<img src=assets/img/icons/wms/qty_reject.png height=14px> '.floatval($d['qty_reject']) : '';
 
 
 //   $tr_hasil .= "
@@ -154,7 +153,6 @@ $tr_hasil = $jumlah_row==0 ? "<tr><td colspan=100%><div class='alert alert-dange
 //         <div>$qty $satuan</div>
 //         <div class='kecil abu'>$qty_lebih</div>
 //         <div class='kecil abu'>$qty_kurang</div>
-//         <div class='kecil abu'>$qty_reject</div>
 //       </td>
 //       <td>
 //         <div class=kecil>$d[proyeksi]</div>

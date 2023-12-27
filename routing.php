@@ -18,6 +18,7 @@ switch($parameter){
   case 'pengeluaran' : include 'pages/pengeluaran/pengeluaran.php'; break;
   case 'stok' : include 'pages/stok/stok.php'; break;
   case 'retur' : include 'pages/retur/retur.php'; break;
+  case 'terima_retur' : include 'pages/retur/terima_retur.php'; break;
   default:
     if(file_exists($page_tujuan)){
       include $page_tujuan;

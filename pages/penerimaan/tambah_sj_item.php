@@ -1,7 +1,7 @@
 <?php
-echo '<pre>';
-var_dump($_POST);
-echo '</pre>';
+// echo '<pre>';
+// var_dump($_POST);
+// echo '</pre>';
 
 foreach ($_POST as $key => $value) $_POST[$key] = clean_sql($value);
 
@@ -20,5 +20,5 @@ echo $s;
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 echo div_alert('success','Tambah barang dan tambah PO item berhasil.');
-// jsurl("?penerimaan&p=manage_sj&kode_sj=$kode_sj");
+jsurl("?penerimaan&p=manage_sj&kode_sj=$kode_sj");
 exit;

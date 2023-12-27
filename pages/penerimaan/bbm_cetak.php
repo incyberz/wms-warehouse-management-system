@@ -1,6 +1,6 @@
 <?php
 echo "<span class=hideit id=view_mode>$view_mode</span>";
-$filePath = "uploads/bbm/$id_bbm.jpg";
+$filePath = "uploads/bbm/$kode_sj.jpg";
 if(file_exists($filePath)){
   $status_upload = "<div class=>Status: <span class='hijau'>sudah upload</span> $img_check</div>";
   $status_upload .= "<div class=mb1><span class='btn_aksi tebal abu kecil pointer' id=form_upload__toggle>Reupload</span> | <a href='$filePath' target=_blank>Lihat Gambar</a></div>";
@@ -16,6 +16,8 @@ if($tanggal_verifikasi==''||$diverifikasi_oleh==''){
 
   $disabled_check = $all_qty_allocated ? '' : 'disabled';
   $unallocated_info = $all_qty_allocated ? '' : '<div class="red kecil mt1">QTY diterima belum semua dialokasikan.</div>';
+  $role_info = $id_role==2 ? '' : '<div class="kecil mt1"><span class=red>Hanya WH Assistant yang berhak verifikasi.</span> | <a target=_blank href="?master&p=user">Lihat Data Users</a> | <a target=_blank href="?logout" onclick="return confirm(\'Yakin untuk logout dan relogin?\')">Relogin</a></div> ';
+  $disabled_cek_role = $id_role==2 ? '' : 'disabled';
 
   $status_verif = "
     <div class='mt2'>
@@ -23,16 +25,16 @@ if($tanggal_verifikasi==''||$diverifikasi_oleh==''){
     </div>
 
     <div class='mt2' style='display:grid;grid-template-columns:30px auto'>
-      <div class=pt1><input type='checkbox' class=cek_bbm id=cek1 $disabled_check></div>
+      <div class=pt1><input type='checkbox' class=cek_bbm id=cek1 $disabled_check $disabled_cek_role></div>
       <div><label for='cek1'>Saya <span class='tebal miring darkblue'>$nama_user</span>, jabatan <span class='tebal miring darkblue'>$jabatan</span>, menyatakan bahwa seluruh QTY pada BBM ini sudah benar-benar fix sesuai dengan kenyataan.</label></div>
-      <div class=pt1><input type='checkbox' class=cek_bbm id=cek2 $disabled_check></div>
+      <div class=pt1><input type='checkbox' class=cek_bbm id=cek2 $disabled_check $disabled_cek_role></div>
       <div><label for='cek2'>Tidak akan ada lagi perubahan pada data BBM ini.</label></div>
       <div class=pt1>&nbsp;</div>
       <div>
         <form method=post>
-          <input type='hidden' name=id_bbm value=$id_bbm>
           <button class='btn btn-primary btn-sm mt2' disabled id=btn_verifikasi name=btn_verifikasi>Verifikasi BBM</button>
           $unallocated_info
+          $role_info
         </form>
       </div>
     </div>  
@@ -44,21 +46,24 @@ if($tanggal_verifikasi==''||$diverifikasi_oleh==''){
 }
 
 if($terverifikasi && $sudah_upload){
-  $btn_cetak_bbm = "<a href='?penerimaan&p=terima_barang&kode_po=$kode_po&id_bbm=$id_bbm&view_mode=cetak' class='btn btn-success w-100' target=_blank'>Cetak Bukti Barang Masuk</a>";
+  $btn_cetak_bbm = "<a href='?penerimaan&p=bbm&kode_sj=$kode_sj&view_mode=cetak' class='btn btn-success w-100' target=_blank'>Cetak Bukti Barang Masuk</a>";
 }else{
   $btn_cetak_bbm = "<button class='btn btn-success w-100' disabled'>Belum bisa Cetak BBM</button>";
 }
 
 $status_total_qty = $total_qty_diterima==$total_qty_subitem ? "<span class=hijau>All allocated.</span>" : "<span class=red>Belum semua dialokasikan.</span>";
 
+$hide_blok_cetak = $masih_bisa_edit ? 'hideit' : '';
+
+
 ?>
-<div id='blok_cetak' style='margin-top:40px' class='hide_cetak hideit'>
+<div id='blok_cetak' style='margin-top:40px' class='hide_cetak <?=$hide_blok_cetak?>'>
 
   <h2>Verifikasi dan Cetak BBM</h2>
   <p class=p1>Syarat untuk mencetak BBM yaitu:</p>
   <ol>
     <li>
-      Silahkan Upload Surat Jalan No. <span class="darkblue"><?=$kode_sj?></span>
+      Silahkan Upload Surat Jalan dari Supplier No. <span class="darkblue"><?=$kode_sj_supplier?></span>
 
       <div>
         <?=$status_upload?>

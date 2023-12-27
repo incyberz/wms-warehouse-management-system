@@ -6,24 +6,24 @@
 # KET ITEM PO
 # ==========================================
 $jumlah_item = 0;
-$ket_item_po = 'Lorem ipsum dolor sit amet consectetur, adipisicing elit___Distinctio doloribus corporis ducimus, veniam officiis expedita quidem voluptates sed, magni veritatis odio officia___Praesentium ipsum iusto tenetur facilis odio accusamus temporibus';
+$ket_sj_item = 'Lorem ipsum dolor sit amet consectetur, adipisicing elit___Distinctio doloribus corporis ducimus, veniam officiis expedita quidem voluptates sed, magni veritatis odio officia___Praesentium ipsum iusto tenetur facilis odio accusamus temporibus';
 
-$arr_ket_item_po = explode('___',$ket_item_po);
+$arr_ket_sj_item = explode('___',$ket_sj_item);
 $li = '';
-foreach ($arr_ket_item_po as $key => $item_ket_item_po) {
-  $id_toggle = "edit_ket_item_po__toggle__$key";
-  $id_save = "edit_ket_item_po__save__$key";
-  $id_close = "edit_ket_item_po__close__$key";
-  $id_delete = "edit_ket_item_po__delete__$key";
+foreach ($arr_ket_sj_item as $key => $item_ket_sj_item) {
+  $id_toggle = "edit_ket_sj_item__toggle__$key";
+  $id_save = "edit_ket_sj_item__save__$key";
+  $id_close = "edit_ket_sj_item__close__$key";
+  $id_delete = "edit_ket_sj_item__delete__$key";
   $li.="
-    <li class=mb2  id=source_edit_ket_item_po__$key>
-      $item_ket_item_po 
+    <li class=mb2  id=source_edit_ket_sj_item__$key>
+      $item_ket_sj_item 
       <span class='btn_aksi' id=$id_toggle>$img_edit</span>
       <span class='btn_aksi' id=$id_delete>$img_delete</span>
     </li>
-    <li class='no-bullet $hideit' id=edit_ket_item_po__$key>
+    <li class='no-bullet $hideit' id=edit_ket_sj_item__$key>
       <div class='border-merah gradasi-kuning br5 p2 flex-between mb4'>
-        <textarea class='form-control'>$item_ket_item_po</textarea>
+        <textarea class='form-control'>$item_ket_sj_item</textarea>
         <div class='ml2' style='width: 60px'>
           <span class='btn_aksi' id=$id_save>$img_save</span>
           <span class='btn_aksi' id=$id_close>$img_close</span>
@@ -33,7 +33,7 @@ foreach ($arr_ket_item_po as $key => $item_ket_item_po) {
   ";
 }
 
-$ket_item_po_show = "<ul>$li</ul>";
+$ket_sj_item_show = "<ul>$li</ul>";
 
 
 $tr = "
@@ -45,6 +45,7 @@ $tr = "
 $s = "SELECT 
 a.id as id_sj_item,
 a.qty,
+a.qty_diterima,
 a.harga_manual,
 b.tmp_harga as harga,
 b.satuan,
@@ -66,16 +67,14 @@ if(mysqli_num_rows($q)){
     $jumlah_item++;
     $id=$d['id_sj_item'];
     $id_sj_item=$d['id_sj_item'];
-    $qty=$d['qty'];
+    $qty=floatval($d['qty']);
+    $qty_diterima=floatval($d['qty_diterima']);
     $harga=$d['harga'];
     $satuan=$d['satuan'];
-    $harga_manual=$d['harga_manual'];
+    $harga_manual=floatval($d['harga_manual']);
     $keterangan=$d['keterangan'];
     $stok=$d['stok'];
     $tmp_stok=$d['tmp_stok'];
-
-    $qty = floatval($qty);
-    $harga_manual = floatval($harga_manual);
 
     $harga = $harga ?? $harga_manual;
     $harga = $harga ?? 0;
@@ -107,15 +106,16 @@ if(mysqli_num_rows($q)){
     }
 
     $satuan = $satuan=='' ? "<a href='?master&p=barang&keyword=$d[kode_barang]' target=_blank class='merah tebal'>SATUAN UNSET</a>" : $satuan;
-
+    $qty_diterima_show = $qty_diterima ? "<span>$qty_diterima $satuan<span>" : '<span class="kecil miring abu">(belum ada)</span>';
+    $qty_disabled = $qty_diterima ? 'disabled' : '';
 
     $tr .= "
-      <tr id=source_edit_item_po__1>
+      <tr id=source_edit_sj_item__$id>
         <td>$jumlah_item</td>
         <td>
           <div class=darkblue>
             $d[kode_barang]
-            <span class='btn_aksi' id='edit_item_po__delete__$id'>$img_delete</span>
+            <span class='btn_aksi' id='edit_sj_item__delete__$id'>$img_delete</span>
           </div>
           <div class=darkabu>$d[nama_barang]</div> 
         </td>
@@ -126,9 +126,10 @@ if(mysqli_num_rows($q)){
           </div>
         </td>
         <td class=kanan>
-          <input class='form-control input input__$id input_qty' style=width:110px type=number step=0.01 id=qty__$id value='$qty'>
+          <input class='form-control input input__$id input_qty' style=width:110px type=number step=0.01 id=qty__$id value='$qty' $qty_disabled>
           <div class='kecil abu kiri mt1'>Stok-baru: <span id=stok_baru__$id>$stok</span></div>
         </td>
+        <td>$qty_diterima_show</td>
         <td class=kanan>
           <input class='form-control input input__$id input_harga' style=width:150px type=number step=0.01 id=harga__$id value='$harga'>
           <div class='kecil abu kiri mt1'>Harga lama: <span id=harga_lama__$id>$harga</span></div>
@@ -141,6 +142,48 @@ if(mysqli_num_rows($q)){
 
 }
 
+$tr_tambah = "
+  <tr>
+    <td><span class='miring abu kecil'><?php echo ($jumlah_item+1);?></span></td>
+    <td colspan=100% >
+      <span class='green pointer'>
+        <span class='btn_aksi' id='edit_sj_item__toggle'>
+        Tambah item <?=$img_add?></span>
+      </span>
+      <div id='edit_sj_item' class='border-merah gradasi-kuning br5 p2 mb2 mt2 hideit' style='display: blocasdk;'>
+          <div class='row'>
+            <div class='col-11'>
+              <div class='flexy'>
+                <div class='darkblue'>Cari barang:</div>
+                <div class='darkblue'>
+                  <input type='text' class='form-control form-control-sm' id=keyword>
+                </div>
+              </div>
+            </div>
+            <div class='col-1 kanan'>
+              <span class='btn_aksi' id='edit_sj_item__close'><img class='zoom pointer' src='assets/img/icons/close.png' alt='close' height='20px'></span>
+            </div>
+          </div>
+
+          <!-- ======================================================== -->
+          <!-- HASIL AJAX ITEM BARANG PO -->
+          <!-- ======================================================== -->
+          <div class='mt2' id=hasil_ajax></div>
+        </div>
+    </td>
+  </tr>
+";
+
+if($tanggal_verifikasi_bbm){
+  $tgl = date('d M Y H:i:s',strtotime($tanggal_verifikasi_bbm));
+  $tr_tambah = "
+    <tr>
+      <td colspan=100% class='kecil'>
+        <span class='hijau miring'>)* BBM sudah terverifikasi pada tanggal $tgl</span>
+      </td>
+    </tr>
+  ";
+}
 
 ?>
 <div class="wadah">
@@ -150,73 +193,56 @@ if(mysqli_num_rows($q)){
       <th>NO</th>
       <th>KODE</th>
       <th>KETERANGAN</th>
-      <th>QTY</th>
-      <th>HARGA</th>
+      <th>QTY PO</th>
+      <th>QTY Diterima</th>
+      <th>INFO HARGA</th>
       <th>JUMLAH</th>
     </thead>
   
     <?=$tr?>
-    
-    <tr>
-      <td><span class='miring abu kecil'><?php echo ($jumlah_item+1);?></span></td>
-      <td colspan=5 >
-        <span class="green pointer">
-          <span class="btn_aksi" id="edit_item_po__toggle">
-          Tambah item <?=$img_add?></span>
-        </span>
-        <div id="edit_item_po" class="border-merah gradasi-kuning br5 p2 mb2 mt2 hideit" style="display: blocasdk;">
-            <div class="row">
-              <div class="col-11">
-                <div class="flexy">
-                  <div class="darkblue">Cari barang:</div>
-                  <div class="darkblue">
-                    <input type="text" class="form-control form-control-sm" id=keyword>
-                  </div>
-                </div>
-              </div>
-              <div class="col-1 kanan">
-                <span class="btn_aksi" id="edit_item_po__close"><img class="zoom pointer" src="assets/img/icons/close.png" alt="close" height="20px"></span>
-              </div>
-            </div>
-  
-            <!-- ======================================================== -->
-            <!-- HASIL AJAX ITEM BARANG PO -->
-            <!-- ======================================================== -->
-            <div class='mt2' id=hasil_ajax></div>
-          </div>
-      </td>
-    </tr> 
+    <?=$tr_tambah?> 
     <tfoot class=gradasi-kuning>
       <tr>
-        <td colspan=3 class=kanan>Total</td>
+        <td colspan=4 class=kanan>Total</td>
         <td class=kanan id=total_qty>?</td>
         <td>&nbsp;</td>
         <td class=kanan id=total>?</td>
       </tr>
       <tr>
-        <td colspan=3 class=kanan>PPN 11%</td>
+        <td colspan=4 class=kanan>PPN 11%</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td class=kanan id=ppn>?</td>
       </tr>
       <tr>
-        <td colspan=3 class=kanan>Total + PPN</td>
+        <td colspan=4 class=kanan>Total + PPN</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td class=kanan id=total_ppn>?</td>
       </tr>
       <tr>
         <td colspan=100%>
-          <button class="btn btn-success w-100 btn-sm" id="btn_simpan_item_po" disabled>Simpan</button>
+          <button class="btn btn-success w-100 btn-sm" id="btn_simpan_sj_item" disabled>Simpan</button>
         </td>
       </tr>
     </tfoot>
   
   </table>
+  <table class='darkabu f12 flexy'>
+    <tr>
+      <td valign=top><b>Catatan:</b></td> 
+      <td valign=top>
+        <ul>
+          <li>QTY PO tidak bisa diubah jika sudah ada QTY Diterima pada BBM</li>
+          <li>Item Surat Jalan tidak bisa ditambah jika BBM sudah diverifikasi</li>
+        </ul>
+      </td>
+    </tr>
+  </table>
 
 </div>
 
-<div class="f20 abu tebal mb2">Next: <a href="?penerimaan&p=bbm&kode_sj=<?=$kode_sj?>">Bukti Barang Masuk</a></div>
+<div class=" mb2">Next: <a href="?penerimaan&p=bbm&kode_sj=<?=$kode_sj?>">Proses Bukti Barang Masuk</a></div>
 
 
 
@@ -282,11 +308,11 @@ if(mysqli_num_rows($q)){
     $('#ppn').text(rupiah(total*.11));
     $('#total_ppn').text(rupiah(total*.89));
 
-    $('#btn_simpan_item_po').prop("disabled",true);
-    $('#btn_simpan_item_po').text('Terdapat QTY atau harga satuan yang masih kosong.');
+    $('#btn_simpan_sj_item').prop("disabled",true);
+    $('#btn_simpan_sj_item').text('Terdapat QTY atau harga satuan yang masih kosong.');
     if(is_lengkap){
-      $('#btn_simpan_item_po').text('Simpan');
-      $('#btn_simpan_item_po').prop("disabled",false);
+      $('#btn_simpan_sj_item').text('Simpan');
+      $('#btn_simpan_sj_item').prop("disabled",false);
       if(is_save){
         console.log('save to db', ids, qtys,hargas);
         link_ajax = `ajax/crud.php?tb=sj_item&aksi=insert_item&id=array&ids=${ids}&qtys=${qtys}&hargas=${hargas}`;
@@ -294,8 +320,8 @@ if(mysqli_num_rows($q)){
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
-              $('#btn_simpan_item_po').prop("disabled",true);
-              $('#btn_simpan_item_po').text('Simpan berhasil.');
+              $('#btn_simpan_sj_item').prop("disabled",true);
+              $('#btn_simpan_sj_item').text('Simpan berhasil.');
             }else{
               // alert('Tidak dapat menyimpan items.');
               console.log(a);
@@ -311,7 +337,7 @@ if(mysqli_num_rows($q)){
 
   }
   hitung_total();
-  $('#btn_simpan_item_po').prop("disabled",true);
+  $('#btn_simpan_sj_item').prop("disabled",true);
 
 
   $('.input').change(function(){
@@ -325,7 +351,7 @@ if(mysqli_num_rows($q)){
     hitung_total();
   });
 
-  $('#btn_simpan_item_po').click(function(){
+  $('#btn_simpan_sj_item').click(function(){
     hitung_total(1);
   });
 

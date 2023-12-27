@@ -177,7 +177,15 @@ if($parameter=='logout'){
     <script src="assets/js/main2.js"></script>
     <?php include 'include/js_btn_aksi.php'; ?>
 
-  <?php } ?>
+  <?php 
+  }
+
+  # =======================================================
+  # INCLUDES
+  # =======================================================
+  include 'include/editable_js.php';
+ 
+  ?>
 
 </body>
 

@@ -2,6 +2,7 @@
 # =======================================================================
 # SELECT PROYEKSI
 # =======================================================================
+$masih_bisa_edit = 0;
 $arr_bln = ['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGS','SEP','OKT','NOV','DES',];
 $arr_thn = [2023,2024];
 $opt_proyeksi = '<option value=null>--Pilih--</option>';
@@ -96,6 +97,7 @@ if(mysqli_num_rows($q)==0){
 
     //disabled edit qty diterima jika sudah ada subitem
     $qty_diterima_disabled = $qty_subitem ? 'disabled' : '';
+    if(!$qty_subitem) $masih_bisa_edit = 1;
     
     $tr .= "
       <tr>
@@ -121,16 +123,16 @@ if(mysqli_num_rows($q)==0){
             </div>
           </div>
         </td>
-        <td>
+        <td class=hide_cetak>
           <a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>
             <span class='kecil $qty_subitem_color'>$qty_subitem $satuan</span>
-            $img_next
+            <span class=hide_cetak>$img_next</span>
           </a>
         </td>
-        <td>
+        <td class=hide_cetak>
           <select class='form-control form-control-sm select_save' name=proyeksi__$id id=proyeksi__$id>$opt_proyeksi</select>
         </td>
-        <td>
+        <td class=hide_cetak>
           <select class='form-control form-control-sm select_save' name=kode_ppic__$id id=kode_ppic__$id>$opt_ppic</select>
         </td>
       </tr>
@@ -145,9 +147,9 @@ $tb_items = "
       <th>Kode / Item</th>
       <th>QTY-PO</th>
       <th>QTY Diterima</th>
-      <th>QTY Subitems</th>
-      <th>Proyeksi</th>
-      <th>PPIC</th>
+      <th class=hide_cetak>QTY Subitems</th>
+      <th class=hide_cetak>Proyeksi</th>
+      <th class=hide_cetak>PPIC</th>
     </thead>
     $tr
   </table>
@@ -171,13 +173,15 @@ $tb_items = "
 echo "<h2>QTY Diterima pada BBM $no_bbm</h2>";
 include 'bbm_process_simpan_item.php';
 
-echo "
+$hide_cek = $masih_bisa_edit ? '' : 'style="display:none"';
+
+echo " 
   <form method=post >
     $tb_items
-    <div class='mb2 f12'><b>Catatan:</b> QTY diterima tidak bisa diubah jika sudah ada subitem.</div>
+    <div class='mb2 f12 hide_cetak'><b>Catatan:</b> QTY diterima tidak bisa diubah jika sudah ada subitem.</div>
 
     <div class='hide_cetak $hide_saya_menyatakan'>
-      <div class='flexy'>
+      <div class='flexy ' $hide_cek>
         <div class='pt1'>
           <input type='checkbox' id=saya_menyatakan $saya_menyatakan_disabled>
         </div>

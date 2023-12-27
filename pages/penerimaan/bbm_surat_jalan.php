@@ -32,6 +32,7 @@ if(mysqli_num_rows($q)==0){
 }else{
   $d = mysqli_fetch_assoc($q);
 
+  $kode_sj_supplier = $d['kode_sj_supplier'] ?? $unset;
   $id_bbm_count = $d['id_bbm_count'];
   if($id_bbm_count==0){
     # =======================================================================
@@ -56,6 +57,10 @@ if(mysqli_num_rows($q)==0){
     exit;
   }
 
+  $kode_po = $d['kode_po'];
+  $tanggal_terima = $d['tanggal_terima'];
+  $awal_terima = date('H:i',strtotime($d['awal_terima']));
+  $akhir_terima = date('H:i',strtotime($d['akhir_terima']));
   $kode_supplier = $d['kode_supplier'];
   $sum_qty_po = $d['sum_qty_po'];
   $sum_qty_diterima = $d['sum_qty_diterima'];
@@ -88,11 +93,26 @@ if(mysqli_num_rows($q)==0){
       ";
     }
   }
+
+  $tanggal_terima_show = date('d M Y', strtotime($tanggal_terima));
+  $tanggal_terima_show = $awal_terima ? "$tanggal_terima_show ~ Pukul: $awal_terima" : $tanggal_terima_show;
+  $tanggal_terima_show = ($awal_terima && $akhir_terima) ? "$tanggal_terima_show s.d $akhir_terima" : $tanggal_terima_show;
+
   $tb_sj = "
     <table class=table>
+      <tr>
+        <td width=200px>Surat Jalan From Supplier</td>
+        <td>$kode_sj_supplier </td>
+      </tr>
+      <tr>
+        <td width=200px>Tanggal Terima</td>
+        <td>$tanggal_terima_show </td>
+      </tr>
+    </table>
+    <table class=table>
       <thead>
-        <th width=200px>Nomor Surat Jalan</th>
-        <th>$kode_sj <span id=identitas_po_toggle>$img_detail</span></th>
+        <th width=200px>Nomor Terima Surat Jalan</th>
+        <th>$kode_sj <span id=identitas_po_toggle  class=hide_cetak>$img_detail</span></th>
       </thead>
       <tbody class=hideit id=identitas_po>
         $tr
@@ -109,6 +129,6 @@ if(mysqli_num_rows($q)==0){
 }
 
 echo "
-  <h2>Surat Jalan</h2>
+  <h2 class=hide_cetak>Surat Jalan</h2>
   $tb_sj
 ";

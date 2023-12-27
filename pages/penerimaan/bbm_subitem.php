@@ -46,6 +46,10 @@ if(isset($_POST['btn_tambah_subitem']) || isset($_POST['btn_tambah_subitem_fs'])
 }
 
 $id_sj_item = $_GET['id_sj_item'] ?? die(erid('id_sj_item'));
+if($id_sj_item==''){
+  echo div_alert('danger',"ID item invalid. <a href='?penerimaan&p=bbm&kode_sj=$kode_sj'>Pilih Item dari BBM</a>");
+  exit;
+} 
 $s = "SELECT a.*,
 a.id as id_sj_item,
 a.kode_sj,

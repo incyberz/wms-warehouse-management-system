@@ -100,10 +100,10 @@ LIMIT 10
 
 $s = "SELECT 
 a.id,
+a.id as id_sj_item,
 a.qty,
 a.proyeksi,
 a.kode_ppic,
-a.qty_reject,
 a.kode_sj,
 b.kode_po,
 b.awal_terima,
@@ -124,7 +124,16 @@ e.satuan,
 (
   SELECT COUNT(1) FROM tb_sj_subitem 
   WHERE id_sj_item=a.id 
-  ) jumlah_subitem  
+  ) jumlah_subitem,
+(
+  SELECT qty FROM tb_retur 
+  WHERE id=a.id 
+  ) qty_retur,  
+(
+  SELECT qty FROM tb_terima_retur 
+  WHERE id=a.id 
+  ) qty_terima_retur
+
 FROM tb_sj_item a  
 JOIN tb_sj b ON a.kode_sj=b.kode
 JOIN tb_bbm c ON b.kode=c.kode_sj
@@ -161,22 +170,25 @@ while($d=mysqli_fetch_assoc($q)){
   $masuk = $awal_masuk=='' ? '' : '<img src=assets/img/icons/wms/masuk.png height=14px> '. date('h:i',strtotime($awal_masuk));
   $masuk = $akhir_masuk=='' ? $masuk : "$masuk s.d ". date('h:i',strtotime($akhir_masuk));
 
+  $datang = $datang=='' ? '' : "<a href='?penerimaan&p=manage_sj&kode_sj=$d[kode_sj]'>$datang</a>";
+  $masuk = $masuk=='' ? '' : "<a href='?penerimaan&p=bbm&kode_sj=$d[kode_sj]'>$masuk</a>";
 
 
   $qty = floatval($d['qty']);
+  $qty_retur = floatval($d['qty_retur']);
+  $qty_terima_retur = floatval($d['qty_terima_retur']);
   $qty_diterima = floatval($d['qty_diterima']);
-  $qty_reject = $d['qty_reject']>0 ? '<img src=assets/img/icons/wms/qty_reject.png height=14px> '.floatval($d['qty_reject']) : '';
 
 
 
   $qty_lebih = $qty_diterima - $qty;
   $qty_kurang = $qty - $qty_diterima;
   
-  $qty_pas_show = $qty==$qty_diterima ? "diterima: $qty $satuan <img src=assets/img/icons/check.png height=14px>" : '';
+  $pas = $qty==$qty_diterima ? '<img src=assets/img/icons/check.png height=14px>' : '';
+  $qty_diterima_show = "diterima: <a href='?penerimaan&p=bbm&kode_sj=$d[kode_sj]'>$qty_diterima $satuan</a> $pas";
   $qty_lebih_show = $qty_lebih>0 ? "<img src=assets/img/icons/wms/qty_lebih.png height=14px> $qty_lebih" : '';
   $qty_kurang_show = $qty_kurang>0 ? "<img src=assets/img/icons/wms/qty_kurang.png height=14px> $qty_kurang" : '';
   
-  $qty_reject_show = ''; //zzz sementara
 
 
   if($d['jumlah_subitem']){
@@ -203,6 +215,8 @@ while($d=mysqli_fetch_assoc($q)){
 
     $locations = "<a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
   }
+
+  $terima_retur = $qty_retur ? "<div><a href='?terima_retur&id_sj_item=$id_sj_item'>Balik: $qty_terima_retur</a></div>" : '';
   
 
   $tr_hasil .= "
@@ -211,11 +225,11 @@ while($d=mysqli_fetch_assoc($q)){
         <div>$locations</div>
       </td>
       <td>
-        <div>$d[kode_po]</div>
-        <div class='kecil abu'>Supplier: $d[nama_supplier]</div>
+        <div><a href='?penerimaan&p=manage_sj&kode_sj=$d[kode_sj]'>$d[kode_sj]</a></div>
+        <div class='kecil abu'>$d[nama_supplier]</div>
       </td>
       <td>
-        <div>$d[kode_barang]</div>
+        <div><a href='?penerimaan&p=bbm_subitem&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>$d[kode_barang]</a></div>
         <div class='kecil abu'>$d[nama_barang]</div>
         <div class='kecil abu'>$d[keterangan_barang]</div>
       </td>
@@ -225,19 +239,18 @@ while($d=mysqli_fetch_assoc($q)){
         <div class='kecil abu'>$masuk</div>
       </td>
       <td>
-        <div>$qty $satuan</div>
-        <div class='kecil abu'>$qty_pas_show</div>
+        <div><a href='?penerimaan&p=manage_sj&kode_sj=$d[kode_sj]'>$qty $satuan</a></div>
+        <div class='kecil abu'>$qty_diterima_show</div>
         <div class='kecil abu'>$qty_lebih_show</div>
         <div class='kecil abu'>$qty_kurang_show</div>
-        <div class='kecil abu'>$qty_reject_show</div>
       </td>
       <td>
         <div class=kecil>$proyeksi</div>
         <div class=kecil>$kode_ppic</div>
       </td>
-      <td>
-        <div><a href='?retur&id_sj_item=$id_sj_item'>Retur</a></div>
-        <div><a href='?retur_balik&id_sj_item=$id_sj_item'>Retur-Balik</a></div>
+      <td class=kecil>
+        <div><a href='?retur&id_sj_item=$id_sj_item'>Retur: $qty_retur</a></div>
+        $terima_retur
       </td>
     </tr>
   ";
@@ -296,10 +309,10 @@ $bread = "<li class='breadcrumb-item'><a href='?master_penerimaan&cat=aks'>Akses
         <td>Lokasi</td>
         <td>PO / Supplier</td>
         <td>ID / Item / Keterangan</td>
-        <td>Tanggal Masuk</td>
-        <td>QTY / Data Lebih</td>
-        <td>Keterangan</td>
-        <td>Aksi</td>
+        <td>Tanggal</td>
+        <td>QTY </td>
+        <td>Info</td>
+        <td>Retur</td>
       </tr>
       <?=$tr_hasil?>
 

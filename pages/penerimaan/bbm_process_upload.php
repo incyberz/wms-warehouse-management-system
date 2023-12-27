@@ -1,5 +1,6 @@
 <?php
 if(isset($_POST['btn_upload'])){
+  unset($_POST['btn_upload']);
   echo '<br>Processing upload images...';
   // echo '<pre>';
   // var_dump($_POST);
@@ -9,7 +10,7 @@ if(isset($_POST['btn_upload'])){
   // var_dump($_FILES);
   // echo '</pre>';
 
-  $filePath = "uploads/bbm/$_POST[id_bbm].jpg";
+  $filePath = "uploads/bbm/$_GET[kode_sj].jpg";
   $tmpName = $_FILES['surat_jalan']['tmp_name'];
 
   $result = move_uploaded_file($tmpName, $filePath);
@@ -17,8 +18,11 @@ if(isset($_POST['btn_upload'])){
   $image_info = getimagesize($filePath); 
   $width_orig  = $image_info[0]; // current width as found in image file
   $height_orig = $image_info[1]; // current height as found in image file
+
+  $link_back = " | <a href='?penerimaan&p=bbm&kode_sj=$_GET[kode_sj]'>Kembali</a>";
+
   if($width_orig<100 || $height_orig<100){
-    echo 'Resolusi image terlalu kecil. Silahkan pilih gambar lain!';
+    die("<div>Resolusi image terlalu kecil. Silahkan pilih gambar lain! $link_back");
   }else if($width_orig>1000 || $height_orig>1000){
     if($width_orig>$height_orig){
       $width = 1000;
@@ -38,7 +42,6 @@ if(isset($_POST['btn_upload'])){
     echo '<br>No need to be resized.';
   }
 
-  echo div_alert('success',"Upload sukses.");
-  jsurl("?penerimaan&p=terima_barang&kode_po=$_GET[kode_po]&id_bbm=$_GET[id_bbm]");
+  echo div_alert('success',"Upload Surat Jalan sukses.$link_back");
   exit;
 }
