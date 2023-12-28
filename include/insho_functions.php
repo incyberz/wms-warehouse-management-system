@@ -112,6 +112,10 @@ function terbilang($nilai) {
   return $hasil;
 }
 
+function set_title($a){
+  echo '<script>$(function(){$("title").text("'.$a.'");})</script>';
+} 
+
 
 ?>
 <script>

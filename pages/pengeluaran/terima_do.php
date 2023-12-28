@@ -2,12 +2,19 @@
   .help{font-size:12px; color:white; background:blue; padding: 10px; border-radius: 5px; margin: 10px 0}
   .help ul, .blok_kode ul{margin:0;padding:0 0 0 15px}
 </style>
+<?php
+$kode_do = $_GET['kode_do'] ?? '';
+$bread_active = $kode_do=='' ? 'Terima DO' : 'Picking List';
+$bread_terima_do = $kode_do=='' ? '' : '<li class="breadcrumb-item"><a href="?pengeluaran&p=terima_do">Terima DO Baru</a></li>'
+?>
 <div class="pagetitle">
-  <h1>Buat DO</h1>
+  <h1>Terima DO</h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?pengeluaran">Pengeluaran</a></li>
-      <li class="breadcrumb-item active">Buat DO</li>
+      <li class="breadcrumb-item"><a href="?pengeluaran&p=list_do">List DO</a></li>
+      <?=$bread_terima_do?>
+      <li class='breadcrumb-item active'><?=$bread_active?></li>
     </ol>
   </nav>
 </div>
@@ -57,7 +64,6 @@ if(isset($_POST['btn_create_do'])){
 # ======================================================
 # GET DO DATA
 # ======================================================
-$kode_do = $_GET['kode_do'] ?? '';
 $kode_delivery = '';
 $kode_artikel = '';
 $btn_caption = 'Create and Next';
@@ -65,8 +71,12 @@ $id_kategori = '';
 $kode_do_type = 'text';
 $kode_do_div = '';
 $update_trigger = '';
+$jumlah_item = 0;
+$pic_info = '';
 if($kode_do!=''){
-  $s = "SELECT * FROM tb_do WHERE kode_do='$kode_do'";
+  $s = "SELECT a.*,
+  (SELECT COUNT(1) FROM tb_picking WHERE kode_do=a.kode_do) jumlah_item 
+  FROM tb_do a WHERE a.kode_do='$kode_do'";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) die(div_alert('danger',"Data DO tidak ditemukan. | <a href='?pengeluaran&p=terima_do'>Terima DO Baru</a>"));
   $d = mysqli_fetch_assoc($q);
@@ -76,7 +86,50 @@ if($kode_do!=''){
   $kode_delivery = $d['kode_delivery'];
   $kode_artikel = $d['kode_artikel'];
   $id_kategori = $d['id_kategori'];
+  $jumlah_item = $d['jumlah_item'];
   $btn_caption = 'Update DO';
+
+  // 012345678
+  $kode_brand = substr($kode_artikel,0,1);
+  $kode_gender = substr($kode_artikel,7,1);
+  $kode_apparel = substr($kode_artikel,8,1);
+  $kode_unik = "$kode_brand$kode_gender$kode_apparel";
+
+  $s = "SELECT *, e.nama as nama_pic 
+  FROM tb_assign_pic a 
+  JOIN tb_brand b ON a.kode_brand=b.kode 
+  JOIN tb_gender c ON a.kode_gender=c.kode 
+  JOIN tb_apparel d ON a.kode_apparel=d.kode 
+  JOIN tb_pic e ON a.kode_pic=e.kode 
+  WHERE a.kode_unik='$kode_unik'";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)){
+    $d = mysqli_fetch_assoc($q);
+    $brand = $d['brand'];
+    $gender = $d['gender'];
+    $apparel = $d['apparel'];
+    $nama_pic = $d['nama_pic'];
+    $pic_info = "
+      <ul>
+        <li>Brand: $brand</li>
+        <li>Gender: $gender</li>
+        <li>Apparel: $apparel</li>
+        <li>PIC: $nama_pic</li>
+      </ul>
+    ";
+  }else{
+    $pic_info = "PIC: $unset";
+  }
+
+
+  $pic_info = "
+    <tr>
+      <td valign=top class=pt2>PIC Info</td>
+      <td>
+        <div class=mb2>$pic_info</div>
+      </td>
+    </tr>
+  ";
 }
 
 $radio_kategori_1_checked = $id_kategori==1 ? 'checked' : '';
@@ -160,6 +213,7 @@ echo "
           $help
         </td>
       </tr>
+      $pic_info
       <tr>
         <td>Tanggal Delivery</td>
         <td>

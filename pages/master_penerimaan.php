@@ -15,7 +15,7 @@ $arr_waktu = [
   'all_time' => 'All time',
 ];
 
-$filter_waktu = $_GET['waktu'] ?? 'hari_ini';
+$filter_waktu = $_GET['waktu'] ?? 'minggu_ini';
 $opt_waktu = '';
 foreach ($arr_waktu as $waktu => $nama_waktu) {
   $selected = $filter_waktu==$waktu ? 'selected' : '';
@@ -122,17 +122,38 @@ e.satuan,
   WHERE id_sj_item=a.id 
   ) qty_diterima,
 (
+  SELECT SUM(p.qty) FROM tb_sj_subitem p 
+  JOIN tb_retur q ON p.id=q.id 
+  WHERE p.id_sj_item=a.id AND is_fs is null
+  ) qty_diterima_with_qc_no_fs,
+(
+  SELECT count(1) FROM tb_sj_subitem 
+  WHERE id_sj_item=a.id AND is_fs is null
+  ) count_subitem,
+(
+  SELECT count(1) FROM tb_sj_subitem 
+  WHERE id_sj_item=a.id AND is_fs is not null
+  ) count_subitem_fs,
+(
   SELECT COUNT(1) FROM tb_sj_subitem 
   WHERE id_sj_item=a.id 
   ) jumlah_subitem,
 (
-  SELECT qty FROM tb_retur 
-  WHERE id=a.id 
+  SELECT sum(p.qty) FROM tb_retur p 
+  JOIN tb_sj_subitem q ON p.id=q.id  
+  WHERE q.id_sj_item=a.id 
   ) qty_retur,  
 (
-  SELECT qty FROM tb_terima_retur 
-  WHERE id=a.id 
-  ) qty_terima_retur
+  SELECT count(1) FROM tb_retur p 
+  JOIN tb_sj_subitem q ON p.id=q.id  
+  WHERE q.id_sj_item=a.id 
+  ) count_retur,  
+(
+  SELECT sum(p.qty) FROM tb_terima_retur p 
+  JOIN tb_retur q ON p.id=q.id 
+  JOIN tb_sj_subitem r ON q.id=r.id  
+  WHERE r.id_sj_item=a.id 
+  ) qty_balik
 
 FROM tb_sj_item a  
 JOIN tb_sj b ON a.kode_sj=b.kode
@@ -153,6 +174,9 @@ while($d=mysqli_fetch_assoc($q)){
   $id=$d['id'];
   $satuan=$d['satuan'];
   $kode_sj=$d['kode_sj'];
+  $count_subitem=$d['count_subitem'];
+  $count_subitem_fs=$d['count_subitem_fs'];
+  $count_retur=$d['count_retur'];
   $kode_ppic=$d['kode_ppic'] ?? "PIC: $unset";
   $proyeksi=$d['proyeksi'] ?? "Proyeksi: $unset";
 
@@ -176,8 +200,9 @@ while($d=mysqli_fetch_assoc($q)){
 
   $qty = floatval($d['qty']);
   $qty_retur = floatval($d['qty_retur']);
-  $qty_terima_retur = floatval($d['qty_terima_retur']);
+  $qty_balik = floatval($d['qty_balik']);
   $qty_diterima = floatval($d['qty_diterima']);
+  $qty_diterima_with_qc_no_fs = floatval($d['qty_diterima_with_qc_no_fs']);
 
 
 
@@ -207,7 +232,7 @@ while($d=mysqli_fetch_assoc($q)){
 
     $li = '';
     foreach ($arr as $kode_lokasi => $brand) {
-      $li.= "<li>$kode_lokasi  <span class='f14 abu'>$brand</span></li>";
+      $li.= "<li>$kode_lokasi  <div class='f14 abu'>$brand</div></li>";
     }
 
     $locations = "<ul style='padding-left:15px'>$li</ul>";
@@ -216,8 +241,40 @@ while($d=mysqli_fetch_assoc($q)){
     $locations = "<a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
   }
 
-  $terima_retur = $qty_retur ? "<div><a href='?terima_retur&id_sj_item=$id_sj_item'>Balik: $qty_terima_retur</a></div>" : '';
-  
+  $fs_show = $count_subitem_fs ? " | <span class='kecil tebal biru'>$count_subitem_fs FS</span>" : '';
+  if($count_subitem!=$count_retur){
+    if($count_retur){
+      $retur_show = "<span class=red>QC Sebagian</span>";
+    }else{
+      $retur_show = "<span class=red>Belum QC</span>";
+    }
+  }else{
+    if($qty_retur){
+      $retur_show = "Retur: $qty_retur";
+    }else{
+      $retur_show = "<span class=green>No Retur $img_check</span>";
+    }
+  }
+
+  if($qty_retur){
+    if($qty_retur==$qty_balik && $count_retur==$count_subitem){
+      $terima_retur_show = "<div><a href='?retur&id_sj_item=$id_sj_item'>Balik: $qty_balik $img_check</a></div>";
+    }else{
+      $terima_retur_show = "<div><a href='?retur&id_sj_item=$id_sj_item'><span class=red>Balik: $qty_balik</span> $img_warning</a></div>";
+    }
+  }else{
+    if($qty_retur){ // belum balik ada retur
+      $terima_retur_show = "<div class=red>Belum Balik</div>";
+    }else{ // belum balik tak ada retur
+      $terima_retur_show = '';
+    }
+  }
+
+  $qc_show = $count_retur==$count_subitem ? "<div class=green>QC $count_retur of $count_subitem $img_check</div>" : "<div>QC $count_retur of $count_subitem</div>";
+
+
+  $qty_stok = $qty_diterima_with_qc_no_fs - $qty_retur + $qty_balik;
+  $qty_transit = $qty - $qty_stok -$qty_retur + $qty_balik;
 
   $tr_hasil .= "
     <tr id=tr__$id>
@@ -229,7 +286,12 @@ while($d=mysqli_fetch_assoc($q)){
         <div class='kecil abu'>$d[nama_supplier]</div>
       </td>
       <td>
-        <div><a href='?penerimaan&p=bbm_subitem&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>$d[kode_barang]</a></div>
+        <div>
+          <a href='?penerimaan&p=bbm_subitem&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>
+            $d[kode_barang] | 
+            <span class=kecil>$count_subitem subitems</span> $fs_show
+          </a>
+        </div>
         <div class='kecil abu'>$d[nama_barang]</div>
         <div class='kecil abu'>$d[keterangan_barang]</div>
       </td>
@@ -244,13 +306,20 @@ while($d=mysqli_fetch_assoc($q)){
         <div class='kecil abu'>$qty_lebih_show</div>
         <div class='kecil abu'>$qty_kurang_show</div>
       </td>
-      <td>
+      <td class=hideit>
         <div class=kecil>$proyeksi</div>
         <div class=kecil>$kode_ppic</div>
       </td>
       <td class=kecil>
-        <div><a href='?retur&id_sj_item=$id_sj_item'>Retur: $qty_retur</a></div>
-        $terima_retur
+        $qc_show
+        <div><a href='?retur&id_sj_item=$id_sj_item'>$retur_show</a></div>
+        $terima_retur_show
+      </td>
+      <td>
+        $qty_transit 
+      </td>
+      <td>
+        $qty_stok
       </td>
     </tr>
   ";
@@ -311,8 +380,10 @@ $bread = "<li class='breadcrumb-item'><a href='?master_penerimaan&cat=aks'>Akses
         <td>ID / Item / Keterangan</td>
         <td>Tanggal</td>
         <td>QTY </td>
-        <td>Info</td>
-        <td>Retur</td>
+        <td class=hideit>Info</td>
+        <td>QC</td>
+        <td>Transit</td>
+        <td>Stok</td>
       </tr>
       <?=$tr_hasil?>
 

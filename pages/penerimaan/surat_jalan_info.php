@@ -59,7 +59,7 @@ echo "<span id=id_sj class=hideit>$id_sj</span>";
   <div class="f20 darkblue tebal mb2">Surat Jalan Info</div>
 
   Surat Jalan from Supplier <span id="kode_sj_supplier__check__<?=$id_sj?>" class=hideit><?=$img_check?></span>
-  <input type="text" class="form-control mt1 mb2 editable" id=kode_sj_supplier__sj__<?=$id_sj?> value='<?=$kode_sj_supplier?>'>
+  <input type="text" class="form-control mt1 mb2 editable" id=kode_sj_supplier__sj__<?=$id_sj?> value='<?=$kode_sj_supplier?>' placeholder='Nomor Surat Jalan Supplier'>
   
   <div class="flexy">
 

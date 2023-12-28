@@ -1,10 +1,32 @@
+<style>.hideita{background:yellow}</style>
 <?php
 $pesan_tambah = '';
+$today = date('Y-m-d');
+$now = date('Y-m-d H:i:s');
+$now_eng = date('M d, Y, H:i:s');
+
+
+if(isset($_POST['btn_terima_retur'])){
+  // echo '<pre>';
+  // var_dump($_POST);
+  // echo '</pre>';
+  echo 'Processing penerimaan retur...<hr>';
+  $koloms = 'id,qty,tanggal_terima';
+  $values = "$_POST[id_retur],$_POST[qty_balik],CURRENT_TIMESTAMP";
+  $pairs = "qty=$_POST[qty_balik],tanggal_terima=CURRENT_TIMESTAMP";
+  $s = "INSERT INTO tb_terima_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $arr = explode('?',$_SERVER['REQUEST_URI']);
+  jsurl("?$arr[1]");
+  exit;
+}
+
 if(isset($_POST['btn_retur'])){
   unset($_POST['btn_retur']);
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
+  // echo '<pre>';
+  // var_dump($_POST);
+  // echo '</pre>';
+  echo 'Processing data retur...<hr>';
 
   $pairs = '__';
   $koloms = '__';
@@ -21,12 +43,12 @@ if(isset($_POST['btn_retur'])){
   $values = str_replace('__,','',$values);
 
   $s = "INSERT INTO tb_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
-  echo $s;
+  // echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
-  // $arr = explode('?',$_SERVER['REQUEST_URI']);
-  // jsurl("?$arr[1]");
-  // exit;
+  $arr = explode('?',$_SERVER['REQUEST_URI']);
+  jsurl("?$arr[1]");
+  exit;
 }
 
 
@@ -105,6 +127,7 @@ if($is_lebih){
 # =======================================================================
 # PAGE TITLE & BREADCRUMBS 
 # =======================================================================
+set_title('Retur Barang');
 ?>
 <div class="pagetitle">
   <h1>Retur Barang</h1>
@@ -176,97 +199,216 @@ if($get_id_sj_item!=''){
 
   $s = "SELECT a.*,
   c.kode as kode_barang,
-  c.keterangan as keterangan_barang
-
-  FROM tb_retur a 
-  JOIN tb_sj_item b ON a.id=b.id 
-  JOIN tb_barang c ON b.kode_barang=c.kode 
-  WHERE a.id=$get_id_sj_item";
-  // echo $s;
+  c.nama as nama_barang,
+  c.keterangan as keterangan_barang,
+  d.satuan,
+  d.step,
+  (SELECT qty FROM tb_retur WHERE id=a.id) qty_retur,
+  (SELECT qty FROM tb_terima_retur WHERE id=a.id) qty_balik,
+  (SELECT metode_qc FROM tb_retur WHERE id=a.id) metode_qc,
+  (SELECT alasan_retur FROM tb_retur WHERE id=a.id) alasan_retur,
+  (SELECT tanggal_retur FROM tb_retur WHERE id=a.id) tanggal_retur,
+  1
+  FROM tb_sj_subitem a 
+  JOIN tb_sj_item b ON a.id_sj_item=b.id 
+  JOIN tb_barang c ON b.kode_barang=c.kode   
+  JOIN tb_satuan d ON c.satuan=d.satuan   
+  WHERE a.id_sj_item = $id_sj_item
+  AND a.is_fs is null
+  ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)){
-    $d = mysqli_fetch_assoc($q);
-    $qty = $d['qty'];
-    $kode_barang = $d['kode_barang'];
-    $keterangan_barang = $d['keterangan_barang'];
-    $info_lot = $d['info_lot'] ?? '-';
-    $info_roll = $d['info_roll'] ?? '-';
+  if(mysqli_num_rows($q)==0) die('Item ini tidak punya subitem');
+  $tr = '';
+  $i = 0;
+  while($d=mysqli_fetch_assoc($q)){
+    $i++;
+    $qty = floatval($d['qty']);
+    $qty_retur = floatval($d['qty_retur']);
+    $qty_balik = floatval($d['qty_balik']);
+    $id = $d['id'];
+    $satuan = $d['satuan'];
+    $kode_lokasi = $d['kode_lokasi'];
+    $no_lot = $d['no_lot'] ?? '-';
+    $no_roll = $d['no_roll'] ?? '-';
     $metode_qc = $d['metode_qc'] ?? '-';
     $alasan_retur = $d['alasan_retur'] ?? '-';
-    $qty = floatval($qty);
-    $btn_retur = "<button class='btn btn-secondary' name=btn_retur >Update Retur</button>";
-    $link_terima_retur = "<hr>Next: <a href='?terima_retur&id_sj_item=$get_id_sj_item'>Penerimaan untuk Retur ini</a>";
-  }else{
-    $link_terima_retur = '';
-    $btn_retur = "<button class='btn btn-primary' name=btn_retur >Retur</button>";
-    $qty = '';
-    $info_lot = '-';
-    $info_roll = '-';
-    $metode_qc = '-';
-    $alasan_retur = '-';
+    $tanggal_retur = $d['tanggal_retur'] ?? $now;
+
+    
+
+    $qty_retur_show = $qty_retur ? "<div class='darkred miring'>Retur: $qty_retur </div>" : "<div class='green'>No Retur $img_check</div>";
+    $qty_retur_show = $d['qty_retur']=='' ? "<div class='red'>Belum QC $img_warning</div>" : $qty_retur_show;
+
+    $qty_balik_show = $qty_balik ? "<div class='darkred miring'>Balik: $qty_balik</div>" : '';
+    $qty_stok = $qty - $qty_retur + $qty_balik;
+
+    $gradasi = $qty_retur ? 'kuning' : '';
+    $gradasi = $qty_retur==0 ? 'hijau' : $gradasi;
+    $gradasi = $d['qty_retur']=='' ? 'merah' : $gradasi;
+
+    $tr .= "
+      <tr class='gradasi-$gradasi tr_retur' id=tr_retur__$id>
+        <td>$i</td>
+        <td>
+          $d[kode_barang]
+          <div class='abu f12'>$d[nama_barang]</div>
+        </td>
+        <td>$d[kode_lokasi] / $no_lot / $no_roll</td>
+        <td>
+          <span id=qty__$id>$qty</span> $satuan
+        </td>
+        <td>
+          $qty_retur_show
+          $qty_balik_show
+          <div class=hideit>qty_retur:<span id=qty_retur__$id>$d[qty_retur]</span></div>
+          <div class=hideit>qty_balik:<span id=qty_balik__$id>$qty_balik</span></div>
+          
+        </td>
+        <td>
+          <span class='btn btn-warning btn-sm btn_retur' id=retur__$id>QC & Retur</span>
+          <div class=hideit>
+            <div>id: <span id=id__$id>$d[id]</span></div>
+            <div>metode_qc: <span id=metode_qc__$id>$metode_qc</span></div>
+            <div>alasan_retur: <span id=alasan_retur__$id>$alasan_retur</span></div>
+            <div>tanggal_retur: <span id=tanggal_retur__$id>$tanggal_retur</span></div>
+          </div>
+        </td>
+        <td>
+          $qty_stok $satuan
+        </td>
+      </tr>
+    ";
+    // $id=$d['id'];
   }
 
-
-  # =======================================================================
-  # INFO LOKASI dan BRAND
-  # =======================================================================
-  $s = "SELECT a.kode_lokasi,b.brand FROM tb_sj_subitem a 
-  JOIN tb_lokasi b ON a.kode_lokasi=b.kode 
-  WHERE id_sj_item=$id_sj_item";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  $info_kode_lokasi='';
-  $info_brand='';
-  while($d=mysqli_fetch_assoc($q)){
-    if(!strpos("salt$info_kode_lokasi",$d['kode_lokasi'])){
-      if($info_kode_lokasi!='') $info_kode_lokasi.= ', ';
-      $info_kode_lokasi .= $d['kode_lokasi'];
-    }
-    if(!strpos("salt$info_brand",$d['brand'])){
-      if($info_brand!='') $info_brand.= ', ';
-      $info_brand .= $d['brand'];
-    } 
-  }
-
-
-
-
-
-  $max_input_qty = $qty_subitem;
 
   echo "
-  <div id=source_sj_item__$id_sj_item class='wadah mt2'>
-    <form method=post>
-      <input type='hidden' name=id value=$get_id_sj_item>
+    <table class=table>
+      <thead>
+        <th>No</th>
+        <th>ID</th>
+        <th>Lokasi / Lot / Roll</th>
+        <th>QTY Subitem</th>
+        <th>QTY Retur</th>
+        <th>QC & Retur</th>
+        <th>Stok</th>
+      </thead>
+      $tr
+    </table>
+  
+    <div class='row'>
+      <div class=col-md-6>
+        <div class='wadah mt2 hideit gradasi-hijau' id=form_retur>
+          <form method=post>
+            <div class='flexy flex-between'>
+              <div>
+                <h3 class=f18 darkblue mb3>Hasil QC</h3>
+              </div>
+              <div>
+                <span class=btn_cancel>$img_close</span>
+              </div>
+            </div>
+            <input type='hidden' name=id id=id>
+            QTY Retur ($satuan) $bintang 
+            <input class='elemen_retur form-control mb1' type=number min=0 max=0 step=$step required name=qty id=qty>
+            <div class='mb2 abu f12 mt1'><b>Catatan:</b> Masukan nilai 0 jika Hasil QC menyatakan item bagus semua</div>
 
-      QTY Retur ($satuan) $bintang ~ <u class='pointer darkblue kecil' id=set_max_qty>Set Max: <span id=max_input_qty>$max_input_qty</span></u>
-      <input class='form-control mb1' type=number min=0 max=$max_input_qty step=$step required name=qty id=qty value=$qty>
-      <div class='mb2 abu f12'><b>Catatan:</b> QTY Retur akan terkunci jika sudah ada Penerimaan Retur untuk retur ini.</div>
-      Metode QC
-      <input class='form-control mb2' maxlength=100 name=metode_qc value='$metode_qc'>
-      Alasan Retur
-      <input class='form-control mb2' maxlength=100 name=alasan_retur value='$alasan_retur'>
-      Info Lot Number
-      <input class='form-control mb2' maxlength=100 name=info_lot value='$info_lot'>
-      Info Roll Number
-      <input class='form-control mb2' maxlength=100 name=info_roll value='$info_roll'>
-      Keterangan Barang | <a target=_blank href='?master&p=barang&keyword=$kode_barang'>Ubah</a>
-      <input class='form-control mb2' maxlength=100 name=keterangan_barang value='$nama_barang / $keterangan_barang' disabled>
-      Info Lokasi ($kategori) / Brand
-      <input class='form-control mb2' id=kode_rak_show value='$info_kode_lokasi / $info_brand' disabled>
-      <div class=mt3>
-        $btn_retur
+
+            Metode QC
+            <input class='elemen_retur form-control mb2' maxlength=100 name=metode_qc id=metode_qc value='-'>
+            Alasan Retur
+            <input class='elemen_retur form-control mb2' maxlength=100 name=alasan_retur id=alasan_retur value='-'>
+            Tanggal QC / Retur
+            <input type=datetime class='elemen_retur form-control mb2' value='' name=tanggal_retur id=tanggal_retur>
+            <div class=mt3>
+              <button class='elemen_retur btn btn-primary' name=btn_retur id=btn_retur >Simpan QC</button> 
+              <button class='elemen_retur btn btn-danger' name=btn_hapus_qc id=btn_hapus_qc >Hapus Data QC</button> 
+              <div class='mb2 abu f12 mt1'><b>Catatan:</b> Tidak bisa update retur jika sudah ada Penerimaan Retur untuk retur ini. Nol kan QTY balik terlebih dahulu untuk mengubah data retur ini.</div>
+            </div>
+          </form>
+        </div>
       </div>
-    </form>
-    $link_terima_retur
-  </div>
+
+
+      <div class=col-md-6>
+        <div class='wadah mt2 hideit' id=form_terima_retur>
+          <form method=post>
+            <input type='hidden' name=id_retur id=id_retur>
+            QTY Terima Retur ($satuan) $bintang 
+            <input class='form-control mb1' type=number min=0 max=0 step=$step required name=qty_balik id=qty_balik>
+            <div class='mb2 abu f12'><b>Catatan:</b> Max QTY Terima Retur sama dengan QTY Retur.</div>
+            Tanggal Terima Retur
+            <input type=text class='form-control mb2' value='$now_eng' disabled>
+            <div class=mt3>
+              <button class='btn btn-primary' name=btn_terima_retur id=btn_terima_retur >Terima Retur</button> 
+              <span class='btn btn-danger btn_cancel'>Cancel</span>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
   ";
 }
 
 ?>
 <script>
   $(function(){
-    $('#set_max_qty').click(function(){
-      $('#qty').val($('#max_input_qty').text())
+    $('.btn_cancel').click(function(){
+      $('.tr_retur').fadeIn();
+      $('#form_retur').slideUp();
+      $('#form_terima_retur').slideUp();
+    })
+    $('.btn_retur').click(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id = rid[1];
+
+      $('.tr_retur').hide();
+      $('#tr_retur__'+id).show();
+      $('#form_retur').slideDown();
+
+
+      
+      let this_qty = $('#qty__'+id).text();
+      let qty_retur = $('#qty_retur__'+id).text();
+      let qty_balik = $('#qty_balik__'+id).text();
+
+      if(qty_retur>0){
+        // console.log(qty_retur);
+        $('#form_terima_retur').slideDown();
+      }
+
+
+      $('#qty').prop('max',this_qty)
+      $('#qty_balik').prop('max',qty_retur)
+      $('#id').val(id)
+      $('#id_retur').val(id)
+      $('#alasan_retur').val( $('#alasan_retur__'+id).text());
+      $('#metode_qc').val( $('#metode_qc__'+id).text());
+      $('#tanggal_retur').val( $('#tanggal_retur__'+id).text());
+
+      $('#qty').val(qty_retur);
+      if(qty_retur!=''){
+        $('#btn_retur').text('Update QC');
+      }else{
+        // $('#qty').val('');
+        $('#btn_retur').text('Simpan QC');
+      }
+
+      if(qty_balik>0){
+        $('#qty_balik').val(qty_balik);
+        // console.log(qty_balik,$('#qty_balik').val());
+
+        // $('#qty').prop('disabled',1);
+        $('.elemen_retur').prop('disabled',1);
+        $('#btn_terima_retur').text('Update QTY Balik');
+      }else{
+        $('.elemen_retur').prop('disabled',0);
+        $('#qty_balik').val('');
+
+      }
     });
   })
 </script>

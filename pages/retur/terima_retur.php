@@ -30,7 +30,7 @@ if(isset($_POST['btn_terima_retur'])){
 }
 
 
-$id_sj_item = $_GET['id_sj_item'] ?? die(erid('id_sj_item'));
+$id_retur = $_GET['id_retur'] ?? die(erid('id_retur'));
 $s = "SELECT a.*,
 a.id as id_sj_item,
 a.kode_sj,
@@ -47,7 +47,7 @@ e.kode as kategori,
 e.nama as nama_kategori,
 f.step,
 (
-  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is null) qty_subitem,
+  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_retur=a.id and is_fs is null) qty_subitem,
 (
   SELECT qty FROM tb_retur WHERE id=a.id) qty_retur
 
@@ -57,7 +57,7 @@ JOIN tb_bbm c ON b.kode=c.kode_sj
 JOIN tb_barang d ON a.kode_barang=d.kode 
 JOIN tb_kategori e ON d.id_kategori=e.id 
 JOIN tb_satuan f ON d.satuan=f.satuan 
-WHERE a.id=$id_sj_item 
+WHERE a.id=$id_retur 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d = mysqli_fetch_assoc($q);
@@ -177,9 +177,9 @@ if($is_lebih){
 # =======================================================================
 echo "<h2 class='mb3 mt4'>Penerimaan Retur: $kode_barang | $nama_kategori</h2>";
 
-$get_id_sj_item = $_GET['id_sj_item'] ?? '';
+$get_id_retur = $_GET['id_retur'] ?? '';
 
-if($get_id_sj_item!=''){
+if($get_id_retur!=''){
 
   $s = "SELECT a.*,
   c.kode as kode_barang,
@@ -188,7 +188,7 @@ if($get_id_sj_item!=''){
   FROM tb_terima_retur a 
   JOIN tb_sj_item b ON a.id=b.id 
   JOIN tb_barang c ON b.kode_barang=c.kode 
-  WHERE a.id=$get_id_sj_item";
+  WHERE a.id=$get_id_retur";
   // echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)){
@@ -209,7 +209,7 @@ if($get_id_sj_item!=''){
   # =======================================================================
   $s = "SELECT a.kode_lokasi,b.brand FROM tb_sj_subitem a 
   JOIN tb_lokasi b ON a.kode_lokasi=b.kode 
-  WHERE id_sj_item=$id_sj_item";
+  WHERE id_retur=$id_retur";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $info_kode_lokasi='';
   $info_brand='';
@@ -231,9 +231,9 @@ if($get_id_sj_item!=''){
   $max_input_qty = $qty_retur;
 
   echo "
-  <div id=source_sj_item__$id_sj_item class='wadah mt2'>
+  <div id=source_sj_item__$id_retur class='wadah mt2'>
     <form method=post>
-      <input type='hidden' name=id value=$get_id_sj_item>
+      <input type='hidden' name=id value=$get_id_retur>
 
       QTY Penerimaan Retur ($satuan) $bintang ~ <u class='pointer darkblue kecil' id=set_max_qty>Set Max: <span id=max_input_qty>$max_input_qty</span></u>
       <input class='form-control mb1' type=number min=0 max=$max_input_qty step=$step required name=qty id=qty value=$qty>

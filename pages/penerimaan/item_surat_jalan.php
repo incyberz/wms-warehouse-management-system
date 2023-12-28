@@ -148,7 +148,8 @@ $tr_tambah = "
     <td colspan=100% >
       <span class='green pointer'>
         <span class='btn_aksi' id='edit_sj_item__toggle'>
-        Tambah item <?=$img_add?></span>
+          Tambah item $img_add
+        </span>
       </span>
       <div id='edit_sj_item' class='border-merah gradasi-kuning br5 p2 mb2 mt2 hideit' style='display: blocasdk;'>
           <div class='row'>

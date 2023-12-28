@@ -12,6 +12,7 @@
   </nav>
 </div>
 <?php
+set_title('Penerimaan Surat jalan');
 
 include 'include/arr_supplier.php';
 # ==========================================
