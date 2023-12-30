@@ -68,11 +68,12 @@ $kode_delivery = '';
 $kode_artikel = '';
 $btn_caption = 'Create and Next';
 $id_kategori = '';
-$kode_do_type = 'text';
+$kode_do_tr_hide = '';
 $kode_do_div = '';
 $update_trigger = '';
 $jumlah_item = 0;
 $pic_info = '';
+$form_do_hide = '';
 if($kode_do!=''){
   $s = "SELECT a.*,
   (SELECT COUNT(1) FROM tb_picking WHERE kode_do=a.kode_do) jumlah_item 
@@ -81,8 +82,16 @@ if($kode_do!=''){
   if(mysqli_num_rows($q)==0) die(div_alert('danger',"Data DO tidak ditemukan. | <a href='?pengeluaran&p=terima_do'>Terima DO Baru</a>"));
   $d = mysqli_fetch_assoc($q);
   $update_trigger = 'update_trigger';
-  $kode_do_type = 'hidden';
-  $kode_do_div = "<div class='tebal mb2'>$d[kode_do]</div>";
+  $kode_do_tr_hide = 'hideit';
+  $form_do_hide = 'hideit';
+  $kode_do_div = "
+    <div class=flexy>
+      <div class='tebal mb2'>Nomor DO : $d[kode_do] </div>
+      <div>|</div>
+      <div class='tebal mb2'>Artikel : $d[kode_artikel] </div>
+      <div><span class=btn_aksi id=form_do__toggle>$img_detail</span></div>
+    </div>
+  ";
   $kode_delivery = $d['kode_delivery'];
   $kode_artikel = $d['kode_artikel'];
   $id_kategori = $d['id_kategori'];
@@ -122,14 +131,14 @@ if($kode_do!=''){
   }
 
 
-  $pic_info = "
-    <tr>
-      <td valign=top class=pt2>PIC Info</td>
-      <td>
-        <div class=mb2>$pic_info</div>
-      </td>
-    </tr>
-  ";
+  // $pic_info = "
+  //   <tr>
+  //     <td valign=top class=pt2>PIC Info</td>
+  //     <td>
+  //       <div class=mb2>$pic_info</div>
+  //     </td>
+  //   </tr>
+  // ";
 }
 
 $radio_kategori_1_checked = $id_kategori==1 ? 'checked' : '';
@@ -190,13 +199,15 @@ $help .= "<div class=flexy><div class='help hideit' id=apparel_help><ul>$apparel
 $today = $d_do['tanggal_delivery'] ?? date('Y-m-d');
 
 echo "
-  <form method=post>
+  $kode_do_div
+  $pic_info
+  <form method=post id=form_do class=$form_do_hide>
     <table class=tablez>
-      <tr>
+      <tr class='$kode_do_tr_hide'>
         <td width=150px>Nomor DO</td>
         <td>
-          <input type='$kode_do_type' class='mb2 form-control' id=kode_do name=kode_do minlength=9 maxlength=9 placeholder='K0112312K' required value='$kode_do'>
-          $kode_do_div
+          <input type='text' class='mb2 form-control' id=kode_do name=kode_do minlength=9 maxlength=9 placeholder='K0112312K' required value='$kode_do'>
+          
         </td>
       </tr>
       <tr>
@@ -213,7 +224,6 @@ echo "
           $help
         </td>
       </tr>
-      $pic_info
       <tr>
         <td>Tanggal Delivery</td>
         <td>

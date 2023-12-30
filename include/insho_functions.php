@@ -60,7 +60,11 @@ function eta($eta,$indo=1){
   }
 }
 
-function jsurl($a){
+function jsurl($a=''){
+  if($a==''){
+    $arr = explode('?',$_SERVER['REQUEST_URI']);
+    jsurl("?$arr[1]");
+  }
   echo "<script>location.replace('$a')</script>";
   exit;
 }

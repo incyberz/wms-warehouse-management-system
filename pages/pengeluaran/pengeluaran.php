@@ -22,6 +22,7 @@ if($p!=''){
 </div>
 
 <section>
+  <a href="?pengeluaran&p=data_do">Data DO</a> | 
   <a href="?pengeluaran&p=terima_do">Buat DO</a>
 </section>
 
