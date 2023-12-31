@@ -4,6 +4,8 @@ include 'podo_styles.php';
 include 'pages/must_login.php';
 
 $p = $_GET['p'] ?? '';
+set_title('Penerimaan');
+
 $kode_sj = $_GET['kode_sj'] ?? '';
 if($p!=''){
   if(file_exists("pages/penerimaan/$p.php")){
@@ -21,7 +23,7 @@ if($p!=''){
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?">Home Dashboard</a></li>
-      <li class="breadcrumb-item active">Purchase Order</li>
+      <li class="breadcrumb-item active">Terima Purchase Order</li>
     </ol>
   </nav>
 </div>

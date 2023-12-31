@@ -1,7 +1,7 @@
 <table width=100% class=mb2>
   <tr>
     <td>
-      <h2>Add Item to Picking List</h2>
+      <h2>Add Item <?=$jenis_barang?> to Picking List</h2>
     </td>
     <td width=30px class=kanan>
       <span class=btn_aksi id=picking_list_add__close><?=$img_close?></span>
@@ -18,11 +18,23 @@
 </div>
 <div id="hasil_ajax"></div>
 <script>
+  let kode_do = '';
+  let id_kategori = '';
+  let kode_do_cat = '';
   $(function(){
+    id_kategori = $('#id_kategori').text();
+    kode_do = $('#kode_do').val();
+    kode_do_cat = kode_do+id_kategori;
+
+    if(kode_do_cat.length!=10){
+      console.log('kode_do_cat.length != 10 ',kode_do_cat.length);
+      return;
+    }
+    
     $('#keyword').keyup(function(){
       let keyword = $(this).val().trim();
       if(keyword.length>2){
-        let link_ajax = "pages/pengeluaran/picking_list_add_fetcher.php?keyword="+keyword;
+        let link_ajax = `pages/pengeluaran/picking_list_add_fetcher.php?keyword=${keyword}&id_kategori=${id_kategori}&kode_do_cat=${kode_do_cat}`;
         $.ajax({
           url:link_ajax,
           success:function(a){
@@ -44,9 +56,8 @@
     let aksi = rid[0];
     let id = rid[1];
 
-    let kode_do = $('#kode_do').val();
-    console.log(id,kode_do);
-    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_sj_subitem=${id}&kode_do=${kode_do}`;
+    console.log(id,kode_do,id_kategori);
+    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_sj_subitem=${id}&kode_do_cat=${kode_do_cat}`;
     $.ajax({
       url:link_ajax,
       success:function(a){

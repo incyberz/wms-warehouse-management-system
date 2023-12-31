@@ -82,6 +82,8 @@ JOIN tb_satuan f ON d.satuan=f.satuan
 WHERE a.id=$id_sj_item 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0) die(div_alert('danger',"Data item dg id_sj_item: $id_sj_item tidak ditemukan. | 
+<a href='?master_penerimaan&id=&waktu=all_time'>Akses dari Master Penerimaan</a>"));
 $d = mysqli_fetch_assoc($q);
 
 $nama_barang = $d['nama_barang'];
@@ -160,23 +162,6 @@ set_title('Retur Barang');
     <td>Nomor BBM</td>
     <td><?=$no_bbm?></td>
   </tr>
-  <!-- <tr>
-    <td>Nama Barang</td>
-    <td><?=$nama_barang?></td>
-  </tr> -->
-  <!-- <tr>
-    <td>QTY PO</td>
-    <td>
-      <span id="qty_po"><?=$qty_po?></span> 
-      <span id="satuan"><?=$satuan?></span> 
-    </td>
-  </tr>
-  <tr>
-    <td>QTY Diterima</td>
-    <td>
-      <span id="qty_diterima"><?=$qty_diterima?></span> <?=$satuan?> 
-    </td>
-  </tr> -->
   <?=$tr_free_supplier?>
   <tr>
     <td>QTY Subitem</td>
@@ -214,7 +199,7 @@ if($get_id_sj_item!=''){
   JOIN tb_barang c ON b.kode_barang=c.kode   
   JOIN tb_satuan d ON c.satuan=d.satuan   
   WHERE a.id_sj_item = $id_sj_item
-  AND a.is_fs is null
+  -- AND a.is_fs is null
   ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) die('Item ini tidak punya subitem');
@@ -227,6 +212,7 @@ if($get_id_sj_item!=''){
     $qty_balik = floatval($d['qty_balik']);
     $id = $d['id'];
     $satuan = $d['satuan'];
+    $is_fs = $d['is_fs'];
     $kode_lokasi = $d['kode_lokasi'];
     $no_lot = $d['no_lot'] ?? '-';
     $no_roll = $d['no_roll'] ?? '-';
@@ -246,6 +232,8 @@ if($get_id_sj_item!=''){
     $gradasi = $qty_retur==0 ? 'hijau' : $gradasi;
     $gradasi = $d['qty_retur']=='' ? 'merah' : $gradasi;
 
+    $fs_show = $is_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
+
     $tr .= "
       <tr class='gradasi-$gradasi tr_retur' id=tr_retur__$id>
         <td>$i</td>
@@ -255,7 +243,7 @@ if($get_id_sj_item!=''){
         </td>
         <td>$d[kode_lokasi] / $no_lot / $no_roll</td>
         <td>
-          <span id=qty__$id>$qty</span> $satuan
+          <span id=qty__$id>$qty</span> $satuan $fs_show
         </td>
         <td>
           $qty_retur_show
@@ -291,7 +279,7 @@ if($get_id_sj_item!=''){
         <th>QTY Subitem</th>
         <th>QTY Retur</th>
         <th>QC & Retur</th>
-        <th>Stok</th>
+        <th>Stok Terima</th>
       </thead>
       $tr
     </table>

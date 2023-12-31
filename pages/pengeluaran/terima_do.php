@@ -3,34 +3,36 @@
   .help ul, .blok_kode ul{margin:0;padding:0 0 0 15px}
 </style>
 <?php
+set_title('Terima DO');
+
 $kode_do = $_GET['kode_do'] ?? '';
-$bread_active = $kode_do=='' ? 'Terima DO' : 'Picking List';
-$bread_terima_do = $kode_do=='' ? '' : '<li class="breadcrumb-item"><a href="?pengeluaran&p=terima_do">Terima DO Baru</a></li>'
-?>
-<div class="pagetitle">
-  <h1>Terima DO</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?pengeluaran">Pengeluaran</a></li>
-      <li class="breadcrumb-item"><a href="?pengeluaran&p=list_do">List DO</a></li>
-      <?=$bread_terima_do?>
-      <li class='breadcrumb-item active'><?=$bread_active?></li>
-    </ol>
-  </nav>
-</div>
+$bread_terima_do = $kode_do=='' ? '' : '<li class="breadcrumb-item"><a href="?pengeluaran&p=terima_do">Terima DO Baru</a></li>';
 
+$page_title = "
+  <div class='pagetitle'>
+    <h1>Terima DO</h1>
+    <nav>
+      <ol class='breadcrumb'>
+        <li class='breadcrumb-item'><a href='?pengeluaran'>Pengeluaran</a></li>
+        <li class='breadcrumb-item'><a href='?pengeluaran&p=data_do'>Data DO</a></li>
+        $bread_terima_do
+        <li class='breadcrumb-item active'>Terima DO</li>
+      </ol>
+    </nav>
+  </div>
+";
 
-
-<?php
 # ======================================================
 # PROCESSORS
 # ======================================================
 if(isset($_POST['btn_create_do'])){
   unset($_POST['btn_create_do']);
 
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
+
+  echo 'Processing Accept Delivery Order ... <hr>';
+  // echo '<pre>';
+  // var_dump($_POST);
+  // echo '</pre>';
 
   $keys = '';
   $values = '';
@@ -44,13 +46,18 @@ if(isset($_POST['btn_create_do'])){
     if($pairs!='') $pairs.=',';
     $keys .= $key;
     $values .= $value;
-    if($key!='kode_do') $pairs .= "$key=$value";
+    $pairs .= "$key=$value";
   }
 
-  $s = "INSERT INTO tb_do ($keys) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs";
+  /// cek if exists zzz here
+
+  $kode_do_cat = "$_POST[kode_do]$_POST[id_kategori]";
+  if(strlen($kode_do_cat)!=10) die("Kode DO harus 9 digit.");
+  $s = "INSERT INTO tb_terima_do (kode,$keys) VALUES ('$kode_do_cat',$values) ON DUPLICATE KEY UPDATE $pairs";
   // echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl("?pengeluaran&p=terima_do&kode_do=$_POST[kode_do]");
+  $cat = $_POST['id_kategori']==1 ? 'aks' : 'fab';
+  jsurl("?pengeluaran&p=terima_do&kode_do=$_POST[kode_do]&cat=$cat");
   exit;
 
 }
@@ -67,19 +74,51 @@ if(isset($_POST['btn_create_do'])){
 $kode_delivery = '';
 $kode_artikel = '';
 $btn_caption = 'Create and Next';
-$id_kategori = '';
 $kode_do_tr_hide = '';
 $kode_do_div = '';
 $update_trigger = '';
+$id_kategori = '';
 $jumlah_item = 0;
 $pic_info = '';
 $form_do_hide = '';
 if($kode_do!=''){
+
+  $cat = $_GET['cat'] ?? 'aks';
+  $id_kategori = $cat=='aks' ? 1 : 2;
+  $jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
+  $jenis_barang_lainnya = $cat=='aks' ? 'Fabric' : 'Aksesoris';
+  $cat_lainnya = $cat=='aks' ? 'fab' : 'aks';
+
+  echo "<span class=hideit id=id_kategori>$id_kategori</span>";
+
+  set_title("Picking List $jenis_barang");
+  $page_title = "
+    <div class='pagetitle'>
+      <h1>Picking List $jenis_barang</h1>
+      <nav>
+        <ol class='breadcrumb'>
+          <li class='breadcrumb-item'><a href='?pengeluaran'>Pengeluaran</a></li>
+          <li class='breadcrumb-item'><a href='?pengeluaran&p=data_do'>Data DO</a></li>
+          $bread_terima_do
+          <li class='breadcrumb-item'><a href='?pengeluaran&p=terima_do&kode_do=$kode_do&cat=$cat_lainnya'>PL $jenis_barang_lainnya</a></li>
+          <li class='breadcrumb-item active'>PL $jenis_barang</li>
+        </ol>
+      </nav>
+    </div>
+  ";
+
+
+
+
+
   $s = "SELECT a.*,
-  (SELECT COUNT(1) FROM tb_picking WHERE kode_do=a.kode_do) jumlah_item 
-  FROM tb_do a WHERE a.kode_do='$kode_do'";
+  (SELECT COUNT(1) FROM tb_picking WHERE kode_do_cat=a.kode) jumlah_item 
+  FROM tb_terima_do a 
+  WHERE a.kode_do='$kode_do' 
+  AND a.id_kategori=$id_kategori 
+  ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0) die(div_alert('danger',"Data DO tidak ditemukan. | <a href='?pengeluaran&p=terima_do'>Terima DO Baru</a>"));
+  if(mysqli_num_rows($q)==0) die(div_alert('danger',"Data DO $kode_do untuk $jenis_barang tidak ditemukan. | <a href='?pengeluaran&p=terima_do'>Terima DO Baru</a>"));
   $d = mysqli_fetch_assoc($q);
   $update_trigger = 'update_trigger';
   $kode_do_tr_hide = 'hideit';
@@ -127,18 +166,8 @@ if($kode_do!=''){
       </ul>
     ";
   }else{
-    $pic_info = "PIC: $unset";
+    $pic_info = "<div class=mb2>Assign PIC: $unset | <a href='?assign_pic&kode_artikel=$kode_artikel'>Assign PIC</a></div>";
   }
-
-
-  // $pic_info = "
-  //   <tr>
-  //     <td valign=top class=pt2>PIC Info</td>
-  //     <td>
-  //       <div class=mb2>$pic_info</div>
-  //     </td>
-  //   </tr>
-  // ";
 }
 
 $radio_kategori_1_checked = $id_kategori==1 ? 'checked' : '';
@@ -199,6 +228,7 @@ $help .= "<div class=flexy><div class='help hideit' id=apparel_help><ul>$apparel
 $today = $d_do['tanggal_delivery'] ?? date('Y-m-d');
 
 echo "
+  $page_title
   $kode_do_div
   $pic_info
   <form method=post id=form_do class=$form_do_hide>
@@ -206,20 +236,20 @@ echo "
       <tr class='$kode_do_tr_hide'>
         <td width=150px>Nomor DO</td>
         <td>
-          <input type='text' class='mb2 form-control' id=kode_do name=kode_do minlength=9 maxlength=9 placeholder='K0112312K' required value='$kode_do'>
+          <input type='text' class='mb2 form-control' id=kode_do name=kode_do minlength=9 maxlength=9 placeholder='Contoh: K0112312K' required value='$kode_do'>
           
         </td>
       </tr>
       <tr>
         <td>Nomor Delivery</td>
         <td>
-          <input type='text' class='mb2 form-control $update_trigger' id=kode_delivery name=kode_delivery minlength=9 maxlength=9 placeholder='191401705' required value='$kode_delivery'>
+          <input type='text' class='mb2 form-control $update_trigger' id=kode_delivery name=kode_delivery minlength=9 maxlength=9 placeholder='Contoh: 191401705' required value='$kode_delivery'>
         </td>
       </tr>
       <tr>
         <td valign=top class=pt2>Kode Artikel</td>
         <td>
-          <input type='text' class='mb2 form-control $update_trigger consolas f24' id=kode_artikel name=kode_artikel style='letter-spacing:5px;' maxlength=9 required value='$kode_artikel' placeholder='K01122312'>
+          <input type='text' class='mb2 form-control $update_trigger consolas f24' id=kode_artikel name=kode_artikel style='letter-spacing:5px;' maxlength=9 required value='$kode_artikel' placeholder='.........'>
           <div class='blok_kode kecil mb2'><ul>$li</ul></div>
           $help
         </td>

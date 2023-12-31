@@ -9,6 +9,23 @@
 </div>
 
 <?php
+set_title('Data Surat Jalan');
+if(isset($_POST['keyword'])){
+  $keyword = clean_sql($_POST['keyword']);
+  jsurl("?penerimaan&p=data_sj&keyword=$keyword");
+  exit;
+}
+$keyword = $_GET['keyword'] ?? '';
+$bg_keyword = $keyword ? 'style="background:#0f0"' : '';
+$hide_clear = $keyword ? '' : 'hideit';
+
+
+$sql_filter = $keyword ? "
+  (
+    a.kode LIKE '%$keyword%' 
+  )
+" : '1';
+
 $s = "SELECT 
 a.id as id_sj, 
 a.kode as kode_sj ,
@@ -19,12 +36,16 @@ b.nama as nama_supplier,
 (SELECT kode FROM tb_bbm WHERE kode_sj=a.kode) kode_bbm
 FROM tb_sj a 
 JOIN tb_supplier b ON a.id_supplier=b.id 
-WHERE 1  
+WHERE $sql_filter  
 AND a.kode NOT LIKE 'STOCK%' 
 ORDER BY tanggal_terima DESC
-LIMIT 10
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$jumlah_records = mysqli_num_rows($q);
+
+$s .= "LIMIT 10";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$jumlah_tampil = mysqli_num_rows($q);
 
 $tr = '';
 $i = 0;
@@ -59,8 +80,23 @@ while($d=mysqli_fetch_assoc($q)){
 
 $tambah_sj_baru = "<a class='btn btn-sm btn-success' href='?penerimaan&p=terima_sj_baru'>Terima SJ Baru</a>";
 
-echo $tr=='' ? div_alert('danger', "Belum ada data PO | $tambah_sj_baru") : "
-  <div class='mb2 kanan'>$tambah_sj_baru</div>
+if(!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
+
+echo  "
+  <div class='flexy flex-between mb2'>
+    <div class=flexy>
+      <div>
+        <form method=post>
+          <input class='form-control form-control-sm' placeholder='Filter ...' name=keyword id=keyword value='$keyword' maxlength=15 $bg_keyword>
+          <button class=hideit>Filter</button>
+        </form>
+      </div>
+      <div class='$hide_clear'><a href='?penerimaan&p=data_sj' class=kecil>Clear<span class=f18> </span></a></div>
+      <div class='kecil abu'>Tampil <span class='darkblue f18'>$jumlah_tampil</span> data of $jumlah_records records</div>
+    </div>
+    <div>$tambah_sj_baru</div>
+  </div>  
+
   <table class=table>
     <thead>
       <th>NO</th>

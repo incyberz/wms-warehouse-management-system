@@ -1,4 +1,4 @@
-<?php $p = $_GET['p'] ?? jsurl('?'); ?>
+<?php $p = $_GET['p'] ?? jsurl('?'); set_title("Master $p")?>
 <section class='section'>
   <div class="section-title">
     <!-- <h2 class='proper'>Master <?=$p?></h2> -->

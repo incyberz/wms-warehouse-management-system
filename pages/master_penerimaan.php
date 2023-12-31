@@ -1,5 +1,6 @@
 
 <?php 
+set_title("Master Penerimaan");
 // to do : fix decimal
 include 'include/date_managements.php';
 $p = 'penerimaan'; // untuk navigasi
@@ -319,7 +320,7 @@ while($d=mysqli_fetch_assoc($q)){
         $qty_transit 
       </td>
       <td>
-        $qty_stok
+        $qty_stok $satuan
       </td>
     </tr>
   ";
@@ -339,8 +340,8 @@ $form_cari = "
       <td>
         <select class='form-control form-control-sm $bg_waktu' name=filter_waktu>$opt_waktu</select>
       </td>
-      <td><input type='text' class='form-control form-control-sm $bg_proyeksi' placeholder='proyeksi' name=filter_proyeksi value='$filter_proyeksi' ></td>
-      <td><input type='text' class='form-control form-control-sm $bg_ppic' placeholder='ppic' name=filter_ppic value='$filter_ppic' ></td>
+      <td class=hideit><input type='text' class='form-control form-control-sm $bg_proyeksi' placeholder='proyeksi' name=filter_proyeksi value='$filter_proyeksi' ></td>
+      <td class=hideit><input type='text' class='form-control form-control-sm $bg_ppic' placeholder='ppic' name=filter_ppic value='$filter_ppic' ></td>
       <td>
         <button class='btn btn-success btn-sm' name=btn_cari>Cari</button>
       </td>
@@ -366,7 +367,6 @@ $bread = "<li class='breadcrumb-item'><a href='?master_penerimaan&cat=aks'>Akses
 
 
 <section class='section'>
-  <?php //include 'pages/sheet_nav.php'; ?>
   <div id="blok_penerimaan" class='mt2'>
 
     <table class='table'>
@@ -383,7 +383,7 @@ $bread = "<li class='breadcrumb-item'><a href='?master_penerimaan&cat=aks'>Akses
         <td class=hideit>Info</td>
         <td>QC</td>
         <td>Transit</td>
-        <td>Stok</td>
+        <td>Stok Terima</td>
       </tr>
       <?=$tr_hasil?>
 

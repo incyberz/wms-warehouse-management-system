@@ -1,4 +1,6 @@
 <?php
+set_title('Manage Subitem Penerimaan');
+
 $pesan_tambah = '';
 if(isset($_POST['btn_simpan'])){
   $id = $_POST['id_sj_subitem'];
@@ -121,7 +123,7 @@ if($is_lebih){
 }
 ?>
 <div class="pagetitle">
-  <h1>BBM Sub Items</h1>
+  <h1>Manage Subitem Penerimaan</h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
@@ -228,6 +230,7 @@ while($d=mysqli_fetch_assoc($q)){
         <div class='f12'>Subitem-$i</div>
         $fs_info
         <div class=kecil>$qty_show</div>
+        <div class=kecil>Lot: $d[no_lot]</div>
       </a>
     </div>
     <div>
@@ -436,7 +439,7 @@ if($get_id_sj_subitem!=''){
   // echo "<hr>max_input_qty:$max_input_qty = qty:$qty ? (qty_po:$qty_po - qty_subitem:$qty_subitem + qty:$qty) : sisa_qty:$sisa_qty;";
   if($is_fs){
     $max_input_qty = $qty ? ($qty_diterima - $qty_po - $qty_subitem_fs + $qty) : $sisa_fs;
-    echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_po:$qty_po - qty_subitem_fs:$qty_subitem_fs + qty:$qty) : sisa_fs:$sisa_fs;";
+    // echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_po:$qty_po - qty_subitem_fs:$qty_subitem_fs + qty:$qty) : sisa_fs:$sisa_fs;";
   }
 
   echo "
