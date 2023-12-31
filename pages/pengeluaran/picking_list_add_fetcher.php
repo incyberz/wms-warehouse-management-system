@@ -54,7 +54,20 @@ g.brand,
 (
   SELECT sum(p.qty) FROM tb_picking p 
   WHERE p.id_sj_subitem=a.id 
-  ) qty_pick_by 
+  ) qty_pick_by ,
+(
+  SELECT p.qty FROM tb_retur p 
+  WHERE p.id=a.id 
+  ) qty_retur,
+(
+  SELECT p.tanggal_retur FROM tb_retur p 
+  WHERE p.id=a.id 
+  ) tanggal_retur,
+(
+  SELECT p.qty FROM tb_terima_retur p 
+  JOIN tb_retur q ON p.id=q.id  
+  WHERE q.id=a.id 
+  ) qty_balik 
 
 $sql_from 
 LIMIT 10
@@ -71,34 +84,76 @@ if(mysqli_num_rows($q)==0){
     $id=$d['id'];
     $is_fs=$d['is_fs'];
     $satuan=$d['satuan'];
+    $tanggal_retur=$d['tanggal_retur'];
     $qty=floatval($d['qty']);
     $qty_terima=floatval($d['qty_terima']);
     $qty_pick_by=floatval($d['qty_pick_by']);
+    $qty_retur=floatval($d['qty_retur']);
+    $qty_balik=floatval($d['qty_balik']);
     $lot_info = $d['no_lot'] ? "<div>Lot: $d[no_lot]</div>" : "<div>Lot: $unset</div>";
     $roll_info = $d['no_roll'] ? "<div>Roll: $d[no_roll]</div>" : '';
 
-    if($is_fs){
-      $qty_fs = $qty;
-      $qty = 0;
-      // $tr_gradasi = 'biru';
-      $qty_transit = 0;
-    }else{
-      $qty_transit = $qty-$qty_terima;
-      // $tr_gradasi = '';
-      $qty_fs = 0;
-    }
+    // if($is_fs){
+    //   $qty_fs = $qty;
+    //   $qty = 0;
+    //   // $tr_gradasi = 'biru';
+    //   $qty_transit = 0;
+    // }else{
+    //   $qty_transit = $qty-$qty_terima;
+    //   // $tr_gradasi = '';
+    //   $qty_fs = 0;
+    // }
 
-    $qty_transit_show = $qty_transit ? "<td class='merah'><div>$qty_transit $satuan</div></td>" : '<td>-</td>';
-    $qty_fs_show = $qty_fs ? "<td class='gradasi-hijau'><div>$qty_fs $satuan</div></td>" : '<td>-</td>';
-    $qty_terima_show = $qty_terima ? "<td class='gradasi-hijau'><div>$qty_terima $satuan</div></td>" : '<td class="gradasi-merah">-</td>';
-    $qty_terima_show = $qty_fs ? '<td>-</td>' : $qty_terima_show;
 
-    $qty_pick_by_show = "<td class=darkred>$qty_pick_by</td>";
+    // transit or after QC
+    $qty_transit = 0;
+    $qty_transit_fs = 0;
+    $qty_qc = 0;
+    $qty_qc_fs = 0;
+    if($d['tanggal_retur']==''){ //belum QC
+      if($is_fs){
+        $qty_transit_fs = $qty;
+      }else{
+        $qty_transit = $qty;
+      }
+    }else{ //sudah QC
+      if($is_fs){
+        $qty_qc_fs = $qty;
+      }else{
+        $qty_qc = $qty;
+      }
+    }    
 
-    $qty_stok = ($qty_terima + $qty_fs) - $qty_pick_by;
-    $qty_stok_show = "<td>$qty_stok</td>";
+    //stok akhir
+    $stok_akhir = $qty_qc + $qty_qc_fs - $qty_pick_by;
 
-    $btn_add = $qty_stok ? "<div id=div_btn_add__$id><button class='btn btn-success btn-sm btn_add' id=btn_add__$id>Add</button></div>" : '<button class="btn btn-secondary btn-sm" disabled>Add</button>';
+    $nol = '<span class="abu miring kecil">0</span>';
+    $qty_transit_show = $qty_transit ? "<span class='tebal red'>PO: $qty_transit</span>" : $nol;
+    $qty_transit_fs_show = $qty_transit_fs ? "<span class='tebal purple'>FS: $qty_transit_fs</span>" : $nol;
+    $qty_qc_show = $qty_qc ? "<span class='tebal darkblue'>PO: $qty_qc</span>" : $nol;
+    $qty_qc_fs_show = $qty_qc_fs ? "<span class='tebal hijau'>FS: $qty_qc_fs</span>" : $nol;
+    $stok_akhir_show = $stok_akhir ? "<span class='tebal biru'>$stok_akhir $satuan</span>" : $nol;
+    $qty_pick_by_show = $qty_pick_by ? "<span class='tebal darkred'>$qty_pick_by $satuan</span>" : $nol;
+
+    $kode_lokasi_brand = "$d[kode_lokasi] <span class='abu f12'>$d[brand]</span>";
+    $lokasi_show = ($qty_pick_by || $stok_akhir) ? "<span class='darkblue f16'>$kode_lokasi_brand</span>" : "<span class=abu>$kode_lokasi_brand</span>";
+
+    
+
+
+    //old code
+    // $qty_transit_show = $qty_transit ? "<td class='merah'><div>$qty_transit $satuan</div></td>" : '<td>-</td>';
+    // $qty_fs_show = $qty_fs ? "<td class='gradasi-hijau'><div>$qty_fs $satuan</div></td>" : '<td>-</td>';
+    // $qty_terima_show = $qty_terima ? "<td class='gradasi-hijau'><div>$qty_terima $satuan</div></td>" : '<td class="gradasi-merah">-</td>';
+    // $qty_terima_show = $qty_fs ? '<td>-</td>' : $qty_terima_show;
+
+    // $qty_pick_by_show = "<td class=darkred>$qty_pick_by</td>";
+
+    // $qty_stok = ($qty_terima + $qty_fs) - $qty_pick_by;
+    // $qty_stok_show = "<td>$qty_stok</td>";
+
+    $btn_add = $stok_akhir ? "<div id=div_btn_add__$id><button class='btn btn-success btn-sm btn_add' id=btn_add__$id>Add</button></div>" : '<button class="btn btn-secondary btn-sm" disabled>Add</button>';
+    $fs_show = $is_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
 
     $tr .= "
       <tr>
@@ -112,15 +167,23 @@ if(mysqli_num_rows($q)==0){
           </div>
         </td>
         <td>
-          <div>Lokasi: $d[kode_lokasi] ~ $d[brand]</div>
+          <div>Lokasi: $d[kode_lokasi] ~ $d[brand] $fs_show</div>
           $lot_info
           $roll_info
         </td>
-        $qty_transit_show
-        $qty_fs_show
-        $qty_terima_show 
-        $qty_pick_by_show 
-        $qty_stok_show 
+        <td>
+          <div>$qty_transit_show</div>
+          <div>$qty_transit_fs_show</div>
+        </td>
+        <td>
+          <div>$qty_qc_show</div>
+          <div>$qty_qc_fs_show</div>
+        </td>
+        <td>$qty_pick_by_show</td>
+        <td>
+          <div>$stok_akhir_show </div>
+          <div class='abu f12'>$lokasi_show</div>
+        </td>
         <td>
           $btn_add
         </td>
@@ -138,11 +201,11 @@ echo "
       <th>No</th>
       <th>ITEM</th>
       <th>INFO</th>
-      <th>QTY Transit</th>
-      <th>QTY FS</th>
-      <th>QTY Terima</th>
+      <th>Transit</th>
+      <th>After QC</th>
       <th class=darkred>Pick by<br><span class=f12>Other DO</span></th>
-      <th>Stok</th>
+      <th>Stok Akhir</th>
+      <th>Add</th>
     </thead>
 
     $tr

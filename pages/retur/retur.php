@@ -21,28 +21,35 @@ if(isset($_POST['btn_terima_retur'])){
   exit;
 }
 
-if(isset($_POST['btn_retur'])){
-  unset($_POST['btn_retur']);
-  // echo '<pre>';
-  // var_dump($_POST);
-  // echo '</pre>';
-  echo 'Processing data retur...<hr>';
+if(isset($_POST['btn_retur']) || isset($_POST['btn_hapus_qc'])){
 
-  $pairs = '__';
-  $koloms = '__';
-  $values = '__';
-  foreach ($_POST as $key => $value) {
-    $value = clean_sql($value);
-    $value = ($value==''||$value=='-') ? 'NULL' : "'$value'";
-    if($key!='id') $pairs .= ",$key = $value";
-    $koloms .= ",$key";
-    $values .= ",$value";
+  if(isset($_POST['btn_hapus_qc'])){
+    // echo '<pre>';
+    // var_dump($_POST);
+    // echo '</pre>';
+    echo 'Deleting data retur...<hr>';
+    $s = "DELETE FROM tb_retur WHERE id = $_POST[id] ";
+  }else{
+    unset($_POST['btn_retur']);
+    echo 'Processing data retur...<hr>';
+  
+    $pairs = '__';
+    $koloms = '__';
+    $values = '__';
+    foreach ($_POST as $key => $value) {
+      $value = clean_sql($value);
+      $value = ($value==''||$value=='-') ? 'NULL' : "'$value'";
+      if($key!='id') $pairs .= ",$key = $value";
+      $koloms .= ",$key";
+      $values .= ",$value";
+    }
+    $pairs = str_replace('__,','',$pairs);
+    $koloms = str_replace('__,','',$koloms);
+    $values = str_replace('__,','',$values);
+  
+    $s = "INSERT INTO tb_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
   }
-  $pairs = str_replace('__,','',$pairs);
-  $koloms = str_replace('__,','',$koloms);
-  $values = str_replace('__,','',$values);
 
-  $s = "INSERT INTO tb_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
   // echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 

@@ -104,7 +104,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" href="?stok">
         <i class="bi bi-file-earmark-spreadsheet"></i>
-        <span>Kartu Stok</span>
+        <span>Stok Opname</span>
       </a>
     </li>
   </ul>
