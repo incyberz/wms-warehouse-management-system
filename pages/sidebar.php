@@ -3,12 +3,12 @@
   <ul class="sidebar-nav" id="sidebar-nav">
 
     <li class="nav-heading">Login as <b class="darkred"><?=$sebagai?></b></li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a class="nav-link collapsed" href="?stok_awal">
         <i class="bi bi-arrow-down-square"></i>
         <span>Stok Awal</span>
       </a>
-    </li>
+    </li> -->
     <li class="nav-item">
       <a class="nav-link " href="?">
         <i class="bi bi-grid"></i>

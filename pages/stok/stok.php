@@ -1,11 +1,13 @@
 <?php
-if(isset($_POST['keyword'])){
+if(isset($_POST['btn_filter']) || isset($_POST['btn_get_csv'])){
   $keyword = clean_sql($_POST['keyword']);
-  jsurl("?stok&cat=$_GET[cat]&keyword=$keyword&tipe_stok=$_POST[tipe_stok]");
+  $get_csv = $_POST['btn_get_csv'] ?? '';
+  jsurl("?stok&cat=$_POST[cat]&keyword=$keyword&tipe_stok=$_POST[tipe_stok]&get_csv=$get_csv");
   exit;
 }
 $keyword = $_GET['keyword'] ?? '';
 $tipe_stok = $_GET['tipe_stok'] ?? 'all';
+$get_csv = $_GET['get_csv'] ?? '';
 $cat = $_GET['cat'] ?? 'aks';
 $id_kategori = $cat=='aks' ? 1 : 2;
 $cat_lainnya = $cat=='aks' ? 'fab' : 'aks';
@@ -68,6 +70,17 @@ $arr_tipe_stok = [
   'qcfs'=>'After QC FS',
 ];
 
+$data_csv = '';
+if($get_csv){
+  $data_csv.= "EXPORT STOCK OPNAME\n\n";
+  $data_csv.= "Tanggal,".date('Y-m-d H:i:s')."\n";
+  $data_csv.= "Filter by keyword:,$keyword\n";
+  $data_csv.= "Stock Type:,$arr_tipe_stok[$tipe_stok]\n";
+  $data_csv.= "Operator:,$nama_user / $jabatan\n\n";
+}
+
+
+
 $select = '';
 foreach ($arr_tipe_stok as $key => $value) {
   $selected = $tipe_stok==$key ? 'selected' : '';
@@ -119,11 +132,16 @@ ORDER BY c.kode
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
 
-$s .= "LIMIT 10";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$jumlah_tampil = mysqli_num_rows($q);
+if($get_csv){
+  $jumlah_tampil = $jumlah_records;
+}else{
+  $s .= "LIMIT 10";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $jumlah_tampil = mysqli_num_rows($q);
+}
 
 $tr = '';
+$tr_csv = '';
 $i = 0;
 while($d=mysqli_fetch_assoc($q)){
   $i++;
@@ -185,41 +203,105 @@ while($d=mysqli_fetch_assoc($q)){
   //stok akhir
   $stok_akhir = $qty_qc + $qty_qc_fs - $qty_pick;
 
-  $nol = '<span class="abu miring kecil">0</span>';
-  $qty_transit_show = $qty_transit ? "<span class='tebal red'>PO: $qty_transit</span>" : $nol;
-  $qty_transit_fs_show = $qty_transit_fs ? "<span class='tebal purple'>FS: $qty_transit_fs</span>" : $nol;
-  $qty_qc_show = $qty_qc ? "<span class='tebal darkblue'>PO: $qty_qc</span>" : $nol;
-  $qty_qc_fs_show = $qty_qc_fs ? "<span class='tebal hijau'>FS: $qty_qc_fs</span>" : $nol;
-  $stok_akhir_show = $stok_akhir ? "<span class='tebal biru'>$stok_akhir $satuan</span>" : $nol;
-  $qty_pick_show = $qty_pick ? "<span class='tebal darkred'>$qty_pick $satuan</span>" : $nol;
+  if($get_csv){
+    $fs_text = $is_fs ? "FREE SUPPLIER" : "NO-FS";
+    $info_text = "$d[nama_barang] / $d[keterangan_barang]";
+    $info_text = str_replace(',',';',$info_text);
+    $tr_csv.= "$i,$d[kode_barang],$info_text,$d[no_lot],$d[no_roll],$fs_text,$qty,$qty_retur,$qty_balik,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$d[kode_lokasi],$d[brand]\n";
+  }else{
+    $nol = '<span class="abu miring kecil">0</span>';
+    $qty_transit_show = $qty_transit ? "<span class='tebal red'>PO: $qty_transit</span>" : $nol;
+    $qty_transit_fs_show = $qty_transit_fs ? "<span class='tebal purple'>FS: $qty_transit_fs</span>" : $nol;
+    $qty_qc_show = $qty_qc ? "<span class='tebal darkblue'>PO: $qty_qc</span>" : $nol;
+    $qty_qc_fs_show = $qty_qc_fs ? "<span class='tebal hijau'>FS: $qty_qc_fs</span>" : $nol;
+    $stok_akhir_show = $stok_akhir ? "<span class='tebal biru'>$stok_akhir $satuan</span>" : $nol;
+    $qty_pick_show = $qty_pick ? "<span class='tebal darkred'>$qty_pick $satuan</span>" : $nol;
 
-  $kode_lokasi_brand = "$d[kode_lokasi] <span class='abu f12'>$d[brand]</span>";
-  $lokasi_show = ($qty_pick || $stok_akhir) ? "<span class='darkblue f16'>$kode_lokasi_brand</span>" : "<span class=abu>$kode_lokasi_brand</span>";
+    $kode_lokasi_brand = "$d[kode_lokasi] <span class='abu f12'>$d[brand]</span>";
+    $lokasi_show = ($qty_pick || $stok_akhir) ? "<span class='darkblue f16'>$kode_lokasi_brand</span>" : "<span class=abu>$kode_lokasi_brand</span>";
 
-  $tr .= "
-    <tr>
-      <td>$i</td>
-      
-      <td>$d[kode_barang]</td>
-      <td>$info</td>
-      <td>
-        <div>$qty_transit_show</div>
-        <div>$qty_transit_fs_show</div>
-      </td>
-      <td>
-        <div>$qty_qc_show</div>
-        <div>$qty_qc_fs_show</div>
-      </td>
-      <td>$qty_pick_show</td>
-      <td>
-        <div>$stok_akhir_show </div>
-        <div class='abu f12'>$lokasi_show</div>
-      </td>
-    </tr>
-  ";
+    $tr .= "
+      <tr>
+        <td>$i</td>
+        
+        <td>$d[kode_barang]</td>
+        <td>$info</td>
+        <td>
+          <div>$qty_transit_show</div>
+          <div>$qty_transit_fs_show</div>
+        </td>
+        <td>
+          <div>$qty_qc_show</div>
+          <div>$qty_qc_fs_show</div>
+        </td>
+        <td>$qty_pick_show</td>
+        <td>
+          <div>$stok_akhir_show </div>
+          <div class='abu f12'>$lokasi_show</div>
+        </td>
+      </tr>
+    ";    
+  }
 }
 
 if(!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
+
+if($get_csv){
+  // $tr_csv.= "$i,$d[kode_barang],$info_text,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$stok_akhir,$d[kode_lokasi],$d[brand]\n";
+  $data_csv.= "No,KODE BARANG,INFO,NO.LOT,NO.ROLL,FS,QTY SUBITEM,RETUR,BALIK,TRANSIT PO,TRANSIT FS,QC PO,QC FS,PICK,STOK AKHIR,SATUAN,LOKASI,BRAND\n$tr_csv";
+
+  $ymd = date('ymd');
+  $tipe_stok_ = $tipe_stok ? "_$tipe_stok" : '';
+  $filtered_ = $keyword ? "_filtered" : '';
+  $cat_ = $cat.'_';
+  $path_csv = "csv/stok_opname_$cat_$ymd$tipe_stok_$filtered_.csv";
+  $fcsv = fopen("$path_csv", "w+") or die("$path_csv cannot accesible.");
+  fwrite($fcsv, $data_csv);
+  fclose($fcsv);
+
+  $files = scandir('csv');
+
+  $li = '';
+  foreach ($files as $key => $file) {
+    if(strpos("salt$file",'.csv')){
+      if("csv/$file"!=$path_csv){
+        //auto-delete
+        if(strpos("salt$file",'_filtered.csv')){
+          unlink("csv/$file");
+        }else{
+          $li .= "<li class='mb1 mt1' id=li_csv_$key><a href='csv/$file'>$file</a> <span class=btn_aksi id='li_csv_$key"."__delete_file__$file"."__csv'>$img_delete</span></></li>";
+        }
+      }
+    }
+
+  }
+
+
+  $view_output = "
+    <a href='$path_csv' class='btn btn-primary btn-sm'>Download CSV</a>
+    <hr>
+    History CSV lainnya:
+    <ul>
+      $li
+    </ul>
+  ";
+
+}else{
+  $view_output = "
+    <table class=table>
+      <thead>
+        <th>NO</th>
+        <th>ID</th>
+        <th>INFO</th>
+        <th class=darkred>Transit</th>
+        <th class=darkblue>After QC</th>
+        <th class=darkred>Pick</th>
+        <th>Stok Akhir</th>
+      </thead>
+      $tr
+    </table>
+  ";
+}
 
 echo 
 "
@@ -235,7 +317,11 @@ echo
               $select
             </div>
             <div>
-              <button class='btn btn-primary btn-sm'>Filter</button>
+              <input type=hidden name=cat value='$cat'>
+              <button class='btn btn-primary btn-sm' name=btn_filter>Filter</button>
+            </div>
+            <div>
+              <button class='btn btn-success btn-sm' name=btn_get_csv value=1>Get CSV</button>
             </div>
           </div>
         </form>
@@ -248,16 +334,5 @@ echo
     </div>
   </div>  
 
-  <table class=table>
-    <thead>
-      <th>NO</th>
-      <th>ID</th>
-      <th>INFO</th>
-      <th class=darkred>Transit</th>
-      <th class=darkblue>After QC</th>
-      <th class=darkred>Pick</th>
-      <th>Stok Akhir</th>
-    </thead>
-    $tr
-  </table>
+  $view_output
 ";

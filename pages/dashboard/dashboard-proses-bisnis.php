@@ -32,9 +32,9 @@ $arr_proses = [
   ],
   'stok-opname' => [
     1,
-    'Stock Opname Awal',
+    'Stock Opname',
     'Melihat stok dan aging untuk setiap barang dan atau setiap sub item barang di awal proses',
-    '?awal&p=stok_opname'
+    '?stok'
   ],
   'po' => [
     2,
@@ -66,23 +66,29 @@ $arr_proses = [
     'Mencetak label untuk tiap-tiap Sub Item',
     '?penerimaan&p=cetak_label_info'
   ],
+  'terima_do' => [
+    3,
+    'Terima DO',
+    'Menerima DO dari ...',
+    '?pengeluaran&p=terima_do'
+  ],
   'picking' => [
     3,
     'Picking List',
     'Memilih barang-barang yang tersedia untuk dikirim ke proses produksi',
-    '?zzz'
+    '?pengeluaran&p=data_do'
   ],
   'packing' => [
     3,
     'Proses Packing',
     'Recek QTY untuk setiap barang yang akan dikirimkan',
-    '?zzz'
+    '?pengeluaran&p=data_do'
   ],
   'shipping' => [
     3,
     'Cetak Surat Jalan',
     'Mencetak Surat Jalan untuk setiap Delivery Order',
-    '?zzz'
+    '?pengeluaran&p=data_do'
   ],
 ];
 

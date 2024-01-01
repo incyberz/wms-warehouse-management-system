@@ -14,7 +14,31 @@
 
       console.log(tb,aksi,id_item);
 
-      if(aksi=='delete'){
+      if(aksi=='delete_file'){
+        let y = confirm('Yakin untuk menghapus file ini?');
+        if(!y) return;
+        let file = rid[2];
+        let path = rid[3];
+        if(!file || !path){
+          console.log('EMPTY one of file or path', file, path);
+        }else{
+          link_ajax = `ajax/delete_file.php?path=${path}&file=${file}`;
+          console.log(' delete FILE with AJAX: ', link_ajax);
+          $.ajax({
+            url:link_ajax,
+            success:function(a){
+              if(a.trim()=='sukses'){
+                $('#'+tb).fadeOut();
+                console.log('source_'+tb+' hide');
+              }else{
+                alert('Tidak dapat menghapus file.');
+                console.log(a);
+              }
+            }
+          })
+
+        }
+      }else if(aksi=='delete'){
         let y = confirm('Yakin untuk hapus?');
         if(!y) return;
 
