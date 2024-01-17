@@ -1,6 +1,6 @@
 <style>
   /* ================================================ */
-  /* INSHO CSS v.1.0.1 */
+  /* INSHO CSS v.1.0.3 */
   /* ================================================ */
   a {text-decoration:none}
   code,.consolas{font-family:consolas !important}
@@ -25,10 +25,13 @@
   /* ================================================ */
   .hideit{display:none}
   .debug{
-    background:red; 
+    display: inline-block;
+    color: darkred;
+    background:yellow; 
     font-family: consolas; 
     font-size: small; 
-    /* padding:10px;  */
+    padding:5px; 
+
     <?php if (!$dm) { echo 'display:none;'; } ?>
   }
 
@@ -40,10 +43,13 @@
   .hijau,.green{color:green}
   .kuning,.yellow{color:orange}
   .ungu,.purple{color:purple}
-  .abu,.gray{color:gray}
   .darkblue{color:darkblue}
   .darkred{color:darkred}
+
+  .putih,.white{color:white}
+  .hitam,.black{color:black}
   .darkabu{color:#555}
+  .abu,.gray{color:gray}
   .lightabu{color:#aaa}
 
 
@@ -58,6 +64,11 @@
   .gradasi-pink{background:linear-gradient(#fdf,#faf)}
   .gradasi-tulang{background:linear-gradient(#ffe,rgb(213, 234, 233))}
   .bg-white,.bg-putih{background: white;}
+  .bg-red{background: red;}
+  .bg-blue{background: blue;}
+  .bg-yellow{background: yellow;}
+  .bg-purple{background: purple;}
+  .bg-black{background: black;}
 
   /* ================================================ */
   /* TEXT-STYLING */
@@ -240,4 +251,9 @@
     gap: 15px;
   }
   .flex-between{display:flex;justify-content: space-between;}
+  .grid2{display:grid;grid-template-columns: auto auto;}
+  .grid3{display:grid;grid-template-columns: auto auto auto;}
+  .grid4{display:grid;grid-template-columns: auto auto auto auto;}
+  .grid5{display:grid;grid-template-columns: auto auto auto auto auto;}
+  .grid6{display:grid;grid-template-columns: auto auto auto auto auto auto;}
 </style>

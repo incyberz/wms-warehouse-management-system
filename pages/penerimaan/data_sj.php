@@ -29,6 +29,7 @@ $sql_filter = $keyword ? "
 $s = "SELECT 
 a.id as id_sj, 
 a.kode as kode_sj ,
+a.tanggal_terima,
 a.kode_po,
 b.kode as kode_supplier ,
 b.nama as nama_supplier,
@@ -38,7 +39,7 @@ FROM tb_sj a
 JOIN tb_supplier b ON a.id_supplier=b.id 
 WHERE $sql_filter  
 AND a.kode NOT LIKE 'STOCK%' 
-ORDER BY tanggal_terima DESC
+ORDER BY a.tanggal_terima DESC
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
@@ -57,13 +58,14 @@ while($d=mysqli_fetch_assoc($q)){
   $abu_bbm = $d['kode_bbm'] ? 'abu' : 'tebal merah';
   $aksi_hapus = ($d['jumlah_item'] || $d['kode_bbm']) ? '-' : "<span class='btn_aksi' id=sj__delete__$id>$img_delete</span>";
   $kode_bbm_show = $d['kode_bbm'] ? "<a href='?penerimaan&p=bbm&kode_sj=$d[kode_sj]'>$d[kode_bbm]</a>" : $unset;
+  $tgl = date('d M y',strtotime($d['tanggal_terima']));
   $tr .= "
     <tr id=source_sj__$id>
       <td>$i</td>
       <td>
         <a href='?penerimaan&p=manage_sj&kode_sj=$d[kode_sj]'>
           $d[kode_sj]
-          <div class='kecil $abu_items'>$d[jumlah_item] items</div>
+          <div class='kecil $abu_items'>$tgl | $d[jumlah_item] items</div>
         </a>
       </td>
       <td>

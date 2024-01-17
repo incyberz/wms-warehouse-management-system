@@ -21,7 +21,7 @@ $arr_waktu = [
   'all_time' => 'All time',
 ];
 
-$filter_waktu = $_GET['waktu'] ?? 'minggu_ini';
+$filter_waktu = $_GET['waktu'] ?? 'all_time';
 $opt_waktu = '';
 foreach ($arr_waktu as $waktu => $nama_waktu) {
   $selected = $filter_waktu==$waktu ? 'selected' : '';
@@ -83,7 +83,6 @@ a.id_sj_subitem,
 b.kode_lokasi,
 b.is_fs,
 b.no_lot,
-b.no_roll,
 b.id_sj_item,
 c.kode_sj,
 d.kode_po,
@@ -118,7 +117,11 @@ i.kode_do,
 (
   SELECT SUM(p.qty) FROM tb_picking p 
   WHERE p.id != a.id 
-  AND p.id_sj_subitem = a.id_sj_subitem) qty_pick_by
+  AND p.id_sj_subitem = a.id_sj_subitem) qty_pick_by,
+(
+  SELECT COUNT(1) FROM tb_roll  
+  WHERE id_sj_subitem = b.id) count_roll
+
 
 FROM tb_picking a 
 JOIN tb_sj_subitem b ON a.id_sj_subitem=b.id 
@@ -131,6 +134,9 @@ JOIN tb_supplier h ON d.id_supplier=h.id
 JOIN tb_terima_do i ON a.kode_do_cat=i.kode  
 
 $sql_where 
+
+--  ID - PO - LOT - LOKASI - FS
+ORDER BY f.kode, d.kode_po, b.no_lot, g.kode, b.is_fs  
 
 ";
 
@@ -229,7 +235,7 @@ while($d=mysqli_fetch_assoc($q)){
           <span class=miring>id.$d[id_sj_subitem]</span> ~ 
           <a target=_blank href='?penerimaan&p=bbm_subitem&id_sj_item=$d[id_sj_item]&id_sj_subitem=$d[id_sj_subitem]'>
             Lot: $no_lot 
-          </a>
+          </a> ~ $d[kode_lokasi]
         </div>
         <div>
           <a target=_blank href='?master&p=barang&keyword=$d[kode_barang]'>
@@ -245,7 +251,7 @@ while($d=mysqli_fetch_assoc($q)){
             <li>$d[keterangan_barang]</li>
             <li>Lokasi: $d[kode_lokasi]</li>
             <li>Brand: $d[brand]</li>
-            <li>Roll: $d[no_roll]</li>
+            <li>Roll count: $d[count_roll]</li>
           </li>
         </div>
       </td>

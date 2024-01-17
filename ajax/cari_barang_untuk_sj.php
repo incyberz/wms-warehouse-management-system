@@ -6,7 +6,17 @@ include '../include/crud_icons.php';
 
 
 
-$keyword = strtoupper($_GET['keyword']) ?? die(erid('keyword'));
+$kode_sj = $_GET['kode_sj'] ?? die(erid('kode_sj')); if(!$kode_sj) die(erid('kode_sj::empty'));
+$s = "SELECT kode_barang FROM tb_sj_item WHERE kode_sj='$kode_sj'";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$arr_kode_barang = [];
+while($d=mysqli_fetch_assoc($q)){
+  array_push($arr_kode_barang,$d['kode_barang']);
+}
+
+
+$keyword = $_GET['keyword'] ?? die(erid('keyword'));
+$keyword = strtoupper($keyword);
 
 $tr = "<tr><td colspan=100% class='alert alert-danger'>Barang tidak ditemukan.</td></tr>";
 $s = "SELECT  
@@ -18,8 +28,9 @@ a.nama as nama_barang,
 (SELECT tanggal FROM tb_trx WHERE id_barang = a.id ORDER BY tanggal DESC LIMIT 1) last_trx
 
 FROM tb_barang a 
-LEFT JOIN tb_sj_item b ON a.kode=b.kode_barang 
-WHERE b.id is null 
+-- LEFT JOIN tb_sj_item b ON a.kode=b.kode_barang 
+-- WHERE b.id is null 
+WHERE 1  
 AND (a.kode LIKE '%$keyword%' OR a.nama LIKE '%$keyword%')
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -46,9 +57,11 @@ if($jumlah_row==0){
   $i = 0;
   while($d=mysqli_fetch_assoc($q)){
     $i++;
+    $kode_barang=$d['kode_barang'];
+    if(in_array($kode_barang,$arr_kode_barang)) continue;
+    
     $id=$d['id_barang'];
     $id_barang=$d['id_barang'];
-    $kode_barang=$d['kode_barang'];
     $stok=$d['stok'] ?? 0;
 
     $age = round((strtotime('now') - strtotime($d['last_trx'])) / (60*60*24),0);

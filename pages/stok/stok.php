@@ -36,7 +36,8 @@ $sql_filter = $keyword ? "
   (
     c.kode LIKE '%$keyword%' OR  
     c.keterangan LIKE '%$keyword%' OR  
-    c.nama LIKE '%$keyword%' 
+    c.nama LIKE '%$keyword%' OR 
+    g.kode_po LIKE '%$keyword%'
   )
 " : '1';
 
@@ -92,7 +93,6 @@ $select = "<select class='form-control form-control-sm' name=tipe_stok $bg_selec
 $s = "SELECT 
 a.qty,
 a.no_lot,
-a.no_roll,
 a.is_fs,
 a.kode_lokasi,
 a.id as id_sj_subitem,
@@ -102,6 +102,8 @@ c.nama as nama_barang,
 c.keterangan as keterangan_barang,
 c.satuan,
 d.brand,
+g.kode_po,
+g.tanggal_terima,
 (
   SELECT tanggal_retur FROM tb_retur 
   WHERE id=a.id) tanggal_retur,
@@ -114,20 +116,24 @@ d.brand,
   WHERE q.id=a.id) qty_balik,
 (
   SELECT sum(p.qty) FROM tb_picking p 
-  WHERE p.id_sj_subitem=a.id) qty_pick
+  WHERE p.id_sj_subitem=a.id) qty_pick,
+(
+  SELECT count(1) FROM tb_roll p 
+  WHERE p.id_sj_subitem=a.id) count_roll
 
 FROM tb_sj_subitem a 
 JOIN tb_sj_item b ON a.id_sj_item=b.id 
 JOIN tb_barang c ON b.kode_barang=c.kode 
 JOIN tb_lokasi d ON a.kode_lokasi=d.kode 
 $join_tb_retur_e
-$left_join_tb_retur_e
+$left_join_tb_retur_e 
+JOIN tb_sj g ON b.kode_sj=g.kode 
 
 WHERE $sql_filter 
 AND $sql_tipe_stok 
 AND $left_join_where 
 AND c.id_kategori = $id_kategori 
-ORDER BY c.kode 
+ORDER BY g.tanggal_terima DESC, c.kode 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
@@ -135,7 +141,7 @@ $jumlah_records = mysqli_num_rows($q);
 if($get_csv){
   $jumlah_tampil = $jumlah_records;
 }else{
-  $s .= "LIMIT 10";
+  $s .= "LIMIT 100";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $jumlah_tampil = mysqli_num_rows($q);
 }
@@ -147,11 +153,14 @@ while($d=mysqli_fetch_assoc($q)){
   $i++;
   $id = $d['id_sj_subitem'];
   $id_sj_subitem = $d['id_sj_subitem'];
+  $kode_po = $d['kode_po'];
+  $tanggal_terima = $d['tanggal_terima'];
+
+  $tgl = date('d M y',strtotime($tanggal_terima));
 
   $satuan = $d['satuan'];
   $idz = "<span class='abu f12'>id-</span>$id" ;
   $lot = $d['no_lot'] ? "<span class='abu f12'>Lot-</span>$d[no_lot]" : '';
-  $roll = $d['no_roll'] ? "<span class='abu f12'>Roll-</span>$d[no_roll]" : '';
 
   $is_fs = $d['is_fs'];
   $qty_retur = floatval($d['qty_retur']);
@@ -165,7 +174,6 @@ while($d=mysqli_fetch_assoc($q)){
     <div>
       $idz 
       $lot 
-      $roll
       $fs_show 
       <span class=btn_aksi id=info_barang$id"."__toggle>$img_detail</span>
     </div>
@@ -207,7 +215,7 @@ while($d=mysqli_fetch_assoc($q)){
     $fs_text = $is_fs ? "FREE SUPPLIER" : "NO-FS";
     $info_text = "$d[nama_barang] / $d[keterangan_barang]";
     $info_text = str_replace(',',';',$info_text);
-    $tr_csv.= "$i,$d[kode_barang],$info_text,$d[no_lot],$d[no_roll],$fs_text,$qty,$qty_retur,$qty_balik,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$d[kode_lokasi],$d[brand]\n";
+    $tr_csv.= "$i,$d[kode_po],$d[kode_barang],$info_text,$d[no_lot],$d[no_roll],$fs_text,$qty,$qty_retur,$qty_balik,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$d[kode_lokasi],$d[brand]\n";
   }else{
     $nol = '<span class="abu miring kecil">0</span>';
     $qty_transit_show = $qty_transit ? "<span class='tebal red'>PO: $qty_transit</span>" : $nol;
@@ -224,7 +232,14 @@ while($d=mysqli_fetch_assoc($q)){
       <tr>
         <td>$i</td>
         
-        <td>$d[kode_barang]</td>
+        <td>
+          <div>$d[kode_po]</div>
+          <div class='kecil abu'>$tgl</div>
+        </td>
+        <td>
+          $d[kode_barang]
+          <div class='kecil abu'>$d[nama_barang]</div>
+        </td>
         <td>$info</td>
         <td>
           <div>$qty_transit_show</div>
@@ -291,6 +306,7 @@ if($get_csv){
     <table class=table>
       <thead>
         <th>NO</th>
+        <th>PO</th>
         <th>ID</th>
         <th>INFO</th>
         <th class=darkred>Transit</th>

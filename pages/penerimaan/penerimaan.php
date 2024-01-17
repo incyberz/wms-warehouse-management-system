@@ -85,7 +85,7 @@ if($p!=''){
         <br><span class="jumlah_item_podo"><?=3051 ?> <span class=satuan_podo>item</span></span> -->
       </div>
       <div>
-        <a href="?penerimaan&p=stok_gudang">Stok Gudang</a> 
+        <a href="?penerimaan&p=stok_gudang">Manajemen Lokasi</a> 
         <!-- <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
         <br><span class="jumlah_item_podo"><?=2912 ?> <span class=satuan_podo>item</span></span> -->
       </div>

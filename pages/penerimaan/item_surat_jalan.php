@@ -44,6 +44,7 @@ $tr = "
 
 $s = "SELECT 
 a.id as id_sj_item,
+a.qty_po,
 a.qty,
 a.qty_diterima,
 a.harga_manual,
@@ -67,6 +68,7 @@ if(mysqli_num_rows($q)){
     $jumlah_item++;
     $id=$d['id_sj_item'];
     $id_sj_item=$d['id_sj_item'];
+    $qty_po=floatval($d['qty_po']);
     $qty=floatval($d['qty']);
     $qty_diterima=floatval($d['qty_diterima']);
     $harga=$d['harga'];
@@ -120,19 +122,14 @@ if(mysqli_num_rows($q)){
           <div class=darkabu>$d[nama_barang]</div> 
         </td>
         <td>
-          <div class='kecil'>
-            <div><span class='abu miring'>Stok-lama:</span> <span id=stok_lama__$id>$stok</span> $satuan</div>
-            <div>$age_show</div>
-          </div>
+          <input class='form-control input input__$id input_qty_po' style=width:110px type=number step=0.01 id=qty_po__$id value='$qty_po' $qty_disabled>
         </td>
         <td class=kanan>
           <input class='form-control input input__$id input_qty' style=width:110px type=number step=0.01 id=qty__$id value='$qty' $qty_disabled>
-          <div class='kecil abu kiri mt1'>Stok-baru: <span id=stok_baru__$id>$stok</span></div>
         </td>
         <td>$qty_diterima_show</td>
         <td class=kanan>
           <input class='form-control input input__$id input_harga' style=width:150px type=number step=0.01 id=harga__$id value='$harga'>
-          <div class='kecil abu kiri mt1'>Harga lama: <span id=harga_lama__$id>$harga</span></div>
         </td>
         <td class=kanan id=jumlah__$id>$jumlah</td>
       </tr>
@@ -193,8 +190,8 @@ if($tanggal_verifikasi_bbm){
     <thead class=gradasi-hijau>
       <th>NO</th>
       <th>KODE</th>
-      <th>KETERANGAN</th>
       <th>QTY PO</th>
+      <th>QTY Adjusted</th>
       <th>QTY Diterima</th>
       <th>INFO HARGA</th>
       <th>JUMLAH</th>
@@ -260,7 +257,7 @@ if($tanggal_verifikasi_bbm){
   function hitung(id){
     let harga = parseFloat($('#harga__'+id).val());
     let qty = parseFloat($('#qty__'+id).val());
-    let stok_lama = parseFloat($('#stok_lama__'+id).text());
+    // let stok_lama = parseFloat($('#stok_lama__'+id).text());
     let jumlah = 0;
 
     harga = isNaN(harga) ? 0 : harga;
@@ -277,7 +274,7 @@ if($tanggal_verifikasi_bbm){
     } 
 
     $('#jumlah__'+id).text(rupiah(jumlah));
-    $('#stok_baru__'+id).text(stok_lama+qty);
+    // $('#stok_baru__'+id).text(stok_lama+qty);
 
     total += jumlah;
   }
@@ -358,13 +355,14 @@ if($tanggal_verifikasi_bbm){
 
   $('#keyword').keyup(function(){
     let keyword = $(this).val().trim();
+    let kode_sj = $('#kode_sj').text();
 
     if(keyword.length<3 || keyword.length>15){
         $('#hasil_ajax').html("<div class='alert alert-info'>Silahkan ketik keyword minimal 3 huruf, max 15 huruf.</div>");
         return;
     }
 
-    link_ajax = "ajax/cari_barang_untuk_sj.php?keyword="+keyword;
+    link_ajax = "ajax/cari_barang_untuk_sj.php?keyword="+keyword+"&kode_sj="+kode_sj;
     $.ajax({
       url:link_ajax,
       success:function(a){

@@ -29,7 +29,6 @@ if($jumlah_item){
   $s = "SELECT a.*,
   a.qty as qty_pick,
   b.no_lot,
-  b.no_roll,
   b.kode_lokasi,
   b.is_fs,
   b.qty as qty_subitem,
@@ -47,7 +46,10 @@ if($jumlah_item){
   (
     SELECT SUM(p.qty) FROM tb_picking p 
     WHERE p.id != a.id 
-    AND p.id_sj_subitem = a.id_sj_subitem) qty_pick_by
+    AND p.id_sj_subitem = a.id_sj_subitem) qty_pick_by,
+  (
+    SELECT count(1) FROM tb_roll 
+    WHERE id_sj_subitem = b.id) count_roll
 
   FROM tb_picking a 
   JOIN tb_sj_subitem b ON a.id_sj_subitem=b.id 
@@ -72,7 +74,7 @@ if($jumlah_item){
     $qty_qc=floatval($d['qty_qc']);
     $qty_subitem=floatval($d['qty_subitem']);
     $lot_info = $d['no_lot'] ? "<div>Lot: $d[no_lot]</div>" : "<div>Lot: $unset</div>";
-    $roll_info = $d['no_roll'] ? "<div>Roll: $d[no_roll]</div>" : '';
+    $roll_info = $d['count_roll'] ? "<div>Count Roll: $d[count_roll]</div>" : '-';
     $satuan = $d['satuan'];
     $step = $d['step'];
     $is_fs = $d['is_fs'];
