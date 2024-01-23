@@ -92,9 +92,9 @@ if(mysqli_num_rows($q)){
       $total = 'zzz';
     }
 
-    $age = round((strtotime('now') - strtotime($d['last_trx'])) / (60*60*24),0);
-
-    if($qty){
+    
+    if($qty and $d['last_trx']){
+      $age = round((strtotime('now') - strtotime($d['last_trx'])) / (60*60*24),0);
       if($age<30){
         $age_show = "$age<span class='miring abu'>d</span>";
       }elseif($age<365){
