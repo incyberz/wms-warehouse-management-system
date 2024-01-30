@@ -131,7 +131,7 @@ JOIN tb_bbm e ON e.kode_sj=d.kode
 JOIN tb_barang f ON c.kode_barang=f.kode 
 JOIN tb_lokasi g ON b.kode_lokasi=g.kode 
 JOIN tb_supplier h ON d.id_supplier=h.id  
-JOIN tb_terima_do i ON a.kode_do_cat=i.kode  
+JOIN tb_do i ON a.id_do=i.kode  
 
 $sql_where 
 
@@ -268,7 +268,7 @@ while($d=mysqli_fetch_assoc($q)){
 
       </td>
       <td>
-        <div><a target=_blank href='?pengeluaran&p=terima_do&kode_do=$kode_do&cat=$cat'>$qty_pick</a></div>
+        <div><a target=_blank href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat'>$qty_pick</a></div>
       </td>
       <td>
         <div class=darkred>$qty_pick_by</div>

@@ -3,7 +3,7 @@
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?pengeluaran">Pengeluaran</a></li>
-      <li class="breadcrumb-item"><a href="?pengeluaran&p=terima_do">Terima DO Baru</a></li>
+      <li class="breadcrumb-item"><a href="?pengeluaran&p=buat_do">Buat DO Baru</a></li>
       <li class="breadcrumb-item active">Data DO</li>
     </ol>
   </nav>
@@ -19,7 +19,7 @@ if(isset($_POST['keyword'])){
 $keyword = $_GET['keyword'] ?? '';
 $bg_keyword = $keyword ? 'style="background:#0f0"' : '';
 $hide_clear = $keyword ? '' : 'hideit';
-
+$keyword = trim($keyword);
 
 $sql_filter = $keyword ? "
   (
@@ -30,8 +30,9 @@ $sql_filter = $keyword ? "
 
 $s = "SELECT 
 a.*,
-(SELECT COUNT(1) FROM tb_picking WHERE kode_do_cat=a.kode) jumlah_pick 
-FROM tb_terima_do a 
+a.id as id_do,
+(SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id) jumlah_pick 
+FROM tb_do a 
 WHERE $sql_filter  
 ORDER BY tanggal_delivery DESC
 ";
@@ -46,30 +47,33 @@ $tr = '';
 $i = 0;
 while($d=mysqli_fetch_assoc($q)){
   $i++;
-  $kode_do = $d['kode_do'];
+  $id_do = $d['id_do'];
   $abu_items = $d['jumlah_pick'] ? 'abu' : 'tebal merah';
-  $aksi_hapus = $d['jumlah_pick'] ? '-' : "<span class='btn_aksi' id=sj__delete__$kode_do>$img_delete</span>";
+  $aksi_hapus = $d['jumlah_pick'] ? '-' : "<span class='btn_aksi' id=do__delete__$id_do>$img_delete</span>";
   $untuk = $d['id_kategori']==1 ? 'Aksesoris' : 'Fabric';
   $cat = $d['id_kategori']==1 ? 'aks' : 'fab';
+  $add_ro = $d['is_repeat'] ? '' : "<a href='?pengeluaran&p=repeat_order&kode_do_awal=$d[kode_do]&id_kategori=$d[id_kategori]'>$img_add</a>";
 
   $tr .= "
-    <tr id=source_do__$kode_do>
+    <tr id=source_do__$id_do>
       <td>$i</td>
       <td>
-        <a href='?pengeluaran&p=terima_do&kode_do=$d[kode_do]&cat=$cat'>
+        <a href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat'>
           $d[kode_do]
           <div class='kecil $abu_items'>$d[jumlah_pick] picks</div>
         </a>
       </td>
+      <td>$d[kode_artikel]</td>
       <td>$untuk</td>
       <td>
-        $aksi_hapus
+        $aksi_hapus 
+        $add_ro
       </td>
     </tr>
   ";
 }
 
-$tambah_do_baru = "<a class='btn btn-sm btn-success' href='?pengeluaran&p=terima_do'>Terima DO Baru</a>";
+$tambah_do_baru = "<a class='btn btn-sm btn-success' href='?pengeluaran&p=buat_do'>Buat DO Baru</a>";
 if(!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
 
 echo 
@@ -92,6 +96,7 @@ echo
     <thead>
       <th>NO</th>
       <th>NOMOR DO</th>
+      <th>ARTIKEL</th>
       <th>OTP</th>
     </thead>
     $tr

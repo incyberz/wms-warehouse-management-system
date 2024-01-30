@@ -20,21 +20,22 @@
 <script>
   let kode_do = '';
   let id_kategori = '';
-  let kode_do_cat = '';
+  let id_do = '';
+
   $(function(){
     id_kategori = $('#id_kategori').text();
+    id_do = $('#id_do').text();
     kode_do = $('#kode_do').val();
-    kode_do_cat = kode_do+id_kategori;
 
-    if(kode_do_cat.length!=10){
-      console.log('kode_do_cat.length != 10 ',kode_do_cat.length);
+    if(!(kode_do.length==9 || kode_do.length==15)){
+      console.log('kode_do.length != 9 or 15 ',kode_do.length);
       return;
     }
     
     $('#keyword').keyup(function(){
       let keyword = $(this).val().trim();
       if(keyword.length>2){
-        let link_ajax = `pages/pengeluaran/picking_list_add_fetcher.php?keyword=${keyword}&id_kategori=${id_kategori}&kode_do_cat=${kode_do_cat}`;
+        let link_ajax = `pages/pengeluaran/picking_list_add_fetcher.php?keyword=${keyword}&id_kategori=${id_kategori}&id_do=${id_do}`;
         $.ajax({
           url:link_ajax,
           success:function(a){
@@ -56,8 +57,9 @@
     let aksi = rid[0];
     let id = rid[1];
 
-    console.log(id,kode_do,id_kategori);
-    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_sj_subitem=${id}&kode_do_cat=${kode_do_cat}`;
+    // console.log(id,kode_do,id_kategori);
+    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_sj_subitem=${id}&id_do=${id_do}`;
+    console.log(link_ajax);
     $.ajax({
       url:link_ajax,
       success:function(a){

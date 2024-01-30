@@ -69,17 +69,17 @@ if($p!=''){
         <br><span class="jumlah_item_podo"><?=3412 ?> <span class=satuan_podo>item</span></span> -->
       </div>
       <div>
-        <a href="?pengeluaran&p=terima_do">Terima DO Baru</a> 
+        <a href="?pengeluaran&p=buat_do">Buat DO Baru</a> 
         <!-- <br><span class="jumlah_podo"><?=11 ?> <span class=satuan_podo>PO</span></span>
         <br><span class="jumlah_item_podo"><?=3411 ?> <span class=satuan_podo>item</span></span> -->
       </div>
       <div>
-        <a href="?pengeluaran&p=allocate">Allocate</a> 
+        <a href="?pengeluaran&p=allocate">Allocate <?= $id_role==7 ? $img_locked : '' ?></a> 
         <!-- <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
         <br><span class="jumlah_item_podo"><?=3051 ?> <span class=satuan_podo>item</span></span> -->
       </div>
       <div>
-        <a href="?pengeluaran&p=shipping">Shipping</a> 
+        <a href="?pengeluaran&p=shipping">Shipping <?= $id_role==7 ? $img_locked : '' ?></a> 
         <!-- <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
         <br><span class="jumlah_item_podo"><?=2912 ?> <span class=satuan_podo>item</span></span> -->
       </div>

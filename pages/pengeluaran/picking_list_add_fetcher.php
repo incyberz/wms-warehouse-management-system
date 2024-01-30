@@ -4,7 +4,7 @@ $unset = '<span class="kecil miring red consolas">unset</span>';
 
 $keyword = $_GET['keyword'] ?? '';
 $id_kategori = $_GET['id_kategori'] ?? die(erid('id_kategori'));
-$kode_do_cat = $_GET['kode_do_cat'] ?? die(erid('kode_do_cat'));
+$id_do = $_GET['id_do'] ?? die(erid('id_do'));
 if(!$id_kategori) die(erid('id_kategori::empty'));
 $jenis_barang = $id_kategori==1 ? 'Aksesoris' : 'Fabric';
 
@@ -26,7 +26,7 @@ $sql_from = "
   JOIN tb_barang e ON b.kode_barang=e.kode 
   JOIN tb_satuan f ON e.satuan=f.satuan 
   JOIN tb_lokasi g ON a.kode_lokasi=g.kode 
-  LEFT JOIN tb_picking h ON a.id=h.id_sj_subitem AND h.kode_do_cat='$kode_do_cat'
+  LEFT JOIN tb_picking h ON a.id=h.id_sj_subitem AND h.id_do='$id_do'
   WHERE h.id is null 
   AND e.id_kategori = $id_kategori 
   AND $sql_keyword  
@@ -70,7 +70,10 @@ g.brand,
   ) qty_balik 
 
 $sql_from 
-LIMIT 10
+
+
+LIMIT 10 
+
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_tampil = mysqli_num_rows($q);
@@ -91,19 +94,6 @@ if(mysqli_num_rows($q)==0){
     $qty_retur=floatval($d['qty_retur']);
     $qty_balik=floatval($d['qty_balik']);
     $lot_info = $d['no_lot'] ? "<div>Lot: $d[no_lot]</div>" : "<div>Lot: $unset</div>";
-    $roll_info = $d['no_roll'] ? "<div>Roll: $d[no_roll]</div>" : '';
-
-    // if($is_fs){
-    //   $qty_fs = $qty;
-    //   $qty = 0;
-    //   // $tr_gradasi = 'biru';
-    //   $qty_transit = 0;
-    // }else{
-    //   $qty_transit = $qty-$qty_terima;
-    //   // $tr_gradasi = '';
-    //   $qty_fs = 0;
-    // }
-
 
     // transit or after QC
     $qty_transit = 0;
@@ -138,22 +128,9 @@ if(mysqli_num_rows($q)==0){
     $kode_lokasi_brand = "$d[kode_lokasi] <span class='abu f12'>$d[brand]</span>";
     $lokasi_show = ($qty_pick_by || $stok_akhir) ? "<span class='darkblue f16'>$kode_lokasi_brand</span>" : "<span class=abu>$kode_lokasi_brand</span>";
 
-    
-
-
-    //old code
-    // $qty_transit_show = $qty_transit ? "<td class='merah'><div>$qty_transit $satuan</div></td>" : '<td>-</td>';
-    // $qty_fs_show = $qty_fs ? "<td class='gradasi-hijau'><div>$qty_fs $satuan</div></td>" : '<td>-</td>';
-    // $qty_terima_show = $qty_terima ? "<td class='gradasi-hijau'><div>$qty_terima $satuan</div></td>" : '<td class="gradasi-merah">-</td>';
-    // $qty_terima_show = $qty_fs ? '<td>-</td>' : $qty_terima_show;
-
-    // $qty_pick_by_show = "<td class=darkred>$qty_pick_by</td>";
-
-    // $qty_stok = ($qty_terima + $qty_fs) - $qty_pick_by;
-    // $qty_stok_show = "<td>$qty_stok</td>";
-
-    $btn_add = $stok_akhir ? "<div id=div_btn_add__$id><button class='btn btn-success btn-sm btn_add' id=btn_add__$id>Add</button></div>" : '<button class="btn btn-secondary btn-sm" disabled>Add</button>';
+    $btn_add = $stok_akhir ? "<div id=div_btn_add__$id><button class='btn btn-success btn-sm btn_add mb1' id=btn_add__$id>Add</button></div>" : '<button class="btn btn-secondary btn-sm mb1" disabled>Add</button>';
     $fs_show = $is_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
+    $btn_hutangan = !$stok_akhir ? "<div id=div_btn_hutangan__$id><button class='btn btn-danger btn-sm btn_add' id=btn_hutangan__$id>Hutangan</button></div>" : '';
 
     $tr .= "
       <tr>
@@ -169,7 +146,7 @@ if(mysqli_num_rows($q)==0){
         <td>
           <div>Lokasi: $d[kode_lokasi] ~ $d[brand] $fs_show</div>
           $lot_info
-          $roll_info
+          
         </td>
         <td>
           <div>$qty_transit_show</div>
@@ -185,7 +162,7 @@ if(mysqli_num_rows($q)==0){
           <div class='abu f12'>$lokasi_show</div>
         </td>
         <td>
-          $btn_add
+          $btn_add $btn_hutangan
         </td>
       </tr>
     ";

@@ -59,7 +59,7 @@ if($jumlah_item){
   JOIN tb_barang f ON c.kode_barang=f.kode 
   JOIN tb_satuan g ON f.satuan=g.satuan 
   JOIN tb_lokasi h ON b.kode_lokasi=h.kode 
-  JOIN tb_terima_do i ON a.kode_do_cat=i.kode 
+  JOIN tb_do i ON a.id_do=i.id 
   WHERE i.kode_do='$kode_do' 
   AND i.id_kategori=$id_kategori 
   ";
@@ -111,13 +111,16 @@ if($jumlah_item){
     
     $stok_real = $qty_fs + $qty_qc - $qty_pick_by;
     $stok_akhir = $stok_real - $qty_pick;
+
+    $hutangan_show = $d['is_hutangan'] ? "HUTANGAN" : '';
+    $max = $d['is_hutangan'] ? '' : $stok_real;
     
     $tr .= "
       <tr class='gradasi-$gradasi'>
         <td>$i</td>
         <td>
           <div>PO: $d[kode_po]</div>
-          <div>$d[kode_barang]</div>
+          <div>$d[kode_barang] <span class='badge bg-red mb1'>$hutangan_show</span></div>
           <div class='f12 abu'>
             <div>$d[nama_barang]</div>
             <div>$d[keterangan_barang]</div>
@@ -136,7 +139,7 @@ if($jumlah_item){
         <td class=darkred>$qty_pick_by</td>
         <td>$stok_real</td>
         <td width=100px>
-          <input class='form-control qty_pick' id=qty_pick__$id name=qty_pick__$id type=number step=$step max=$stok_real required value='$qty_pick_for_input'>
+          <input class='form-control qty_pick' id=qty_pick__$id name=qty_pick__$id type=number step=$step max=$max required value='$qty_pick_for_input'>
           <div class='f12 darkabu mt1'><span class='set_max pointer' id=set_max__$id>Set Max : <span id=stok_real__$id>$stok_real</span></span></div>
         </td>
         <td>

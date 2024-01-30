@@ -66,11 +66,11 @@ $arr_proses = [
     'Mencetak label untuk tiap-tiap Sub Item',
     '?penerimaan&p=cetak_label_info'
   ],
-  'terima_do' => [
+  'buat_do' => [
     3,
-    'Terima DO',
+    'Buat DO',
     'Menerima DO dari ...',
-    '?pengeluaran&p=terima_do'
+    '?pengeluaran&p=buat_do'
   ],
   'picking' => [
     3,

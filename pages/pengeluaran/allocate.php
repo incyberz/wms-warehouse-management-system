@@ -24,7 +24,7 @@ if(!in_array($id_role,[1,2,3,9])){
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?pengeluaran">Pengeluaran</a></li>
       <li class="breadcrumb-item"><a href="?pengeluaran&p=data_do">Data DO</a></li>
-      <li class="breadcrumb-item"><a href="?pengeluaran&p=terima_do">Terima DO Baru</a></li>
+      <li class="breadcrumb-item"><a href="?pengeluaran&p=buat_do">Buat DO Baru</a></li>
       <li class="breadcrumb-item active">Allocate</li>
     </ol>
   </nav>

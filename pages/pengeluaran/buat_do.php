@@ -3,20 +3,20 @@
   .help ul, .blok_kode ul{margin:0;padding:0 0 0 15px}
 </style>
 <?php
-set_title('Terima DO');
+set_title('Buat DO');
 
 $kode_do = $_GET['kode_do'] ?? '';
-$bread_terima_do = $kode_do=='' ? '' : '<li class="breadcrumb-item"><a href="?pengeluaran&p=terima_do">Terima DO Baru</a></li>';
+$bread_terima_do = $kode_do=='' ? '' : '<li class="breadcrumb-item"><a href="?pengeluaran&p=buat_do">Buat DO Baru</a></li>';
 
 $page_title = "
   <div class='pagetitle'>
-    <h1>Terima DO</h1>
+    <h1>Buat DO</h1>
     <nav>
       <ol class='breadcrumb'>
         <li class='breadcrumb-item'><a href='?pengeluaran'>Pengeluaran</a></li>
         <li class='breadcrumb-item'><a href='?pengeluaran&p=data_do'>Data DO</a></li>
         $bread_terima_do
-        <li class='breadcrumb-item active'>Terima DO</li>
+        <li class='breadcrumb-item active'>Buat DO</li>
       </ol>
     </nav>
   </div>
@@ -27,37 +27,68 @@ $page_title = "
 # ======================================================
 if(isset($_POST['btn_create_do'])){
   unset($_POST['btn_create_do']);
-
-
-  echo 'Processing Accept Delivery Order ... <hr>';
+  echo 'Processing Delivery Order ... <hr>';
   // echo '<pre>';
   // var_dump($_POST);
   // echo '</pre>';
 
   $keys = '';
   $values = '';
-  $pairs = '';
+
+  // kode_do == kode_artikel
+  $_POST['kode_do'] = $_POST['kode_artikel'];
+
+  // kode_delivery auto = yymmdd-count(data, 4 digit)
+  $s = "SELECT 1 FROM tb_do";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $count_do = mysqli_num_rows($q);
+  $count_do = "000$count_do";
+  $count_do = substr($count_do,strlen($count_do)-4,4);
+  $_POST['kode_delivery'] = date('ymd')."-$count_do";
+
+
+
   foreach ($_POST as $key => $value) {
     $value = clean_sql($value);
     $value = ($value==''||$value=='-') ? 'NULL' : "'$value'";
 
     if($keys!='') $keys.=',';
     if($values!='') $values.=',';
-    if($pairs!='') $pairs.=',';
     $keys .= $key;
     $values .= $value;
-    $pairs .= "$key=$value";
   }
 
-  /// cek if exists zzz here
 
-  $kode_do_cat = "$_POST[kode_do]$_POST[id_kategori]";
-  if(strlen($kode_do_cat)!=10) die("Kode DO harus 9 digit.");
-  $s = "INSERT INTO tb_terima_do (kode,$keys) VALUES ('$kode_do_cat',$values) ON DUPLICATE KEY UPDATE $pairs";
+  // duplicate check
+  $s = "SELECT 1 FROM tb_do WHERE kode_do='$_POST[kode_do]' AND id_kategori=$_POST[id_kategori]";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)){
+    //duplicate handler
+
+    $kategori = $_POST['id_kategori']==1 ? 'Aksesoris' : 'Fabric';
+
+    die(div_alert('danger',"Kode DO <u>$_POST[kode_do]</u> untuk <u>$kategori</u> sudah ada. Jika repeat order silahkan  <a href='?pengeluaran&p=repeat_order&kode_do_awal=$_POST[kode_do]&id_kategori=$_POST[id_kategori]'>Buat Repeat Order</a>"));
+  }
+
+
+  // length validate of kode_do, must 9 || 15
+  if(strlen($_POST['kode_do'])==9){
+    //order pertama kali ... do nothing, passed
+
+  }else if(strlen($_POST['kode_do'])==15){
+    //repeat order
+    $keys.= ',is_repeat';
+    $values.= ',1';
+
+  }else{
+    die('Kode DO harus 9 digit atau 15 digit (Repeat Order)<hr>Format Kode Repeat Order: RO-[9 digit kode DO normal]-[2 digit bulan proyeksi]');
+  } 
+
+  $s = "INSERT INTO tb_do ($keys) VALUES ($values)";
   // echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $cat = $_POST['id_kategori']==1 ? 'aks' : 'fab';
-  jsurl("?pengeluaran&p=terima_do&kode_do=$_POST[kode_do]&cat=$cat");
+  // jsurl("?pengeluaran&p=buat_do&kode_do=$_POST[kode_do]&cat=$cat");
   exit;
 
 }
@@ -100,7 +131,7 @@ if($kode_do!=''){
           <li class='breadcrumb-item'><a href='?pengeluaran'>Pengeluaran</a></li>
           <li class='breadcrumb-item'><a href='?pengeluaran&p=data_do'>Data DO</a></li>
           $bread_terima_do
-          <li class='breadcrumb-item'><a href='?pengeluaran&p=terima_do&kode_do=$kode_do&cat=$cat_lainnya'>PL $jenis_barang_lainnya</a></li>
+          <li class='breadcrumb-item'><a href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat_lainnya'>PL $jenis_barang_lainnya</a></li>
           <li class='breadcrumb-item active'>PL $jenis_barang</li>
         </ol>
       </nav>
@@ -111,14 +142,14 @@ if($kode_do!=''){
 
 
 
-  $s = "SELECT a.*,
-  (SELECT COUNT(1) FROM tb_picking WHERE kode_do_cat=a.kode) jumlah_item 
-  FROM tb_terima_do a 
+  $s = "SELECT a.*, a.id as id_do,
+  (SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id) jumlah_item 
+  FROM tb_do a 
   WHERE a.kode_do='$kode_do' 
   AND a.id_kategori=$id_kategori 
   ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0) die(div_alert('danger',"Data DO $kode_do untuk $jenis_barang tidak ditemukan. | <a href='?pengeluaran&p=terima_do'>Terima DO Baru</a>"));
+  if(mysqli_num_rows($q)==0) die(div_alert('danger',"Data DO $kode_do untuk $jenis_barang tidak ditemukan. | <a href='?pengeluaran&p=buat_do'>Buat DO Baru</a>"));
   $d = mysqli_fetch_assoc($q);
   $update_trigger = 'update_trigger';
   $kode_do_tr_hide = 'hideit';
@@ -136,6 +167,9 @@ if($kode_do!=''){
   $id_kategori = $d['id_kategori'];
   $jumlah_item = $d['jumlah_item'];
   $btn_caption = 'Update DO';
+  
+  $id_do = $d['id_do'];
+  echo "<span class=hideit id=id_do>$id_do</span>";
 
   // 012345678
   $kode_brand = substr($kode_artikel,0,1);
@@ -233,25 +267,25 @@ echo "
   $pic_info
   <form method=post id=form_do class=$form_do_hide>
     <table class=tablez>
-      <tr class='$kode_do_tr_hide'>
-        <td width=150px>Nomor DO</td>
-        <td>
-          <input type='text' class='mb2 form-control' id=kode_do name=kode_do minlength=9 maxlength=9 placeholder='Contoh: K0112312K' required value='$kode_do'>
-          
-        </td>
-      </tr>
-      <tr>
-        <td>Nomor Delivery</td>
-        <td>
-          <input type='text' class='mb2 form-control $update_trigger' id=kode_delivery name=kode_delivery minlength=9 maxlength=9 placeholder='Contoh: 191401705' required value='$kode_delivery'>
-        </td>
-      </tr>
       <tr>
         <td valign=top class=pt2>Kode Artikel</td>
         <td>
           <input type='text' class='mb2 form-control $update_trigger consolas f24' id=kode_artikel name=kode_artikel style='letter-spacing:5px;' maxlength=9 required value='$kode_artikel' placeholder='.........'>
           <div class='blok_kode kecil mb2'><ul>$li</ul></div>
           $help
+        </td>
+      </tr>
+      <tr class='$kode_do_tr_hide'>
+        <td width=150px>Nomor DO</td>
+        <td>
+          <input disabled type='text' class='mb2 form-control' id=kode_do name=kode_do minlength=9 maxlength=9 placeholder='auto' required value='$kode_do'>
+          
+        </td>
+      </tr>
+      <tr>
+        <td>Nomor Delivery</td>
+        <td>
+          <input disabled type='text' class='mb2 form-control $update_trigger' id=kode_delivery name=kode_delivery minlength=9 maxlength=9 placeholder='auto' value='$kode_delivery'>
         </td>
       </tr>
       <tr>
