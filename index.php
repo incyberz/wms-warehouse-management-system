@@ -57,6 +57,7 @@ $debug .= "<hr>Anda login sebagai $nama_user dg id-role : $id_role<hr>";
 # INCLUDES
 # ================================================
 include 'include/insho_functions.php';
+include 'include/wms_functions.php';
 include 'include/data_perusahaan.php';
 include 'include/crud_icons.php';
 include 'include/arr_master.php';

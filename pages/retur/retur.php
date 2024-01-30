@@ -1,5 +1,26 @@
-<style>.hideita{background:yellow}</style>
 <?php
+
+if(!in_array($id_role,[1,2,3,9])){
+  // jika bukan petugas wh
+  $pesan = div_alert('info',"<p>$img_locked Maaf, <u>hak akses Anda tidak sesuai</u> dengan fitur ini. Silahkan hubungi Pihak Warehouse jika ada kesalahan. terimakasih</p>");
+  echo "
+    <div class='pagetitle'>
+      <h1>Proses Retur</h1>
+      <nav>
+        <ol class='breadcrumb'>
+          <li class='breadcrumb-item'><a href='?'>Home Dashboard</a></li>
+        </ol>
+      </nav>
+    </div>
+    $pesan
+  ";
+
+}else{
+
+
+# ========================================================
+# PETUGAS WH ONLY
+# ========================================================
 $pesan_tambah = '';
 $today = date('Y-m-d');
 $now = date('Y-m-d H:i:s');
@@ -407,3 +428,5 @@ if($get_id_sj_item!=''){
     });
   })
 </script>
+
+<?php } ?>

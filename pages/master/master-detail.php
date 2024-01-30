@@ -239,15 +239,19 @@ if(isset($_POST['btn_update'])){
     $login_as = $id_role==9 ? "<a href='?login_as&id_user=$id_p'>$img_login_as</a> " : '';
 
     // only admin yang dapat edit / delete role
-    $edit_delete = ($id_role!=9 and ($p=='role' || $p=='user')) ? '-' : "
+    $edit_delete = ($id_role!=9 and ($p=='role' || $p=='user')) ? '' : "
       <span class='btn_aksi' id=$toggle_id>$img_edit</span> 
       <span class='btn_aksi' id=$delete_id>$img_delete</span>
     ";
 
+    // jika hak akses dibatasi
+    if($locked_icon) $edit_delete = $edit_delete ? $locked_icon : '';
+
     // boleh edit user sendiri
     $edit_delete = ($username == $d["kode_$p"]) ? "<span class='btn_aksi' id=$toggle_id>$img_edit</span>" : $edit_delete;
 
-    
+    // null to dash
+    $edit_delete = $edit_delete ? $edit_delete : '-';
     
 
     # ==============================================================

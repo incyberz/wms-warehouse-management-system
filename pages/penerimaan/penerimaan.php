@@ -7,13 +7,33 @@ $p = $_GET['p'] ?? '';
 set_title('Penerimaan');
 
 $kode_sj = $_GET['kode_sj'] ?? '';
-if($p!=''){
-  if(file_exists("pages/penerimaan/$p.php")){
-    include "$p.php";
-  }else{
-    include 'na.php';
-  }
+
+if(!in_array($id_role,[1,2,3,9])){
+  // jika bukan petugas wh
+  $pesan = div_alert('info',"<p>$img_locked Maaf, <u>hak akses Anda tidak sesuai</u> dengan fitur ini. Silahkan hubungi Pihak Warehouse jika ada kesalahan. terimakasih</p>");
+  echo "
+    <div class='pagetitle'>
+      <h1>Proses Penerimaan</h1>
+      <nav>
+        <ol class='breadcrumb'>
+          <li class='breadcrumb-item'><a href='?'>Home Dashboard</a></li>
+        </ol>
+      </nav>
+    </div>
+    $pesan
+  ";
+
 }else{
+  // petugas WH only
+  if($p!=''){
+    if(file_exists("pages/penerimaan/$p.php")){
+      include "$p.php";
+    }else{
+      include 'na.php';
+    }
+  }else{
+
+
 ?>
 
 <!-- for btn_aksi -->
@@ -93,4 +113,4 @@ if($p!=''){
   </div>
 </section>
 
-<?php } ?>
+<?php }} ?>

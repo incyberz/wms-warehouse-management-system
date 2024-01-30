@@ -15,6 +15,7 @@ $img_check = '<img class="zoom pointer" src="assets/img/icons/check.png" alt="ch
 $img_warning = '<img class="zoom pointer" src="assets/img/icons/warning.png" alt="warning" height=20px>';
 $img_next = '<img class="zoom pointer" src="assets/img/icons/next.png" alt="next" height=20px>';
 $img_prev = '<img class="zoom pointer" src="assets/img/icons/prev.png" alt="prev" height=20px>';
+$img_locked = '<img class="zoom pointer" src="assets/img/icons/locked.png" alt="locked" height=20px>';
 
 
 
