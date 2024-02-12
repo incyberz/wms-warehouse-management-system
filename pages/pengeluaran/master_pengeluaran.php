@@ -131,7 +131,7 @@ JOIN tb_bbm e ON e.kode_sj=d.kode
 JOIN tb_barang f ON c.kode_barang=f.kode 
 JOIN tb_lokasi g ON b.kode_lokasi=g.kode 
 JOIN tb_supplier h ON d.id_supplier=h.id  
-JOIN tb_do i ON a.id_do=i.kode  
+JOIN tb_do i ON a.id_do=i.id  
 
 $sql_where 
 

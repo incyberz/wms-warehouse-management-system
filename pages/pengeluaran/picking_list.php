@@ -224,15 +224,16 @@ if($jumlah_item){
     </tr>
   </table>
 </form>
+
+<div id=picking_list_add class="hideit wadah">
+  <?php include 'picking_list_add.php'; ?>
+</div>
+
 <table class="table">
   <?=$tr_verif?>
 </table>
 
-<?php 
-echo '<div id=picking_list_add class="hideit wadah">';
-include 'picking_list_add.php'; 
-echo '</div>';
-?>
+
 <script>
   $(function(){
 

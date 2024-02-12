@@ -1,3 +1,4 @@
+<!-- versi 1.0.0 -->
 <script>
   $(function(){
     let link_ajax = '';

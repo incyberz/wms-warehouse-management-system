@@ -49,10 +49,10 @@ while($d=mysqli_fetch_assoc($q)){
   $i++;
   $id_do = $d['id_do'];
   $abu_items = $d['jumlah_pick'] ? 'abu' : 'tebal merah';
-  $aksi_hapus = $d['jumlah_pick'] ? '-' : "<span class='btn_aksi' id=do__delete__$id_do>$img_delete</span>";
+  $aksi_hapus = $d['jumlah_pick'] ? '' : "<span class='btn_aksi' id=do__delete__$id_do>$img_delete</span>";
   $untuk = $d['id_kategori']==1 ? 'Aksesoris' : 'Fabric';
   $cat = $d['id_kategori']==1 ? 'aks' : 'fab';
-  $add_ro = $d['is_repeat'] ? '' : "<a href='?pengeluaran&p=repeat_order&kode_do_awal=$d[kode_do]&id_kategori=$d[id_kategori]'>$img_add</a>";
+  $add_ro = $d['is_repeat'] ? '' : "<a target=_blank onclick='return confirm(\"Ingin menambah Repeat Order dari DO ini?\")' href='?pengeluaran&p=repeat_order&kode_do_awal=$d[kode_do]&id_kategori=$d[id_kategori]'>$img_add</a>";
 
   $tr .= "
     <tr id=source_do__$id_do>
@@ -98,6 +98,7 @@ echo
       <th>NOMOR DO</th>
       <th>ARTIKEL</th>
       <th>OTP</th>
+      <th>Delete / Add-RO</th>
     </thead>
     $tr
   </table>

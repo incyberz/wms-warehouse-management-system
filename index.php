@@ -3,7 +3,7 @@ session_start();
 # ================================================
 # PHP INDEX
 # ================================================
-$dm = 1;
+$dm = 0;
 $debug = '';
 $unset = '<span class="kecil miring red consolas">unset</span>';
 $unverified = '<span class="kecil miring red consolas" onclick="alert(\'Proses verifikasi harus mengikuti alur pengisisan data.\')">unverified</span>';
