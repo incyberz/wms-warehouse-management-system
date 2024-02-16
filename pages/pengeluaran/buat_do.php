@@ -23,6 +23,16 @@ $page_title = "
 ";
 
 # ======================================================
+# PIC only
+# ======================================================
+if($id_role!=7 and !$kode_do){
+  echo $page_title;
+  echo div_alert('danger'," Maaf, hanya login PIC yang dapat menggunakan fitur membuat DO.");
+  exit;
+}
+
+
+# ======================================================
 # PROCESSORS
 # ======================================================
 if(isset($_POST['btn_create_do'])){
@@ -122,10 +132,13 @@ if($kode_do!=''){
 
   echo "<span class=hideit id=id_kategori>$id_kategori</span>";
 
-  set_title("Picking List $jenis_barang");
+  $Manage = $id_role==7 ? 'Manage' : '';
+  $Allocate = $id_role==3 ? 'Allocate' : '';
+  $judul = "$Manage$Allocate Picking List $jenis_barang";
+  set_title($judul);
   $page_title = "
     <div class='pagetitle'>
-      <h1>Picking List $jenis_barang</h1>
+      <h1>$judul</h1>
       <nav>
         <ol class='breadcrumb'>
           <li class='breadcrumb-item'><a href='?pengeluaran'>Pengeluaran</a></li>
@@ -154,12 +167,15 @@ if($kode_do!=''){
   $update_trigger = 'update_trigger';
   $kode_do_tr_hide = 'hideit';
   $form_do_hide = 'hideit';
+
+  $detail = $id_role!=7 ? '' : "<div><span class=btn_aksi id=form_do__toggle>$img_detail</span></div>";
+
   $kode_do_div = "
     <div class=flexy>
       <div class='tebal mb2'>Nomor DO : $d[kode_do] </div>
       <div>|</div>
       <div class='tebal mb2'>Artikel : $d[kode_artikel] </div>
-      <div><span class=btn_aksi id=form_do__toggle>$img_detail</span></div>
+      $detail
     </div>
   ";
   $kode_delivery = $d['kode_delivery'];
@@ -200,7 +216,7 @@ if($kode_do!=''){
       </ul>
     ";
   }else{
-    $pic_info = "<div class=mb2>Assign PIC: $unset | <a href='?assign_pic&kode_artikel=$kode_artikel'>Assign PIC</a></div>";
+    $pic_info = "<div class='mb2 pic_only'>Assign PIC: $unset | <a href='?assign_pic&kode_artikel=$kode_artikel'>Assign PIC</a></div>";
   }
 }
 

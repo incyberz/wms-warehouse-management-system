@@ -32,8 +32,9 @@ if(!in_array($id_role,[1,2,3,9])){
 
 <?php
 set_title('Allocate/Packing');
+
+echo div_alert('info',"Silahkan Anda Allocate mulai dari <a href='?pengeluaran&p=data_do'>Pemilihan DO</a> pada List DO.");
 ?>
-<div class="alert alert-danger">Page ini masih dalam tahap pengembangan. Terimakasih.</div>
 
 
 <?php } ?>

@@ -2,7 +2,7 @@
 
   <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
     <img src="<?=$src_profile?>" alt="Profile" class="rounded-circle" style='height:30px;width:30px;object-fit:cover'>
-    <span class="d-none d-md-block dropdown-toggle ps-2"><?=$username?></span>
+    <span class="d-none d-md-block dropdown-toggle ps-2"><?=$nama_user?> | <?=$sebagai?></span>
   </a><!-- End Profile Iamge Icon -->
 
   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
@@ -51,5 +51,5 @@
       </a>
     </li>
 
-  </ul><!-- End Profile Dropdown Items -->
-</li><!-- End Profile Nav -->
+  </ul>
+</li>

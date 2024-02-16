@@ -80,6 +80,7 @@ $s = "SELECT
 a.qty as qty_pick,
 a.id as id_pick,
 a.id_sj_subitem,
+a.qty_allocate,
 b.kode_lokasi,
 b.is_fs,
 b.no_lot,
@@ -166,6 +167,7 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_retur = $d['qty_retur'];
   $qty_balik = $d['qty_balik'];
   $qty_pick = $d['qty_pick'];
+  $qty_allocate = $d['qty_allocate'];
   $qty_pick_by = $d['qty_pick_by'];
   $qty_diterima_with_qc_no_fs = $d['qty_diterima_with_qc_no_fs'];
   
@@ -173,6 +175,7 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_retur = $qty_retur ? floatval($qty_retur) : 0;
   $qty_balik = $qty_balik ? floatval($qty_balik) : 0;
   $qty_pick = $qty_pick ? floatval($qty_pick) : 0;
+  $qty_allocate = $qty_allocate ? floatval($qty_allocate) : 0;
   $qty_pick_by = $qty_pick_by ? floatval($qty_pick_by) : 0;
   $qty_diterima_with_qc_no_fs = $qty_diterima_with_qc_no_fs ? floatval($d['qty_diterima_with_qc_no_fs']) : 0;
 
@@ -209,6 +212,44 @@ while($d=mysqli_fetch_assoc($q)){
   ";
 
   $gradasi = $qty_pick ? '' : 'merah';
+
+  if($qty_pick){
+
+    if($id_role==3){
+      if($qty_allocate==$qty_pick){
+        $color = 'success';
+        $caption = 'reAllocate';
+      }else if($qty_allocate){
+        $color = 'danger';
+        $caption = 'Fix Allocate';
+      }else{
+        $color = 'primary';
+        $caption = 'Allocate';
+      }
+      $btn = "<button class='btn btn-$color btn-sm'>$caption</button>";
+    }else{
+      $btn='';      
+    }
+
+    $pick_allocate = "
+      <a target=_blank href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat'>
+        $qty_pick / $qty_allocate  $btn
+      </a>
+    ";
+  }else{
+    if($id_role==7){
+      $pick_allocate = "
+        <a target=_blank href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat'>
+          0 / 0  <button class='btn btn-danger btn-sm'>Pick</button>
+        </a>
+      ";
+    }else{
+      $pick_allocate = '0 / 0';
+    }
+  }
+  // $pick_allocate = $id_role!=3 ? "$qty_pick / $qty_allocate" : "
+  //   
+  // ";
 
   $tr_hasil .= "
     <tr id=tr__$id class='gradasi-$gradasi'>
@@ -268,7 +309,7 @@ while($d=mysqli_fetch_assoc($q)){
 
       </td>
       <td>
-        <div><a target=_blank href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat'>$qty_pick</a></div>
+        <div>$pick_allocate</div>
       </td>
       <td>
         <div class=darkred>$qty_pick_by</div>
@@ -331,7 +372,7 @@ $bread = "<li class='breadcrumb-item'><a href='?master_pengeluaran&cat=aks'>Akse
         <td>PO / Supplier</td>
         <td>ID / Item / Keterangan</td>
         <td>QTY Subitem</td>
-        <td>QTY Pick</td>
+        <td>Pick/Allocate</td>
         <td class=darkred>Pick by<br><span class=f12>Other DO</span></td>
         <td>Stok Akhir</td>
       </tr>

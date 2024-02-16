@@ -38,3 +38,4 @@ if($username==''){
   $src_profile = "assets/img/user/$id_user.jpg";
   if(!file_exists($src_profile)) $src_profile = $profile_na;
 }
+

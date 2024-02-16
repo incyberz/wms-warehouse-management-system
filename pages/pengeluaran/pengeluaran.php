@@ -3,12 +3,14 @@
 <?php
 $p = $_GET['p'] ?? '';
 set_title('Pengeluaran');
+if($id_role!=7) echo "<style>.pic_only{display:none}</style>";
+if($id_role!=3) echo "<style>.wh_only{display:none}</style>";
 
 if($p!=''){
   include "$p.php";
 }else{
 
-
+  $link_buat_do = $id_role==3 ? "Buat DO Baru $img_locked" : "<a href='?pengeluaran&p=buat_do'>Buat DO Baru</a>";
 
 ?>
 
@@ -69,7 +71,7 @@ if($p!=''){
         <br><span class="jumlah_item_podo"><?=3412 ?> <span class=satuan_podo>item</span></span> -->
       </div>
       <div>
-        <a href="?pengeluaran&p=buat_do">Buat DO Baru</a> 
+        <?=$link_buat_do?> 
         <!-- <br><span class="jumlah_podo"><?=11 ?> <span class=satuan_podo>PO</span></span>
         <br><span class="jumlah_item_podo"><?=3411 ?> <span class=satuan_podo>item</span></span> -->
       </div>

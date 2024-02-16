@@ -1,1 +1,1 @@
-ALTER TABLE `tb_sj_subitem` DROP `jenis_bahan`;
+ALTER TABLE `tb_picking` ADD `qty_allocate` DECIMAL(11,4) NULL DEFAULT NULL AFTER `is_hutangan`; 

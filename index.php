@@ -157,6 +157,7 @@ if($parameter=='logout'){
     
     
     <main id="main" class="main">
+      <?php include 'debug.php'; ?>
       <?php include 'routing.php'; ?>
     </main>
     
@@ -185,7 +186,6 @@ if($parameter=='logout'){
   # INCLUDES
   # =======================================================
   include 'include/editable_js.php';
- 
   ?>
 
 </body>

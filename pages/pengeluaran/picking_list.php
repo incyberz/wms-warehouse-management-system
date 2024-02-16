@@ -1,4 +1,8 @@
 <?php
+# =============================================================
+# HAK AKSES PIC ONLY
+# =============================================================
+
 if(isset($_POST['btn_simpan_qty_pl'])){
   unset($_POST['btn_simpan_qty_pl']);
   echo 'Processing Update QTY Pick ...<hr>';
@@ -9,6 +13,19 @@ if(isset($_POST['btn_simpan_qty_pl'])){
 
   }
   echo div_alert('success','Update QTY Pick success.');
+  jsurl();
+}
+
+if(isset($_POST['btn_simpan_allocate'])){
+  unset($_POST['btn_simpan_allocate']);
+  echo 'Processing Update Allocate ...<hr>';
+  foreach ($_POST as $key => $qty_pick) {
+    $arr = explode('__',$key);
+    $s = "UPDATE tb_picking SET qty_allocate=$qty_pick WHERE id=$arr[1]";
+    $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+
+  }
+  echo div_alert('success','Update Allocate success.');
   jsurl();
 }
 
@@ -79,6 +96,7 @@ if($jumlah_item){
     $step = $d['step'];
     $is_fs = $d['is_fs'];
     $qty_pick = $d['qty_pick'];
+    $qty_allocate = $d['qty_allocate'];
     $qty_pick_by = $d['qty_pick_by'];
 
     if($qty_pick) $qty_pick = floatval($qty_pick);
@@ -99,13 +117,10 @@ if($jumlah_item){
 
     if($qty_transit) die("Pada Picking List QTY Transit tidak boleh > 0.<hr>id: $id");
 
-    $qty_fs_show = $qty_fs ? "<td class='hijau'><div>$qty_fs $satuan</div></td>" : '<td>-</td>';
-    $qty_qc_show = $qty_qc ? "<td class='hijau'><div>$qty_qc $satuan</div></td>" : '<td class="gradasi-merah">-</td>';
-    $qty_qc_show = $qty_fs ? '<td>-</td>' : $qty_qc_show;
-
     $qty_qc_or_fs = $qty_qc;
     if($qty_qc<$qty_fs) $qty_qc_or_fs = $qty_fs;
     $qty_pick_for_input = $qty_pick ? $qty_pick : '';
+    $qty_allocate_for_input = $qty_allocate ? $qty_allocate : '';
     
     $gradasi = $qty_pick ? '' : 'merah';
     
@@ -114,6 +129,18 @@ if($jumlah_item){
 
     $hutangan_show = $d['is_hutangan'] ? "HUTANGAN" : '';
     $max = $d['is_hutangan'] ? '' : $stok_real;
+
+    // wh only
+    $td_allocate = $id_role!=3 ? '-' : "
+      <input class='form-control qty_allocate' id=qty_allocate__$id name=qty_allocate__$id type=number step=$step max=$max required value='$qty_allocate_for_input'>
+      <div class='f12 darkabu mt1'><span class='set_max_allocate pointer' id=set_max_allocate__$id>Set Max : <span id=stok_real__$id>$stok_real</span></span></div>    
+    ";
+
+    // pic only
+    $td_pick = $id_role!=7 ? "<span id=qty_pick__$id>$qty_pick</span>" : "
+      <input class='form-control qty_pick' id=qty_pick__$id name=qty_pick__$id type=number step=$step max=$max required value='$qty_pick_for_input'>
+      <div class='f12 darkabu mt1'><span class='set_max pointer' id=set_max__$id>Set Max : <span id=stok_real__$id>$stok_real</span></span></div>
+    ";
     
     $tr .= "
       <tr class='gradasi-$gradasi'>
@@ -126,7 +153,7 @@ if($jumlah_item){
             <div>$d[keterangan_barang]</div>
           </div>
         </td>
-        <td width=50px>
+        <td class='pic_only' width=50px>
           <button name=btn_delete_item_picking value=$id style='border: none;background:none' onclick='return confirm(\"Yakin untuk hapus item ini?\")'>$img_delete</button>
         </td>
         <td>
@@ -134,13 +161,19 @@ if($jumlah_item){
           $lot_info
           $roll_info
         </td>
-        $qty_fs_show
-        $qty_qc_show
-        <td class=darkred>$qty_pick_by</td>
-        <td>$stok_real</td>
+        <td>
+          $stok_real <span class=btn_aksi id=stok_real_info$id"."__toggle>$img_detail</span>
+          <div id=stok_real_info$id class='hideit wadah f14 mt1'>
+            <div class=abu>QTY FS: $qty_fs</div>
+            <div class=green>QTY After QC: $qty_qc</div>
+            <div class=darkred>Pick by other DO: $qty_pick_by</div>
+          </div> 
+        </td>
         <td width=100px>
-          <input class='form-control qty_pick' id=qty_pick__$id name=qty_pick__$id type=number step=$step max=$max required value='$qty_pick_for_input'>
-          <div class='f12 darkabu mt1'><span class='set_max pointer' id=set_max__$id>Set Max : <span id=stok_real__$id>$stok_real</span></span></div>
+          $td_pick
+        </td>
+        <td class='wh_only' width=100px>
+          $td_allocate
         </td>
         <td>
           <span id=stok_akhir__$id>$stok_akhir</span> $satuan
@@ -150,7 +183,7 @@ if($jumlah_item){
   }
 }
 
-$id_role=7; //zzz debug
+// $id_role=7; //zzz debug
 // $jumlah_item_valid=2; //zzz debug
 
 // PIC only
@@ -171,10 +204,11 @@ if($jumlah_item){
     <span class=red>Masih ada $invalid QTY Pick yang kosong/tidak valid.</span>
   ";
 
-  $btn_simpan_qty = "<button class='btn btn-primary' name=btn_simpan_qty_pl id=btn_simpan_qty_pl>Simpan QTY</button>";
+  $btn_simpan_picking_list = $id_role !=7 ? '' : "<button class='btn btn-primary' name=btn_simpan_qty_pl id=btn_simpan_qty_pl>Simpan Picking List</button>";
+  $btn_simpan_allocate = $id_role!=3 ? '' : "<button class='btn btn-primary' name=btn_simpan_allocate id=btn_simpan_allocate>Simpan Allocate</button>";
 
   $tr_verif = "
-    <tr>
+    <tr class='hideit pic_only'>
       <td colspan=100%>
         <div class='mt1 mb1 kecil abu f12'>
           <ul>
@@ -192,9 +226,10 @@ if($jumlah_item){
     </tr>
   ";
 }else{
-  $btn_simpan_qty = '<span class="f12 miring abu">no items</span>';
+  $btn_simpan_picking_list = '<span class="f12 miring abu">no items</span>';
   $tr_verif = '';
 }
+
 
 ?>
 <h2>Picking List <?=$jenis_barang?></h2>
@@ -202,24 +237,29 @@ if($jumlah_item){
   <table class="table">
     <thead>
       <th>No</th>
-      <th colspan=2>ITEM</th>
+      <th>ITEM</th>
+      <th class='pic_only'>&nbsp;</th>
       <th>INFO</th>
-      <th>QTY FS</th>
-      <th>QTY QC</th>
-      <th class=darkred>Pick by<br><span class='f12'>Other DO</span></th>
       <th>Stok Real</th>
       <th>QTY Pick</th>
+      <th class='wh_only'>Allocate</th>
       <th>Stok Akhir</th>
     </thead>
     <?=$tr?>
-    <tr>
-      <td colspan=6>
+    <tr class=pic_only>
+      <td colspan=2>
         <div class=p2>
           <span class='pointer btn_aksi' id=picking_list_add__toggle><?=$img_add?> Tambah Item <?=$jenis_barang?></span>
         </div>
       </td>
-      <td colspan=2>
-        <?=$btn_simpan_qty?>
+      <td colspan=100%>
+        <?=$btn_simpan_picking_list?>
+      </td>
+    </tr>
+    <tr class=wh_only>
+      <td >&nbsp;</td>
+      <td colspan=100%>
+        <?=$btn_simpan_allocate?>
       </td>
     </tr>
   </table>
@@ -237,11 +277,26 @@ if($jumlah_item){
 <script>
   $(function(){
 
-    function hitung_sa(id){
-      let stok_real = $('#stok_real__'+id).text();
-      let qty_pick = $('#qty_pick__'+id).val();
+    let id_role = parseInt($('#id_role').text());
 
-      $('#stok_akhir__'+id).text(stok_real-qty_pick);
+    function hitung_sa(id){
+      if(!id){
+        alert('Invalid id at hitung_sa at picking list JS');
+        return;
+      }
+      if(id_role==3){
+        // for WH user ambil dari allocate
+        let qty_pick = $('#qty_pick__'+id).text();
+        let qty_allocate = $('#qty_allocate__'+id).val();
+        $('#stok_akhir__'+id).text(qty_pick-qty_allocate);
+      }else if(id_role==7){
+        // for PIC user
+        let stok_real = $('#stok_real__'+id).text();
+        let qty_pick = $('#qty_pick__'+id).val();
+        $('#stok_akhir__'+id).text(stok_real-qty_pick);
+      }else{
+        alert('Invalid id_role at picking_list JS');
+      }
     }
 
     $('.set_max').click(function(){
@@ -256,11 +311,32 @@ if($jumlah_item){
       hitung_sa(id);
     });
 
+    $('.set_max_allocate').click(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id = rid[1];
+      let qty_pick = $('#qty_pick__'+id).text();
+
+      $('#qty_allocate__'+id).val(qty_pick);
+      console.log(tid,id,qty_pick);
+      hitung_sa(id);
+    });
+
     $('.qty_pick').keyup(function(){
       let tid = $(this).prop('id');
       let rid = tid.split('__');
       let aksi = rid[0];
       let id = rid[1];
+      hitung_sa(id);
+    });
+
+    $('.qty_allocate').change(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id = rid[1];
+      console.log('qty_allocate keyup',id);
       hitung_sa(id);
     });
   })

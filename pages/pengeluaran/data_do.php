@@ -31,7 +31,10 @@ $sql_filter = $keyword ? "
 $s = "SELECT 
 a.*,
 a.id as id_do,
-(SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id) jumlah_pick 
+(SELECT SUM(qty) FROM tb_picking WHERE id_do=a.id AND is_hutangan is null) sum_pick, 
+(SELECT SUM(qty_allocate) FROM tb_picking WHERE id_do=a.id AND is_hutangan is null) sum_allocate, 
+(SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id) jumlah_pick, 
+(SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id AND qty_allocate is not null) jumlah_allocate 
 FROM tb_do a 
 WHERE $sql_filter  
 ORDER BY tanggal_delivery DESC
@@ -54,6 +57,15 @@ while($d=mysqli_fetch_assoc($q)){
   $cat = $d['id_kategori']==1 ? 'aks' : 'fab';
   $add_ro = $d['is_repeat'] ? '' : "<a target=_blank onclick='return confirm(\"Ingin menambah Repeat Order dari DO ini?\")' href='?pengeluaran&p=repeat_order&kode_do_awal=$d[kode_do]&id_kategori=$d[id_kategori]'>$img_add</a>";
 
+  $jumlah_pick = floatval($d['jumlah_pick']);
+  $sum_pick = floatval($d['sum_pick']);
+  $sum_allocate = floatval($d['sum_allocate']);
+  $persen = ($sum_pick and $sum_allocate) ? number_format($sum_allocate/$sum_pick*100,2) : 0;
+  $allocate_show = ($sum_allocate!=$sum_pick) ? "
+    <div>$sum_allocate of $sum_pick ($persen%)</div>
+    <a class='btn btn-primary btn-sm mt1' href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat'>Allocate</a>
+  " : "$persen%";
+
   $tr .= "
     <tr id=source_do__$id_do>
       <td>$i</td>
@@ -61,11 +73,13 @@ while($d=mysqli_fetch_assoc($q)){
         <a href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat'>
           $d[kode_do]
           <div class='kecil $abu_items'>$d[jumlah_pick] picks</div>
+          <div class='kecil $abu_items'>$d[jumlah_allocate] allocate</div>
         </a>
       </td>
       <td>$d[kode_artikel]</td>
       <td>$untuk</td>
-      <td>
+      <td>$allocate_show</td>
+      <td class=pic_only>
         $aksi_hapus 
         $add_ro
       </td>
@@ -73,7 +87,7 @@ while($d=mysqli_fetch_assoc($q)){
   ";
 }
 
-$tambah_do_baru = "<a class='btn btn-sm btn-success' href='?pengeluaran&p=buat_do'>Buat DO Baru</a>";
+$tambah_do_baru = $id_role!=7 ? '' : "<a class='btn btn-sm btn-success' href='?pengeluaran&p=buat_do'>Buat DO Baru</a>";
 if(!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
 
 echo 
@@ -98,7 +112,8 @@ echo
       <th>NOMOR DO</th>
       <th>ARTIKEL</th>
       <th>OTP</th>
-      <th>Delete / Add-RO</th>
+      <th>QTY Allocate</th>
+      <th class=pic_only>Delete / Add-RO</th>
     </thead>
     $tr
   </table>

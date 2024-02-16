@@ -69,26 +69,26 @@ $arr_proses = [
   'buat_do' => [
     3,
     'Buat DO',
-    'Menerima DO dari ...',
+    'Membuat DO khusus untuk PPIC',
     '?pengeluaran&p=buat_do'
   ],
-  'picking' => [
+  'data_do' => [
     3,
-    'Picking List',
-    'Memilih barang-barang yang tersedia untuk dikirim ke proses produksi',
+    'Data DO',
+    'Data DO yang sudah dibuat oleh PPIC',
     '?pengeluaran&p=data_do'
   ],
-  'packing' => [
+  'allocate' => [
     3,
-    'Proses Packing',
-    'Recek QTY untuk setiap barang yang akan dikirimkan',
-    '?pengeluaran&p=data_do'
+    'Proses Allocate',
+    'Allocate barang jika DO sudah dibuat oelh PPIC',
+    '?pengeluaran&p=allocate'
   ],
   'shipping' => [
     3,
     'Cetak Surat Jalan',
     'Mencetak Surat Jalan untuk setiap Delivery Order',
-    '?pengeluaran&p=data_do'
+    '?pengeluaran&p=shipping'
   ],
 ];
 
