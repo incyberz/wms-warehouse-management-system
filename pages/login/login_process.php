@@ -8,7 +8,7 @@ if(isset($_POST['btn_login_wms'])){
   }else{
     // $sql_password = $username==$password ? 'password is null' : "password=md5('$password')";
     // $sql_password = $username==$password ? 'password is null' : "password='$password'";
-    $sql_password = "password='$password'";
+    $sql_password = "password=md5('$password')";
     $s = "SELECT 1 from tb_user WHERE kode='$username' and $sql_password";
     // echo $s;
     $q = mysqli_query($cn, $s) or die(mysqli_error($cn));

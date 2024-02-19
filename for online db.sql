@@ -1,1 +1,2 @@
-ALTER TABLE `tb_picking` ADD `qty_allocate` DECIMAL(11,4) NULL DEFAULT NULL AFTER `is_hutangan`; 
+UPDATE `tb_user` SET kode = LOWER(kode);
+UPDATE `tb_user` SET `password` = md5(kode);
