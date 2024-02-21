@@ -7,6 +7,8 @@ include '../include/crud_icons.php';
 
 
 $kode_sj = $_GET['kode_sj'] ?? die(erid('kode_sj')); if(!$kode_sj) die(erid('kode_sj::empty'));
+$id_kategori = $_GET['id_kategori'] ?? die(erid('id_kategori')); if(!$id_kategori) die(erid('id_kategori::empty'));
+
 $s = "SELECT kode_barang FROM tb_sj_item WHERE kode_sj='$kode_sj'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $arr_kode_barang = [];
@@ -30,7 +32,7 @@ a.nama as nama_barang,
 FROM tb_barang a 
 -- LEFT JOIN tb_sj_item b ON a.kode=b.kode_barang 
 -- WHERE b.id is null 
-WHERE 1  
+WHERE id_kategori=$id_kategori   
 AND (a.kode LIKE '%$keyword%' OR a.nama LIKE '%$keyword%')
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));

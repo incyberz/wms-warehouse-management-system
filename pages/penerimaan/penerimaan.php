@@ -7,6 +7,7 @@ $p = $_GET['p'] ?? '';
 set_title('Penerimaan');
 
 $kode_sj = $_GET['kode_sj'] ?? '';
+$debug .= "<br>kode_sj: $kode_sj";
 
 if(!in_array($id_role,[1,2,3,9])){
   // jika bukan petugas wh
@@ -85,30 +86,26 @@ if(!in_array($id_role,[1,2,3,9])){
   </style>
 
   <div style='max-width:900px'>
-    <div class='mt-4 mb-2' id="blok_step">
-      <img src="assets/img/penerimaan.png" width="100%">
-    </div>
     <div id="blok_steps">
-      <div>
-        <a href="?penerimaan&p=data_sj">Data Surat Jalan</a> 
-        <!-- <br><span class="jumlah_podo"><?=12 ?> <span class=satuan_podo>PO</span></span>
-        <br><span class="jumlah_item_podo"><?=3412 ?> <span class=satuan_podo>item</span></span> -->
-      </div>
-      <div>
-        <a href="?penerimaan&p=terima_sj_baru">Terima Surat Jalan</a> 
-        <!-- <br><span class="jumlah_podo"><?=11 ?> <span class=satuan_podo>PO</span></span>
-        <br><span class="jumlah_item_podo"><?=3411 ?> <span class=satuan_podo>item</span></span> -->
-      </div>
-      <div>
-        <a href="?penerimaan&p=penempatan">Penempatan</a> 
-        <!-- <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
-        <br><span class="jumlah_item_podo"><?=3051 ?> <span class=satuan_podo>item</span></span> -->
-      </div>
-      <div>
-        <a href="?penerimaan&p=stok_gudang">Manajemen Lokasi</a> 
-        <!-- <br><span class="jumlah_podo"><?=9 ?> <span class=satuan_podo>PO</span></span>
-        <br><span class="jumlah_item_podo"><?=2912 ?> <span class=satuan_podo>item</span></span> -->
-      </div>
+      <?php 
+      $arr[0] = ['Terima Barang','accepting','?penerimaan&p=terima_sj_baru'];
+      $arr[1] = ['Data Surat Jalan','po','?penerimaan&p=data_sj'];
+      $arr[2] = ['Penempatan','putting','?penerimaan&p=penempatan'];
+      $arr[3] = ['Manajemen Lokasi','positioning','?penerimaan&p=stok_gudang'];
+
+      foreach ($arr as $key => $r) {
+        echo "
+          <div class='tengah'>
+            <a href='$r[2]'>
+            <div class=mb2>
+              <img src='assets/img/icons/wms/$r[1].png' alt='terima-barang' height=80px>
+            </div>
+            $r[0]</a> 
+          </div>
+        ";
+      }
+
+      ?>
     </div>
   </div>
 </section>

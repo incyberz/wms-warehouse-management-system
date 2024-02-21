@@ -25,7 +25,7 @@ if(isset($_POST['btn_create'])){
   </nav>
 </div>
 
-<p>Page terima barang digunakan untuk verifikasi isi PO saat barang sudah datang ke Gudang.</p>
+<p>Page ini untuk menerima barang sesuai dengan Surat Jalan yang diterima.</p>
 
 <!-- <div id="blok_buat_po" class=wadah>
 

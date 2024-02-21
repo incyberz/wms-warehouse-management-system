@@ -7,6 +7,8 @@
 # ========================================================
 if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
 
+  $id_kategori = $_POST['id_kategori'] ?? die(erid('id_kategori'));
+
   if(isset($_POST['btn_create'])){
     $kode_po = clean_sql($_POST['kode_po']);
     $kode = "$kode_po-001";
@@ -44,8 +46,8 @@ if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
 
   }
   $s = "INSERT INTO tb_sj 
-  (kode,kode_po,id_supplier) VALUES 
-  ('$kode','$kode_po','$id_supplier') 
+  (kode,kode_po,id_supplier,id_kategori) VALUES 
+  ('$kode','$kode_po','$id_supplier',$id_kategori) 
   ";
 
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -56,7 +58,7 @@ if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
 
 ?>
 <div class="pagetitle">
-  <h1>Terima Surat Jalan</h1>
+  <h1>Terima Barang</h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
@@ -66,20 +68,8 @@ if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
   </nav>
 </div>
 
-<p>Page terima barang digunakan untuk verifikasi isi PO saat barang sudah datang ke Gudang.</p>
+<p>Page ini untuk menerima barang sesuai dengan Surat Jalan yang diterima.</p>
 
-<!-- <div id="blok_buat_po" class=wadah>
-
-  <label for="kode_po" class='mb1 kecil darkabu'>Nomor PO</label>
-  <input type="text" class="form-control mb2" id=kode_po name=kode_po>
-  <label for="supplier" class='mb1 kecil darkabu'>Supplier</label>
-  <input type="text" class="form-control mb2" id=supplier name=supplier>
-  <label for="tanggal_masuk" class='mb1 kecil darkabu'>Tanggal Masuk</label>
-  <input type="text" class="form-control mb2" id=tanggal_masuk name=tanggal_masuk>
-
-  <button class="btn btn-primary">Simpan</button>
-
-</div> -->
 <div class=wadah>
   <h3 class='f18 darkblue mb4' id=judul>Cari Data Surat Jalan</h3>
   Nomor PO
@@ -88,11 +78,16 @@ if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
   <div id="hasil_ajax_po"></div>
 
   <form method=post id=form_simpan class=hideit>
+    <div class='abu f12 mb4'>Nomor PO diatas belum ada pada database. Anda dapat membuat penerimaan baru dengan No. PO tsb.</div>
     <input type="hidden" class="form-control mb2" id=kode_po name=kode_po required>
     <input type="hidden" class="form-control mb2" id=id_supplier name=id_supplier required>
 
+    <select name="id_kategori" class="form-control mb2">
+      <option value="1">Untuk Aksesoris</option>
+      <option value="2">Untuk Fabric</option>
+    </select>
+
     Supplier
-    
     <input type="text" class="form-control mb2" id=supplier name=supplier required maxlength=50>
     <div id="hasil_ajax_supplier"></div>
 

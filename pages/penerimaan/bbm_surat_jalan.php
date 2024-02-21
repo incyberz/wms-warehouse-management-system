@@ -64,7 +64,10 @@ if(mysqli_num_rows($q)==0){
   $kode_supplier = $d['kode_supplier'];
   $sum_qty_po = $d['sum_qty_po'];
   $sum_qty_diterima = $d['sum_qty_diterima'];
+  $id_kategori = $d['id_kategori'];
 
+  $kategori = $arr_kategori[$id_kategori];
+  $cat = $arr_cat[$id_kategori];
 
   # =======================================================================
   # SISA QTY
@@ -111,7 +114,7 @@ if(mysqli_num_rows($q)==0){
     </table>
     <table class=table>
       <thead>
-        <th width=200px>Nomor Terima Surat Jalan</th>
+        <th width=200px>Nomor Terima Barang</th>
         <th>$kode_sj <span id=identitas_po_toggle  class=hide_cetak>$img_detail</span></th>
       </thead>
       <tbody class=hideit id=identitas_po>

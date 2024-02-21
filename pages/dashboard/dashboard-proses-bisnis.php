@@ -44,7 +44,7 @@ $arr_proses = [
   ],
   'accepting' => [
     2,
-    'Terima Surat Jalan',
+    'Terima Barang',
     'Melakukan penimbangan ulang QTY sesuai dengan Surat Jalan yang diterima hingga mencetak BBM',
     '?penerimaan&p=terima_sj_baru'
   ],

@@ -1,11 +1,11 @@
 <?php
-
-
+$debug .= "<br>id_kategori: <span id=id_kategori>$id_kategori</span>";
+$is_valid_all_qty = true;
 
 # ==========================================
 # KET ITEM PO
 # ==========================================
-$jumlah_item = 0;
+$count_item = 0;
 $ket_sj_item = 'Lorem ipsum dolor sit amet consectetur, adipisicing elit___Distinctio doloribus corporis ducimus, veniam officiis expedita quidem voluptates sed, magni veritatis odio officia___Praesentium ipsum iusto tenetur facilis odio accusamus temporibus';
 
 $arr_ket_sj_item = explode('___',$ket_sj_item);
@@ -38,7 +38,7 @@ $ket_sj_item_show = "<ul>$li</ul>";
 
 $tr = "
   <tr class='alert alert-danger'>
-    <td colspan=100%>Belum ada item Surat Jalan.</td>
+    <td colspan=100%>Belum ada item pada Surat Jalan | <a href='#' onclick='alert(\"Fitur ini masih dalam tahap pengembangan. Terimakasih.\")'>Get Item via API</a></td>
   </tr>
 ";
 
@@ -62,10 +62,13 @@ FROM tb_sj_item a
 JOIN tb_barang b ON a.kode_barang=b.kode 
 WHERE a.kode_sj='$kode_sj'";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)){
+$count_item = mysqli_num_rows($q);
+if($count_item){
   $tr = '';
+  $no = 0;
   while($d=mysqli_fetch_assoc($q)){
-    $jumlah_item++;
+    $no++;
+
     $id=$d['id_sj_item'];
     $id_sj_item=$d['id_sj_item'];
     $qty_po=floatval($d['qty_po']);
@@ -92,6 +95,9 @@ if(mysqli_num_rows($q)){
       $total = 'zzz';
     }
 
+    // update value is_valid_all_qty
+    if(!$qty) $is_valid_all_qty = false;
+
     
     if($qty and $d['last_trx']){
       $age = round((strtotime('now') - strtotime($d['last_trx'])) / (60*60*24),0);
@@ -113,7 +119,7 @@ if(mysqli_num_rows($q)){
 
     $tr .= "
       <tr id=source_edit_sj_item__$id>
-        <td>$jumlah_item</td>
+        <td>$no</td>
         <td>
           <div class=darkblue>
             $d[kode_barang]
@@ -141,7 +147,7 @@ if(mysqli_num_rows($q)){
 
 $tr_tambah = "
   <tr>
-    <td><span class='miring abu kecil'><?php echo ($jumlah_item+1);?></span></td>
+    <td><span class='miring abu kecil'>*</td>
     <td colspan=100% >
       <span class='green pointer'>
         <span class='btn_aksi' id='edit_sj_item__toggle'>
@@ -152,7 +158,7 @@ $tr_tambah = "
           <div class='row'>
             <div class='col-11'>
               <div class='flexy'>
-                <div class='darkblue'>Cari barang:</div>
+                <div class='darkblue'>Cari $kategori:</div>
                 <div class='darkblue'>
                   <input type='text' class='form-control form-control-sm' id=keyword>
                 </div>
@@ -240,8 +246,20 @@ if($tanggal_verifikasi_bbm){
 
 </div>
 
-<div class=" mb2">Next: <a href="?penerimaan&p=bbm&kode_sj=<?=$kode_sj?>">Proses Bukti Barang Masuk</a></div>
-
+<?php
+if($count_item){
+  if($is_valid_all_qty){
+    // Next Process
+    echo "
+      <div class=' mb2'>Next: <a href='?penerimaan&p=bbm&kode_sj=$kode_sj'>Proses Bukti Barang Masuk</a></div>
+    ";
+  }else{
+    echo '<div class="abu consolas miring f12">Belum bisa ke proses BBM, masih terdapat QTY PO yang kosong.</div>';
+  }
+}else{
+  echo '<div class="abu consolas miring f12">Belum ada item pada Surat Jalan.</div>';
+} 
+?>
 
 
 
@@ -312,14 +330,15 @@ if($tanggal_verifikasi_bbm){
       $('#btn_simpan_sj_item').text('Simpan');
       $('#btn_simpan_sj_item').prop("disabled",false);
       if(is_save){
-        console.log('save to db', ids, qtys,hargas);
         link_ajax = `ajax/crud.php?tb=sj_item&aksi=insert_item&id=array&ids=${ids}&qtys=${qtys}&hargas=${hargas}`;
+        console.log('save to db link_ajax :: ', link_ajax);
         $.ajax({
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
               $('#btn_simpan_sj_item').prop("disabled",true);
               $('#btn_simpan_sj_item').text('Simpan berhasil.');
+              // location.reload();
             }else{
               // alert('Tidak dapat menyimpan items.');
               console.log(a);
@@ -356,13 +375,14 @@ if($tanggal_verifikasi_bbm){
   $('#keyword').keyup(function(){
     let keyword = $(this).val().trim();
     let kode_sj = $('#kode_sj').text();
+    let id_kategori = $('#id_kategori').text();
 
     if(keyword.length<3 || keyword.length>15){
         $('#hasil_ajax').html("<div class='alert alert-info'>Silahkan ketik keyword minimal 3 huruf, max 15 huruf.</div>");
         return;
     }
 
-    link_ajax = "ajax/cari_barang_untuk_sj.php?keyword="+keyword+"&kode_sj="+kode_sj;
+    link_ajax = "ajax/cari_barang_untuk_sj.php?keyword="+keyword+"&kode_sj="+kode_sj+"&id_kategori="+id_kategori;
     $.ajax({
       url:link_ajax,
       success:function(a){

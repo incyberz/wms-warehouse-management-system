@@ -90,7 +90,7 @@ if($jumlah_row==0){
         <td>$d[tanggal_terima]</td>
         <td>$total_qty</td>
         <td>
-          <a href='?penerimaan&p=manage_sj&kode_sj=$kode_sj' class='btn btn-success btn-sm'>Pilih SJ</a>
+          <a href='?penerimaan&p=manage_sj&kode_sj=$kode_sj' class='btn btn-success btn-sm'>Manage SJ</a>
           $btn_add
         </td>
       </tr>

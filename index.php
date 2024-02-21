@@ -10,6 +10,10 @@ $unverified = '<span class="kecil miring red consolas" onclick="alert(\'Proses v
 $null = '<span class="kecil miring red consolas">null</span>';
 $hideit = 'hideit';
 $view_mode = $_GET['view_mode'] ?? '';
+$arr_kategori[1] = 'Aksesoris';
+$arr_kategori[2] = 'Fabric';
+$arr_cat[1] = 'cat';
+$arr_cat[2] = 'fab';
 
 // set auto login
 // $_SESSION['wms_username'] = 'whas';
@@ -49,7 +53,6 @@ include 'conn.php';
 # USER DATA IF LOGIN
 # ================================================
 include 'data_user.php';
-$debug .= "<hr>Anda login sebagai $nama_user dg id-role : $id_role<hr>";
 
 
 

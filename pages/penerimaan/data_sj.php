@@ -44,7 +44,7 @@ ORDER BY a.tanggal_terima DESC
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
 
-$s .= "LIMIT 10";
+$s .= "LIMIT 100";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_tampil = mysqli_num_rows($q);
 

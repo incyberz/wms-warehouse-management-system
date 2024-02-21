@@ -28,6 +28,7 @@ $select_supplier = "
 
 
 $aksi = isset($_GET['aksi']) ? $_GET['aksi'] : '';
+$debug .= "<br>aksi: $aksi";
 if(!$kode_sj){
   jsurl('?penerimaan&p=terima_sj_baru');
 }else{

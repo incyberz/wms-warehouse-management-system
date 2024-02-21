@@ -28,6 +28,10 @@ $kode_po = $d['kode_po'];
 $tanggal_terima = $d['tanggal_terima'];
 $tanggal_verifikasi_bbm = $d['tanggal_verifikasi_bbm'];
 
+$debug .= "<br>id_sj: $id_sj";
+$debug .= "<br>kode_po: $kode_po";
+$debug .= "<br>tanggal_terima: $tanggal_terima";
+
 # ==========================================
 # TAMBAH BARANG BARU DAN TAMBAHKAN KE SJ ITEM
 # ==========================================
@@ -52,11 +56,16 @@ $date_created = $d['date_created'];
 $kode_sj_supplier = $d['kode_sj_supplier'];
 $awal_terima = $d['awal_terima'];
 $akhir_terima = $d['akhir_terima'];
+$id_kategori = $d['id_kategori'];
+
+$kategori = $arr_kategori[$id_kategori];
 
 echo "<span id=id_sj class=hideit>$id_sj</span>";
 ?>
 <div class="mb2 wadah">
   <div class="f20 darkblue tebal mb2">Surat Jalan Info</div>
+
+  <div class='mb2'><span class="abu">Kategori :</span> <?=$kategori?></div>
 
   Surat Jalan from Supplier <span id="kode_sj_supplier__check__<?=$id_sj?>" class=hideit><?=$img_check?></span>
   <input type="text" class="form-control mt1 mb2 editable" id=kode_sj_supplier__sj__<?=$id_sj?> value='<?=$kode_sj_supplier?>' placeholder='Nomor Surat Jalan Supplier'>
@@ -95,7 +104,7 @@ echo "<span id=id_sj class=hideit>$id_sj</span>";
 
   <div><span class='btn_aksi miring mt3 abu' id=info_lainnya__toggle>Info lainnya <?=$img_detail?></span></div>
   <div id=info_lainnya class=hideit>
-    <div class=mt2>Nomor Terima Surat Jalan </div>
+    <div class=mt2>Nomor Terima Barang </div>
     <input type="text" class="form-control mt1 mb2" value='<?=$kode_sj?>' disabled>
     Nomor PO 
     <input type="text" class="form-control mt1 mb2" value='<?=$kode_po?>' disabled>

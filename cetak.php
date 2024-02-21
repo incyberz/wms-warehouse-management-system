@@ -58,7 +58,6 @@ if(isset($_POST['btn_cetak_semua_label'])){
     $qty = $d['qty'];
     $satuan = $d['satuan'];
     // $pengiriman_ke = $d['pengiriman_ke'];
-    // $kategori = $d['kategori'];
     // $nama_kategori = $d['nama_kategori'];
     $tanggal_masuk = $d['tanggal_masuk'];
     $tgl = date('d-m-y',strtotime($tanggal_masuk));

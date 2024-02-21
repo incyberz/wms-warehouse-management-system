@@ -98,7 +98,7 @@ if($all_qty_allocated){
         <span id='akhir_masuk__check__$id_bbm' class=hideit>$img_check</span>
       </div>
     </div>    
-    <div class=mt2>Next: <a href='?master_penerimaan&cat=aks&po=$kode_po&waktu=all_time'>Proses Retur dari Master Penerimaan</a></div>
+    <div class=mt2>Next: <a href='?master_penerimaan&cat=$cat&po=$kode_po&waktu=all_time'>Proses Retur dari Master Penerimaan</a></div>
   </div>
   ";
 }

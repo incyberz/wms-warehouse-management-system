@@ -7,6 +7,7 @@
   echo "<br>username: <span id=username>$username</span>";
   echo "<br>nama_user: <span id=nama_user>$nama_user</span>";
 
+  echo $debug;
   ?>
 
 </div>
