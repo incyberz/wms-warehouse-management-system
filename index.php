@@ -157,8 +157,10 @@ if($parameter=='logout'){
     
     
     <main id="main" class="main">
-      <?php include 'debug.php'; ?>
-      <?php include 'routing.php'; ?>
+      <?php 
+        include 'routing.php';
+        include 'debug.php';
+      ?>
     </main>
     
     <?php if($view_mode!='cetak') include 'pages/footer.php'; ?>

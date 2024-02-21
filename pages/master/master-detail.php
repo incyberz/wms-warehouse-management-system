@@ -94,7 +94,7 @@ if(isset($_POST['btn_update'])){
   
   $sql_from 
   ORDER BY a.kode 
-  LIMIT 20
+  LIMIT 10
   ";
   // echo "<pre>$s</pre>";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -110,7 +110,8 @@ if(isset($_POST['btn_update'])){
     # =========================================
     # GET PROPERTIES
     # =========================================
-    $li_ket = '';
+    $td_ket = '';
+    $th_ket = '';
     $inputs = '';
     foreach ($colField as $key => $field) {
       if($field=='id'
@@ -124,9 +125,8 @@ if(isset($_POST['btn_update'])){
       // echo "<h1>field : $field</h1>";
       $nama_kolom = ucwords(str_replace('_',' ',$field));
       $isi = $d[$field]=='' ? $unset : $d[$field];
-      $li_ket .= "
-      <li><span class='miring abu proper'>$nama_kolom:</span> $isi</li> 
-      ";
+      $td_ket .= "<td>$isi</td>";
+      $th_ket .= "<th>$nama_kolom</th>";
       
   
       # =========================================
@@ -259,23 +259,24 @@ if(isset($_POST['btn_update'])){
     # ==============================================================
     $tr .= "
       <tr id=source_edit_$dual_id class='$gradasi_item'>
-        <td width=30px>$i</td>
-        <td width=150px>$kode</td>
+        <td>
+          $edit_delete
+        </td>
+        <td class='abu miring f12'><div style='padding-top:3px'>$i</div></td>
+        <td>$kode</td>
         <td>
           $nama 
           $login_as 
           <span class='btn_aksi' id='ket_detail__toggle__$id_p'>$img_detail</span>
           <div class='kecil ket hideit' id='ket_detail__$id_p'>
-            <ul class='p0 pl3'>$li_ket</ul>
+            <ul class='p0 pl3'></ul>
           </div>
         </td>
-        <td width=70px>
-          $edit_delete
-        </td>
+        $td_ket
       </tr>
       <tr class=$hideit_blok_edit id=edit_$dual_id>
-        <td colspan=4>
-          <form method=post class=formulir>
+        <td colspan=100%>
+          <form method=post class=formulir style='max-width:70vw'>
             <input name=id_$p value=$id_p type=hidden>
             <div class='p2 br5 mb4 border-merah gradasi-kuning'>
               <div class='flex-between mb1'>
@@ -329,15 +330,17 @@ if(isset($_POST['btn_update'])){
       </div>
       $clear
     </div>
-    <table class='table table-hover'>
-      <thead class='upper gradasi-toska'>
-        <th>NO</th>
-        <th>$kode_caption</th>
-        <th>$p</th>
-        <th>AKSI</th>
-      </thead>
-      $tr
-    </table>
+    <div style='background:linear-gradient(#fff,#eee); padding:5px;overflow:scroll; max-height:70vh'>
+      <table class='table table-hover f13'>
+        <thead class='upper gradasi-toska'>
+          <th colspan=2><div><img src='#' width=80px height=1px/></div>NO</th>
+          <th>$kode_caption</th>
+          <th>$p</th>
+          $th_ket
+        </thead>
+        $tr
+      </table>
+    </div>
   ";
 }
 
