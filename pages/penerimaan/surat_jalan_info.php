@@ -1,5 +1,17 @@
 <?php
 # ==========================================
+# PERTAMA ATAU PARSIAL
+# ==========================================
+$arr = explode($kode_sj);
+$parsial_number = intval($arr[1]);
+if($parsial_number==1){
+  $parsial_show = 'Pengiriman Pertama';
+}else{
+  $parsial_show = 'Pengiriman Pertama';
+}
+
+
+# ==========================================
 # GET DATA SJ
 # ==========================================
 $s = "SELECT 
@@ -64,6 +76,8 @@ echo "<span id=id_sj class=hideit>$id_sj</span>";
 ?>
 <div class="mb2 wadah">
   <div class="f20 darkblue tebal mb2">Surat Jalan Info</div>
+
+  <div class='mb2'><span class="abu">Jenis Penerimaan :</span> Penerimaan Pertama</div>
 
   <div class='mb2'><span class="abu">Kategori :</span> <?=$kategori?></div>
 

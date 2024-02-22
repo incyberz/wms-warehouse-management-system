@@ -7,7 +7,9 @@
 # ========================================================
 if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
 
-  $id_kategori = $_POST['id_kategori'] ?? die(erid('id_kategori'));
+  // $id_kategori = $_POST['id_kategori'] ?? die(erid('id_kategori'));
+  $id_kategori = $_POST['id_kategori'] ?? 1; // zzz debug here
+  echo div_alert('danger','id_kategori by passed.');
 
   if(isset($_POST['btn_create'])){
     $kode_po = clean_sql($_POST['kode_po']);
@@ -72,8 +74,8 @@ if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
 
 <div class=wadah>
   <h3 class='f18 darkblue mb4' id=judul>Cari Data Surat Jalan</h3>
-  Nomor PO
-  <input type="text" class="form-control mb2" id=keyword maxlength=20>
+  <div class="mb1">Nomor PO | <span id=ket_digit class='consolas abu f12'>0 digit</span></div>
+  <input type="text" class="form-control mb2 consolas f24" id=keyword maxlength=15 style='letter-spacing:5px'>
   
   <div id="hasil_ajax_po"></div>
 
@@ -100,7 +102,10 @@ if(isset($_POST['btn_tambah_sj_selanjutnya']) || isset($_POST['btn_create'])){
 <script>
   $(function(){
     $('#keyword').keyup(function(){
-      let keyword = $(this).val().trim();
+      let keyword = $(this).val().trim().toUpperCase();
+      $(this).val(keyword);
+
+      $('#ket_digit').text(keyword.length+' digit');
       // console.log(keyword);
       $('#kode_po').val(keyword);
       $('#btn_create').prop('disabled',1);
