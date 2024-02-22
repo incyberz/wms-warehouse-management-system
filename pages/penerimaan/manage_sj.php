@@ -30,7 +30,7 @@ $select_supplier = "
 $aksi = isset($_GET['aksi']) ? $_GET['aksi'] : '';
 $debug .= "<br>aksi: $aksi";
 if(!$kode_sj){
-  jsurl('?penerimaan&p=terima_sj_baru');
+  jsurl('?penerimaan&p=terima_barang');
 }else{
 
   echo "<span class=hideit id=kode_sj>$kode_sj</span>";

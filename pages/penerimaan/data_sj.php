@@ -80,7 +80,7 @@ while($d=mysqli_fetch_assoc($q)){
   ";
 }
 
-$tambah_sj_baru = "<a class='btn btn-sm btn-success' href='?penerimaan&p=terima_sj_baru'>Terima SJ Baru</a>";
+$tambah_sj_baru = "<a class='btn btn-sm btn-success' href='?penerimaan&p=terima_barang'>Terima Barang Baru</a>";
 
 if(!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
 

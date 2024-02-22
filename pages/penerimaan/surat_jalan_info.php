@@ -1,17 +1,5 @@
 <?php
 # ==========================================
-# PERTAMA ATAU PARSIAL
-# ==========================================
-$arr = explode($kode_sj);
-$parsial_number = intval($arr[1]);
-if($parsial_number==1){
-  $parsial_show = 'Pengiriman Pertama';
-}else{
-  $parsial_show = 'Pengiriman Pertama';
-}
-
-
-# ==========================================
 # GET DATA SJ
 # ==========================================
 $s = "SELECT 
@@ -71,18 +59,36 @@ $akhir_terima = $d['akhir_terima'];
 $id_kategori = $d['id_kategori'];
 
 $kategori = $arr_kategori[$id_kategori];
+$cat = $arr_cat[$id_kategori];
+# ==========================================
+# PERTAMA ATAU PARSIAL
+# ==========================================
+$arr = explode('-',$kode_sj);
+$parsial_number = intval($arr[1]);
+if($parsial_number==1){
+  $parsial_show = "<label class='upper badge bg-blue'> $cat 1st</label>";
+  $sub_judul = "Surat Jalan Info untuk $kategori Pengiriman Pertama";
+}else{
+  $parsial_show = "<label class='upper badge bg-red'> $cat Parsial ke-$parsial_number</label>";
+  $sub_judul = "Surat Jalan Info untuk $kategori Pengiriman Parsial ke-$parsial_number";
+}
 
 echo "<span id=id_sj class=hideit>$id_sj</span>";
 ?>
-<div class="mb2 wadah">
-  <div class="f20 darkblue tebal mb2">Surat Jalan Info</div>
+<div class="mb2 wadah gradasi-abu">
+  <div class="f20 darkblue tebal mb2"><?=$sub_judul?></div>
 
-  <div class='mb2'><span class="abu">Jenis Penerimaan :</span> Penerimaan Pertama</div>
+  <div class="kanan">
+    <?=$parsial_show?>
+  </div>
 
-  <div class='mb2'><span class="abu">Kategori :</span> <?=$kategori?></div>
+  <div class="mb2">Kode Surat Jalan System : <span class="darkblue tebal"><?=$kode_sj?></span></div>
 
-  Surat Jalan from Supplier <span id="kode_sj_supplier__check__<?=$id_sj?>" class=hideit><?=$img_check?></span>
-  <input type="text" class="form-control mt1 mb2 editable" id=kode_sj_supplier__sj__<?=$id_sj?> value='<?=$kode_sj_supplier?>' placeholder='Nomor Surat Jalan Supplier'>
+  <div class="mb1 mt2">
+    Kode Surat Jalan dari Supplier 
+    <span id="kode_sj_supplier__check__<?=$id_sj?>" class=hideit><?=$img_check?></span>
+  </div>
+  <input type="text" class="form-control mt1 mb2 editable" id=kode_sj_supplier__sj__<?=$id_sj?> value='<?=$kode_sj_supplier?>' placeholder='lihat pada Surat Jalan...'>
   
   <div class="flexy">
 
@@ -113,6 +119,7 @@ echo "<span id=id_sj class=hideit>$id_sj</span>";
       <span id="akhir_terima__check__<?=$id_sj?>" class=hideit><?=$img_check?></span>
     </div>
   </div>
+  <div class="abu f12 miring mb4">)* untuk menghitung durasi penerimaan</div>
   
 
 

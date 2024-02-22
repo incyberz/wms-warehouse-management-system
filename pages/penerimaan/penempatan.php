@@ -18,7 +18,7 @@
 <div class="alert alert-info">
   Tahapan sebelumnya: 
   <ol>
-    <li><a href="?penerimaan&p=terima_sj_baru"><?=$img_prev?> Pencarian atau Penerimaan Surat Jalan Baru</a></li>
+    <li><a href="?penerimaan&p=terima_barang"><?=$img_prev?> Pencarian atau Penerimaan Surat Jalan Baru</a></li>
     <li>Manage Surat Jalan (Pengisian QTY sesuai PO)</li>
     <li>Cetak BBM dan Pengisian QTY Diterima</li>
     <li>Penempatan (Manage Subitems)</li>

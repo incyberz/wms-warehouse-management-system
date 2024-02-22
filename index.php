@@ -12,7 +12,7 @@ $hideit = 'hideit';
 $view_mode = $_GET['view_mode'] ?? '';
 $arr_kategori[1] = 'Aksesoris';
 $arr_kategori[2] = 'Fabric';
-$arr_cat[1] = 'cat';
+$arr_cat[1] = 'aks';
 $arr_cat[2] = 'fab';
 
 // set auto login

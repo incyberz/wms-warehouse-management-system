@@ -88,7 +88,7 @@ if(!in_array($id_role,[1,2,3,9])){
   <div style='max-width:900px'>
     <div id="blok_steps">
       <?php 
-      $arr[0] = ['Terima Barang','accepting','?penerimaan&p=terima_sj_baru'];
+      $arr[0] = ['Terima Barang','accepting','?penerimaan&p=terima_barang'];
       $arr[1] = ['Data Surat Jalan','po','?penerimaan&p=data_sj'];
       $arr[2] = ['Penempatan','putting','?penerimaan&p=penempatan'];
       $arr[3] = ['Manajemen Lokasi','positioning','?penerimaan&p=stok_gudang'];

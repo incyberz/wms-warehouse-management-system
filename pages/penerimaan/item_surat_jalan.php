@@ -38,7 +38,7 @@ $ket_sj_item_show = "<ul>$li</ul>";
 
 $tr = "
   <tr class='alert alert-danger'>
-    <td colspan=100%>Belum ada item pada Surat Jalan | <a href='#' onclick='alert(\"Fitur ini masih dalam tahap pengembangan. Terimakasih.\")'>Get Item via API</a></td>
+    <td colspan=100% height=100px valign=middle><span class=red>Belum ada item pada Surat Jalan</span> | <a href='#' onclick='alert(\"Fitur ini masih dalam tahap pengembangan. Terimakasih.\")'>Get Item via API</a></td>
   </tr>
 ";
 
