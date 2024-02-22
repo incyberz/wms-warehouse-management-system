@@ -274,7 +274,7 @@ while($d=mysqli_fetch_assoc($q)){
       <td>
         <div class='abu f12 mb1'>
           <span class=miring>id.$d[id_sj_subitem]</span> ~ 
-          <a target=_blank href='?penerimaan&p=bbm_subitem&id_sj_item=$d[id_sj_item]&id_sj_subitem=$d[id_sj_subitem]'>
+          <a target=_blank href='?penerimaan&p=manage_sj_subitem&id_sj_item=$d[id_sj_item]&id_sj_subitem=$d[id_sj_subitem]'>
             Lot: $no_lot 
           </a> ~ $d[kode_lokasi]
         </div>

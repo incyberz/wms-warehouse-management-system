@@ -22,7 +22,7 @@ b.no_telfon as telp_supplier,
   WHERE q.kode='$kode_sj') sum_qty_diterima 
 
 FROM tb_sj a 
-JOIN tb_supplier b ON a.id_supplier=b.id 
+JOIN tb_supplier b ON a.kode_supplier=b.kode 
 WHERE a.kode='$kode_sj'
 ";
 // echo "<pre>$s</pre>";

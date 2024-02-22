@@ -1,19 +1,21 @@
+<?php 
+$judul = 'Manage Surat Jalan'; 
+set_title($judul); 
+?>
 <style>
   .no-bullet{list-style: none}
 </style>
 <div class="pagetitle">
-  <h1>Penerimaan Surat Jalan</h1>
+  <h1><?=$judul?></h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
-      <li class="breadcrumb-item active">Manage SJ</li>
+      <li class="breadcrumb-item active"><?=$judul?></li>
     </ol>
   </nav>
 </div>
 <?php
-set_title('Penerimaan Surat jalan');
-
 include 'include/arr_supplier.php';
 # ==========================================
 # SUPPLIER
@@ -43,5 +45,5 @@ if(!$kode_sj){
   # ================================================================
   # ITEMS SJ -->
   # ================================================================
-  include 'item_surat_jalan.php';
+  include 'manage_sj_item.php';
 }

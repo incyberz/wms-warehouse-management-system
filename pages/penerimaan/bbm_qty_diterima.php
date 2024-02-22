@@ -103,7 +103,7 @@ if(mysqli_num_rows($q)==0){
       $select_proyeksi = "<select class='form-control form-control-sm select_save' name=proyeksi__$id id=proyeksi__$id>$opt_proyeksi</select>";
       $select_ppic = "<select class='form-control form-control-sm select_save' name=kode_ppic__$id id=kode_ppic__$id>$opt_ppic</select>";
       $link_manage_sub_item = "
-        <a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>
+        <a href='?penerimaan&p=manage_sj_subitem&kode_sj=$kode_sj&id_sj_item=$id'>
           <span class='kecil $qty_subitem_color'>$qty_subitem $satuan</span>
           <span class=hide_cetak>$img_next</span>
         </a>

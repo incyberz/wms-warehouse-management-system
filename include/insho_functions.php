@@ -1,4 +1,22 @@
 <?php
+// v.1.1 revision with function hm AND th
+function th($rank){
+  if($rank%10==1){return 'st';}
+  elseif($rank%10==2){return 'nd';}
+  elseif($rank%10==3){return 'rd';}
+  else{return 'th';}
+}
+
+function hm($nilai){
+  if($nilai>=85){ return 'A';}
+  elseif($nilai>=70){ return 'B';}
+  elseif($nilai>=60){ return 'C';}
+  elseif($nilai>=40){ return 'D';}
+  elseif($nilai>=1){ return 'E';}
+  elseif($nilai==0){ return 'TL';}
+  else{ return false; }
+}
+
 function eta($eta,$indo=1){
   $menit = '';
   $jam = '';
@@ -60,12 +78,20 @@ function eta($eta,$indo=1){
   }
 }
 
-function jsurl($a=''){
+function jsurl($a='',$milidetik=0){ // v1.1 revision with duration milidetik
   if($a==''){
     $arr = explode('?',$_SERVER['REQUEST_URI']);
-    jsurl("?$arr[1]");
+    jsurl("?$arr[1]",$milidetik);
+    exit;
   }
-  echo "<script>location.replace('$a')</script>";
+  echo "
+    <div class='consolas f12 abu'>Please wait, redirecting in $milidetik mili seconds...</div>
+    <script>
+      setTimeout(()=>{
+        location.replace('$a');
+      },$milidetik);
+    </script>
+  ";
   exit;
 }
 
@@ -74,47 +100,44 @@ function jsreload(){
   exit;
 }
 
-function div_alert($a,$b){
-  return "<div class='alert alert-$a'>$b</div>";
-}
 
-function penyebut($nilai) {
-  $nilai = abs($nilai);
-  $huruf = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
-  $temp = '';
+// function penyebut($nilai) {
+//   $nilai = abs($nilai);
+//   $huruf = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
+//   $temp = '';
 
-  if ($nilai < 12) {
-    $temp = " ". $huruf[$nilai];
-  } else if ($nilai <20) {
-    $temp = penyebut($nilai - 10). " belas";
-  } else if ($nilai < 100) {
-    $temp = penyebut($nilai/10)." puluh". penyebut($nilai % 10);
-  } else if ($nilai < 200) {
-    $temp = " seratus" . penyebut($nilai - 100);
-  } else if ($nilai < 1000) {
-    $temp = penyebut($nilai/100) . " ratus" . penyebut($nilai % 100);
-  } else if ($nilai < 2000) {
-    $temp = " seribu" . penyebut($nilai - 1000);
-  } else if ($nilai < 1000000) {
-    $temp = penyebut($nilai/1000) . " ribu" . penyebut($nilai % 1000);
-  } else if ($nilai < 1000000000) {
-    $temp = penyebut($nilai/1000000) . " juta" . penyebut($nilai % 1000000);
-  } else if ($nilai < 1000000000000) {
-    $temp = penyebut($nilai/1000000000) . " milyar" . penyebut(fmod($nilai,1000000000));
-  } else if ($nilai < 1000000000000000) {
-    $temp = penyebut($nilai/1000000000000) . " trilyun" . penyebut(fmod($nilai,1000000000000));
-  }     
-  return $temp;
-}
+//   if ($nilai < 12) {
+//     $temp = " ". $huruf[$nilai];
+//   } else if ($nilai <20) {
+//     $temp = penyebut($nilai - 10). " belas";
+//   } else if ($nilai < 100) {
+//     $temp = penyebut($nilai/10)." puluh". penyebut($nilai % 10);
+//   } else if ($nilai < 200) {
+//     $temp = " seratus" . penyebut($nilai - 100);
+//   } else if ($nilai < 1000) {
+//     $temp = penyebut($nilai/100) . " ratus" . penyebut($nilai % 100);
+//   } else if ($nilai < 2000) {
+//     $temp = " seribu" . penyebut($nilai - 1000);
+//   } else if ($nilai < 1000000) {
+//     $temp = penyebut($nilai/1000) . " ribu" . penyebut($nilai % 1000);
+//   } else if ($nilai < 1000000000) {
+//     $temp = penyebut($nilai/1000000) . " juta" . penyebut($nilai % 1000000);
+//   } else if ($nilai < 1000000000000) {
+//     $temp = penyebut($nilai/1000000000) . " milyar" . penyebut(fmod($nilai,1000000000));
+//   } else if ($nilai < 1000000000000000) {
+//     $temp = penyebut($nilai/1000000000000) . " trilyun" . penyebut(fmod($nilai,1000000000000));
+//   }     
+//   return $temp;
+// }
 
-function terbilang($nilai) {
-  if($nilai<0) {
-    $hasil = "minus ". trim(penyebut($nilai));
-  } else {
-    $hasil = trim(penyebut($nilai));
-  }         
-  return $hasil;
-}
+// function terbilang($nilai) {
+//   if($nilai<0) {
+//     $hasil = "minus ". trim(penyebut($nilai));
+//   } else {
+//     $hasil = trim(penyebut($nilai));
+//   }         
+//   return $hasil;
+// }
 
 function set_title($a){
   echo '<script>$(function(){$("title").text("'.$a.'");})</script>';

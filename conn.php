@@ -38,3 +38,7 @@ function clean_sql($a){
   $a = str_replace(';',',',$a);
   return $a;
 }
+
+function div_alert($a,$b){
+  return "<div class='alert alert-$a'>$b</div>";
+}

@@ -33,13 +33,15 @@ a.tanggal_terima,
 a.kode_po,
 b.kode as kode_supplier ,
 b.nama as nama_supplier,
-(SELECT COUNT(1) FROM tb_sj_item WHERE kode_sj=a.kode) jumlah_item,
-(SELECT kode FROM tb_bbm WHERE kode_sj=a.kode) kode_bbm
+c.nama as kategori,
+(SELECT COUNT(1) FROM tb_sj_item WHERE kode_sj=a.kode) jumlah_item 
+
 FROM tb_sj a 
-JOIN tb_supplier b ON a.id_supplier=b.id 
+JOIN tb_supplier b ON a.kode_supplier=b.kode 
+JOIN tb_kategori c ON a.id_kategori=c.id 
 WHERE $sql_filter  
 AND a.kode NOT LIKE 'STOCK%' 
-ORDER BY a.tanggal_terima DESC
+ORDER BY a.date_created DESC
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
@@ -55,9 +57,7 @@ while($d=mysqli_fetch_assoc($q)){
   $id = $d['id_sj'];
   // $nama_supplier = $d['nama_supplier'];
   $abu_items = $d['jumlah_item'] ? 'abu' : 'tebal merah';
-  $abu_bbm = $d['kode_bbm'] ? 'abu' : 'tebal merah';
-  $aksi_hapus = ($d['jumlah_item'] || $d['kode_bbm']) ? '-' : "<span class='btn_aksi' id=sj__delete__$id>$img_delete</span>";
-  $kode_bbm_show = $d['kode_bbm'] ? "<a href='?penerimaan&p=bbm&kode_sj=$d[kode_sj]'>$d[kode_bbm]</a>" : $unset;
+  $aksi_hapus = ($d['jumlah_item']) ? '-' : "<span class='btn_aksi' id=sj__delete__$id>$img_delete</span>";
   $tgl = date('d M y',strtotime($d['tanggal_terima']));
   $tr .= "
     <tr id=source_sj__$id>
@@ -68,10 +68,8 @@ while($d=mysqli_fetch_assoc($q)){
           <div class='kecil $abu_items'>$tgl | $d[jumlah_item] items</div>
         </a>
       </td>
-      <td>
-        $d[kode_po]
-        <div class='kecil $abu_bbm'>BBM: $kode_bbm_show</div>
-      </td>
+      <td>$d[kode_po]</td>
+      <td>$d[kategori]</td>
       <td>$d[nama_supplier]</td>
       <td>
         $aksi_hapus
@@ -104,6 +102,7 @@ echo  "
       <th>NO</th>
       <th>NOMOR SJ</th>
       <th>NOMOR PO</th>
+      <th>JENIS</th>
       <th>SUPPLIER</th>
       <th>AKSI</th>
     </thead>

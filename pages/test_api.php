@@ -1,8 +1,9 @@
 <?php
-// echo date('Y-m-d',strtotime('2024-01-29T00:00:00.000000Z'));
-// exit;
+// $kode_po = 'AK202401026';
+if(!$kode_po) die(div_alert('danger','Dibutuhkan po_number untuk GET API.'));
+
 $api_url = "http://103.110.9.22:81/apiwhrm/Get_po?po_id=AK202401026";
-$api_url = "http://103.110.9.21:81/api/purchasing/purchase-order/get-po-by?number=AK202401026";
+$api_url = "http://103.110.9.21:81/api/purchasing/purchase-order/get-po-by?number=$kode_po";
 
 // Create a stream
 $opts = [
@@ -18,9 +19,6 @@ $opts = [
 // DOCS: https://www.php.net/manual/en/function.stream-context-create.php
 $context = stream_context_create($opts);
 
-// Open the file using the HTTP headers set above
-// DOCS: https://www.php.net/manual/en/function.file-get-contents.php
-// $file = file_get_contents('http://www.example.com/', false, $context);
 
 // Read JSON file
 $json_data = file_get_contents($api_url,false,$context);
@@ -30,21 +28,21 @@ $response_data = json_decode($json_data);
 
 if($response_data){
 	// All item data exists in 'data' object
-	$item_data = $response_data->data;
+	$arr_item_po = $response_data->data;
 	
 	// echo '<pre>';
-	// var_dump($item_data);
+	// var_dump($arr_item_po);
 	// echo '</pre>';
 	
 	// Traverse array and display item data
-	foreach ($item_data as $item) {
-		echo '<br/>po_number : '.$item->po_number;
-	}
+	// foreach ($arr_item_po as $item) {
+	// 	echo '<br/>po_number : '.$item->po_number;
+	// }
 	
-	echo '<hr/>count: '.count($item_data);
-
+	$debug .= "<br>PO Item Count FROM API | arr_item_po : ".count($arr_item_po);
 }else{
 	echo 'No response from API.';
 }
+
 
 ?>

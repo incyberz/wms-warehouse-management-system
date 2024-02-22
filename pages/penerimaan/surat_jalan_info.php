@@ -14,7 +14,7 @@ b.alamat as alamat_supplier,
 (SELECT tanggal_verifikasi FROM tb_bbm WHERE kode_sj=a.kode) tanggal_verifikasi_bbm
 
 FROM tb_sj a   
-JOIN tb_supplier b ON a.id_supplier=b.id 
+JOIN tb_supplier b ON a.kode_supplier=b.kode 
 WHERE a.kode='$kode_sj' ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
@@ -67,15 +67,16 @@ $arr = explode('-',$kode_sj);
 $parsial_number = intval($arr[1]);
 if($parsial_number==1){
   $parsial_show = "<label class='upper badge bg-blue'> $cat 1st</label>";
-  $sub_judul = "Surat Jalan Info untuk $kategori Pengiriman Pertama";
+  $sub_judul = "Penerimaan $kategori Pengiriman Pertama";
 }else{
   $parsial_show = "<label class='upper badge bg-red'> $cat Parsial ke-$parsial_number</label>";
-  $sub_judul = "Surat Jalan Info untuk $kategori Pengiriman Parsial ke-$parsial_number";
+  $sub_judul = "Penerimaan $kategori Pengiriman Parsial ke-$parsial_number";
 }
 
 echo "<span id=id_sj class=hideit>$id_sj</span>";
 ?>
 <div class="mb2 wadah gradasi-abu">
+  <div class="sub_form">Sub Form Surat Jalan Info</div>
   <div class="f20 darkblue tebal mb2"><?=$sub_judul?></div>
 
   <div class="kanan">

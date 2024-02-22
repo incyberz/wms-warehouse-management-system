@@ -73,7 +73,7 @@ if($kode_po==''){
   b.alamat as alamat_supplier 
 
   FROM tb_sj a   
-  JOIN tb_supplier b ON a.id_supplier=b.id 
+  JOIN tb_supplier b ON a.kode_supplier=b.kode 
   WHERE a.kode='$kode_po' ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0){

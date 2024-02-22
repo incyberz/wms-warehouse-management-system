@@ -1,7 +1,13 @@
 <?php
 $fs_show = $is_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
-echo "<h2><span class=btn_aksi id=blok_manage_subitem__toggle>$img_prev</span>  | Proses Cetak Label / Manage Roll</h2>";
-$tgl = date('d-m-Y',strtotime($tanggal_masuk));
+echo "
+  <h2>
+    <span class=btn_aksi id=blok_manage_subitem__toggle>$img_prev</span>  | 
+    Proses Cetak Label / Manage Roll/Pack
+  </h2>
+  <div class=sub_form>Sub Form Proses Cetak Label</div>
+";
+$tgl = date('d-m-Y',strtotime($tanggal_terima));
 
 
 $bar = "<img width=300px alt='barcode' src='include/barcode.php?codetype=code39&size=50&text=".$kode_barang."&print=false'/>";
@@ -145,7 +151,7 @@ $s = "SELECT * FROM tb_roll WHERE id_sj_subitem=$id_sj_subitem ORDER BY no_roll"
 // echo "<h1>$s</h1>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
-  echo div_alert('danger mt2', "Belum ada data Roll untuk QTY Roll : $sisa_qty_roll $satuan $fs_show <hr>  $form_tambah_roll");
+  echo div_alert('danger mt2', "Belum ada data Roll/Pack untuk QTY Roll/Pack : $sisa_qty_roll $satuan $fs_show <hr>  $form_tambah_roll");
   $form_cetak_all = '';
 }else{
 
@@ -154,24 +160,24 @@ if(mysqli_num_rows($q)==0){
   $jumlah_roll = mysqli_num_rows($q);
   $sum_qty_roll = 0;
 
-  if($qty_diterima<$qty_po){
+  if($qty_diterima<$qty_adjusted){
     $max_input_qty = $qty ? ($qty_diterima - $qty_subitem + $qty) : $sisa_qty;
   }else{
-    $max_input_qty = $qty ? ($qty_po - $qty_subitem + $qty) : $sisa_qty;
+    $max_input_qty = $qty ? ($qty_adjusted - $qty_subitem + $qty) : $sisa_qty;
   }
-  // echo "<hr>max_input_qty:$max_input_qty = qty:$qty ? (qty_po:$qty_po - qty_subitem:$qty_subitem + qty:$qty) : sisa_qty:$sisa_qty;";
+  // echo "<hr>max_input_qty:$max_input_qty = qty:$qty ? (qty_adjusted:$qty_adjusted - qty_subitem:$qty_subitem + qty:$qty) : sisa_qty:$sisa_qty;";
   if($is_fs){
-    $max_input_qty = $qty ? ($qty_diterima - $qty_po - $qty_subitem_fs + $qty) : $sisa_fs;
-    // echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_po:$qty_po - qty_subitem_fs:$qty_subitem_fs + qty:$qty) : sisa_fs:$sisa_fs;";
+    $max_input_qty = $qty ? ($qty_diterima - $qty_adjusted - $qty_subitem_fs + $qty) : $sisa_fs;
+    // echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_adjusted:$qty_adjusted - qty_subitem_fs:$qty_subitem_fs + qty:$qty) : sisa_fs:$sisa_fs;";
   }
   
-  $btn_cetak_all = "<button class='btn btn-success btn-sm' name=btn_cetak_semua_label value=$id_sj_subitem>Cetak Semua Roll Label</button>";
+  $btn_cetak_all = "<button class='btn btn-success btn-sm' name=btn_cetak_semua_label value=$id_sj_subitem>Cetak Semua Roll/Pack Label</button>";
   while($d=mysqli_fetch_assoc($q)){
     $i++;
     $id_roll=$d['id'];
     $qty = floatval($d['qty']);
     $sum_qty_roll += $qty;
-    if(!$qty) $btn_cetak_all = '<span class="abu miring kecil">Belum bisa cetak semua label karena masih ada QTY Roll yang kosong.</span>';
+    if(!$qty) $btn_cetak_all = '<span class="abu miring kecil">Belum bisa cetak semua label karena masih ada QTY Roll/Pack yang kosong.</span>';
 
     $hapus = $i==$jumlah_roll ? "<button name=btn_hapus_roll value=$id_roll style='border:none;background:none' class=darkred onclick='return confirm(\"Yakin untuk hapus?\")'>$img_delete Hapus</button>" : "<span class='abu pointer f12' onclick='alert(\"Silahkan hapus dari row terbawah.\")'>$img_delete_disabled Hapus</span>";
     $cetak = $qty ? "<a href='#'><span class=green>Cetak</span></a>" 
@@ -193,9 +199,9 @@ if(mysqli_num_rows($q)==0){
 
   $thead = "
     <thead>
-      <th>No Roll</th>
+      <th>No Roll/Pack</th>
       <th>
-        QTY Roll
+        QTY Roll/Pack
         <span class=f12>
           <label>
             <input type=checkbox id=qty_roll_identik> identik
@@ -217,19 +223,24 @@ if(mysqli_num_rows($q)==0){
 
   $tr_sum = "
     <tr>
-      <td align=right>Jumlah QTY Roll</td>
+      <td align=right>Total QTY Roll/Pack (QTY Diterima)</td>
       <td id=jumlah_qty_roll>$sum_qty_roll</td>
       <td colspan=100%>&nbsp;</td>
     </tr>
     <tr>
-      <td align=right>Sisa QTY untuk Roll</td>
-      <td><span id=sisa_qty_roll>$sisa_qty_roll</span> $satuan $fs_show</td>
+      <td align=right>QTY Adjusted</td>
+      <td>$qty_adjusted $satuan $fs_show</td>
+      <td colspan=100%>&nbsp;</td>
+    </tr>
+    <tr>
+      <td align=right>Selisih</td>
+      <td><span id=selisih>$sisa_qty_roll</span>  </td>
       <td colspan=100%>&nbsp;</td>
     </tr>
   ";
 
   echo "
-    <h2 class='mt4 mb2'>Data Roll </h2>
+    <h2 class='mt4 mb2'>Data Roll/Pack </h2>
     <div class='flexy flex-between'>
       <div>
         $data_roll_info $fs_show
@@ -245,10 +256,10 @@ if(mysqli_num_rows($q)==0){
         $tr
         $tr_sum
       </table>
-      <button id=btn_save_roll name=btn_save_roll value=$id_roll  class='btn btn-primary'>$img_save Save Data Roll</button>
+      <button id=btn_save_roll name=btn_save_roll value=$id_roll  class='btn btn-primary'>$img_save Save Data Roll/Pack</button>
     </form>
     <form method=post>
-      <button id=btn_delete_all_roll name=btn_delete_all_roll value=$id_sj_subitem  class='btn btn-danger' onclick='return confirm(\"Yakin untuk hapus semua roll?\")'>$img_delete_disabled Delete All Roll</button>
+      <button id=btn_delete_all_roll name=btn_delete_all_roll value=$id_sj_subitem  class='btn btn-danger' onclick='return confirm(\"Yakin untuk hapus semua roll?\")'>$img_delete_disabled Delete All Roll/Pack</button>
     </form>
   ";
 
@@ -280,11 +291,17 @@ echo "
       }
       $('#jumlah_qty_roll').text(jumlah);
 
-      let sisa_qty_roll = $('#sisa_qty_roll').text();
-      if(jumlah>sisa_qty_roll){
-        $('#btn_save_roll').prop('disabled',1);
-      }else{
+      let qty_adjusted = parseFloat($('#qty_adjusted').text());
+      let selisih = jumlah-qty_adjusted;
+      let selisih_show = selisih ? `<span class=red>${selisih} <i class='f12 consolas'>selisih harus 0</i></span>` : selisih;
+      $('#selisih').html(selisih_show);
+
+      if(jumlah==qty_adjusted){
+        // boleh simpan
         $('#btn_save_roll').prop('disabled',0);
+      }else{
+        // harus nol
+        $('#btn_save_roll').prop('disabled',1);
       }
     }
 

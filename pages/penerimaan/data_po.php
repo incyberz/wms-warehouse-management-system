@@ -15,7 +15,7 @@ a.kode as kode_po ,
 b.kode as kode_supplier ,
 b.nama as nama_supplier 
 FROM tb_sj a 
-JOIN tb_supplier b ON a.id_supplier=b.id 
+JOIN tb_supplier b ON a.kode_supplier=b.kode 
 WHERE 1  
 AND a.kode NOT LIKE 'STOCK%'
 LIMIT 10

@@ -14,7 +14,7 @@ a.id as id_sj,
 a.kode as kode_sj ,
 a.kode_po,
 a.tanggal_terima,
-a.id_supplier,
+a.kode_supplier,
 (SELECT SUM(qty) FROM tb_sj_item WHERE kode_sj=a.kode) as total_qty
 FROM tb_sj a 
 WHERE 1 
@@ -58,11 +58,11 @@ if($jumlah_row==0){
       //   $jumlah_sj_str = $jumlah_sj;
       // }
 
-      $new_kode_sj = "$kode_po-new-$d[id_supplier]";
+      $new_kode_sj = "$kode_po-new-$d[kode_supplier]";
 
       $btn_add = "
       <form method=post style='display: inline-block'>
-        <button class='btn btn-primary btn-sm' name=btn_tambah_sj_selanjutnya value='$new_kode_sj' onclick='return confirm(\"Tambah SJ Baru dari PO ini?\")'>Tambah SJ Baru</button>
+        <button class='btn btn-primary btn-sm' name=btn_tambah_sj_selanjutnya value='$new_kode_sj' onclick='return confirm(\"Tambah Penerimaan Parsial dari PO ini?\")'>Penerimaan Parsial</button>
       </form>
       ";
       
@@ -102,6 +102,7 @@ if($jumlah_row==0){
 $limited = $jumlah_row>$i ? "<div class='alert alert-info bordered br5 p2'>$i data dari $jumlah_row records. <span class=blue>Silahkan perjelas keyword Anda!</span></div>" : '';
 
 echo "
+<div class='abu f12 mb2'>Nomor PO diatas sudah ada pada database. Silahkan Pilih Manage atau Penerimaan Parsial</div>
 <table class='table table-hover'>
   $limited
   <thead>

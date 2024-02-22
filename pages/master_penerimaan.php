@@ -271,7 +271,7 @@ while($d=mysqli_fetch_assoc($q)){
     $locations = "<ul style='padding-left:15px'>$li</ul>";
   }else{
 
-    $locations = "<a href='?penerimaan&p=bbm_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
+    $locations = "<a href='?penerimaan&p=manage_sj_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
   }
 
   $count_subitem_with_fs = $count_subitem_no_fs+$count_subitem_fs;
@@ -332,7 +332,7 @@ while($d=mysqli_fetch_assoc($q)){
       </td>
       <td>
         <div>
-          <a href='?penerimaan&p=bbm_subitem&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>
+          <a href='?penerimaan&p=manage_sj_subitem&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>
             $d[kode_barang] | 
             <span class=kecil>$count_subitem_no_fs subitems</span> $fs_count_show
           </a>

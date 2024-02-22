@@ -72,32 +72,29 @@ if(isset($_POST['btn_tambah_subitem']) || isset($_POST['btn_tambah_subitem_fs'])
   $id_sj_subitem = $d['id_sj_subitem'];
 
   
-  // $arr = explode('?',$_SERVER['REQUEST_URI']);
-  // jsurl("?$arr[1]");
   jsurl("?penerimaan&p=manage_sj_subitem&id_sj_item=$id_sj_item&id_sj_subitem=$id_sj_subitem");
   exit;
   
 }
 
 $id_sj_item = $_GET['id_sj_item'] ?? die(erid('id_sj_item'));
-if($id_sj_item==''){
-  echo div_alert('danger',"ID item invalid. <a href='?penerimaan&p=bbm&kode_sj=$kode_sj'>Pilih Item dari BBM</a>");
+if(!$id_sj_item){
+  echo div_alert('danger','id_sj_item is null');
   exit;
 } 
 $s = "SELECT a.*,
 a.id as id_sj_item,
 a.kode_sj,
 b.kode_po,
-a.qty as qty_po,
-c.id as id_bbm,
-c.kode as no_bbm,
-c.tanggal_masuk,
+a.qty as qty_adjusted,
+b.tanggal_terima,
 d.nama as nama_barang,
 d.kode as kode_barang,
 d.satuan,
 e.kode as kategori,
 e.nama as nama_kategori,
 f.step,
+(SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id) qty_diterima, 
 (
   SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is null) qty_subitem,
 (
@@ -105,13 +102,13 @@ f.step,
 
 FROM tb_sj_item a 
 JOIN tb_sj b ON a.kode_sj=b.kode 
-JOIN tb_bbm c ON b.kode=c.kode_sj 
 JOIN tb_barang d ON a.kode_barang=d.kode 
 JOIN tb_kategori e ON d.id_kategori=e.id 
 JOIN tb_satuan f ON d.satuan=f.satuan 
 WHERE a.id=$id_sj_item 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(!mysqli_num_rows($q)) die(div_alert('danger','Data Subitem tidak ditemukan'));
 $d = mysqli_fetch_assoc($q);
 
 $nama_barang = $d['nama_barang'];
@@ -119,8 +116,7 @@ $kode_barang = $d['kode_barang'];
 $id_sj_item = $d['id_sj_item'];
 $kode_po = $d['kode_po'];
 $kode_sj = $d['kode_sj'];
-$no_bbm = $d['no_bbm'];
-$qty_po = $d['qty_po'];
+$qty_adjusted = $d['qty_adjusted'];
 $qty_diterima = $d['qty_diterima'];
 $qty_subitem = $d['qty_subitem'];
 $qty_subitem_fs = $d['qty_subitem_fs'];
@@ -129,9 +125,9 @@ $step = $d['step'];
 // $pengiriman_ke = $d['pengiriman_ke'];
 $kategori = $d['kategori'];
 $nama_kategori = $d['nama_kategori'];
-$tanggal_masuk = $d['tanggal_masuk'];
+$tanggal_terima = $d['tanggal_terima'];
 
-$qty_po = floatval($qty_po);
+$qty_adjusted = floatval($qty_adjusted);
 $qty_diterima = floatval($qty_diterima);
 $qty_subitem = floatval($qty_subitem);
 $qty_subitem_fs = floatval($qty_subitem_fs);
@@ -139,10 +135,10 @@ $qty_subitem_fs = floatval($qty_subitem_fs);
 
 $nama_kategori = ucwords(strtolower($nama_kategori));
 
-$is_lebih = $qty_po<$qty_diterima ? 1 : 0;
+$is_lebih = $qty_adjusted<$qty_diterima ? 1 : 0;
 $qty_fs = 0;
 if($is_lebih){
-  $qty_fs = $qty_diterima-$qty_po;
+  $qty_fs = $qty_diterima-$qty_adjusted;
   $tr_free_supplier = "
     <tr class=blue>
       <td>QTY Lebih (Free Supplier)</td>
@@ -185,17 +181,13 @@ if($is_lebih){
     <td><?=$kode_sj?></td>
   </tr>
   <tr>
-    <td>Nomor BBM</td>
-    <td><?=$no_bbm?></td>
-  </tr>
-  <tr>
     <td>Nama Barang</td>
     <td><?=$nama_barang?></td>
   </tr>
   <tr>
-    <td>QTY PO</td>
+    <td>QTY PO (Adjusted)</td>
     <td>
-      <span id="qty_po"><?=$qty_po?></span> 
+      <span id="qty_adjusted"><?=$qty_adjusted?></span> 
       <span id="satuan"><?=$satuan?></span> 
     </td>
   </tr>
@@ -299,21 +291,20 @@ while($d=mysqli_fetch_assoc($q)){
   </div>";
 }
 
-echo "<h1>DEBUG
-last_no_lot:$last_no_lot = '';
-last_no_roll:$last_no_roll = '';
-last_keterangan_barang:$last_keterangan_barang = '';
-last_kode_lokasi:$last_kode_lokasi = '';
+$debug .= "
+<br>last_no_lot:$last_no_lot = '';
+<br>last_no_roll:$last_no_roll = '';
+<br>last_keterangan_barang:$last_keterangan_barang = '';
+<br>last_kode_lokasi:$last_kode_lokasi = '';
+";
 
-</h1>";
 
-
-if($qty_diterima<$qty_po){
+if($qty_diterima<$qty_adjusted){
   // barang kurang
   $sisa_qty = $qty_diterima-$qty_subitem;
   $sisa_fs = 0;
 }else{
-  $sisa_qty = $qty_po-$qty_subitem;
+  $sisa_qty = $qty_adjusted-$qty_subitem;
   $sisa_fs = $qty_fs-$qty_subitem_fs;
 }
 
@@ -533,15 +524,15 @@ if($get_id_sj_subitem!=''){
 
   /*
   // echo "<h1>$qty - $sisa_qty</h1>";
-  if($qty_diterima<$qty_po){
+  if($qty_diterima<$qty_adjusted){
     $max_input_qty = $qty ? ($qty_diterima - $qty_subitem + $qty) : $sisa_qty;
   }else{
-    $max_input_qty = $qty ? ($qty_po - $qty_subitem + $qty) : $sisa_qty;
+    $max_input_qty = $qty ? ($qty_adjusted - $qty_subitem + $qty) : $sisa_qty;
   }
-  // echo "<hr>max_input_qty:$max_input_qty = qty:$qty ? (qty_po:$qty_po - qty_subitem:$qty_subitem + qty:$qty) : sisa_qty:$sisa_qty;";
+  // echo "<hr>max_input_qty:$max_input_qty = qty:$qty ? (qty_adjusted:$qty_adjusted - qty_subitem:$qty_subitem + qty:$qty) : sisa_qty:$sisa_qty;";
   if($is_fs){
-    $max_input_qty = $qty ? ($qty_diterima - $qty_po - $qty_subitem_fs + $qty) : $sisa_fs;
-    // echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_po:$qty_po - qty_subitem_fs:$qty_subitem_fs + qty:$qty) : sisa_fs:$sisa_fs;";
+    $max_input_qty = $qty ? ($qty_diterima - $qty_adjusted - $qty_subitem_fs + $qty) : $sisa_fs;
+    // echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_adjusted:$qty_adjusted - qty_subitem_fs:$qty_subitem_fs + qty:$qty) : sisa_fs:$sisa_fs;";
   }
   */
 
