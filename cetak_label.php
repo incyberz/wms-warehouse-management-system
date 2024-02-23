@@ -1,7 +1,4 @@
 <?php
-
-
-
 if(isset($kode_barang)){
   $fs_label_info = '';
   if(isset($is_fs)){
@@ -24,6 +21,7 @@ if(isset($kode_barang)){
   
     echo "
               <div class='f20 mt2' >$kode_barang</div>
+              <div class='f12 ' >$kode_lama</div>
             </td>
             <td>
               $fs_label_info
@@ -36,5 +34,11 @@ if(isset($kode_barang)){
       </div>
     </div>
   ";
-
+}else{
+  echo '<h1>Page ini tidak dapat diakses secara langsung.</h1>';
+  ?><script>
+    setTimeout(function(){
+      location.replace('index.php');
+    },3000);
+  </script><?php  
 }

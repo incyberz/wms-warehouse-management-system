@@ -266,15 +266,15 @@ echo $tr=='' ? div_alert('danger mt-4', $info) : "
 
       <div class='col-6'>
         <div class='wadah bg-white'>
-          <h3>Import Sub Item Awal</h3>
-          <p>Jika Stock Awal punya Sub Item, Anda boleh download dahulu template file CSV Subitem, lalu buka dengan Microsoft Excel, isi dan simpan, lalu upload via form berikut: </p>
+          <h3>Import Item Kumulatif Awal</h3>
+          <p>Jika Stock Awal punya Item Kumulatif, Anda boleh download dahulu template file CSV Item Kumulatif, lalu buka dengan Microsoft Excel, isi dan simpan, lalu upload via form berikut: </p>
           <form method=post enctype='multipart/form-data'>
             <div class=flexy>
               <div>
                 <input class='form-control form-control-sm' type=file name=file_csv_subitem required accept='.csv'>
               </div>
               <div>
-                <button class='btn btn-sm btn-success' name=btn_import_subitem>Import Subitem</button>
+                <button class='btn btn-sm btn-success' name=btn_import_subitem>Import Item Kumulatif</button>
               </div>
             </div>
           </form>
@@ -292,10 +292,10 @@ echo $tr=='' ? div_alert('danger mt-4', $info) : "
 
       <div class='col-6'>
         <div class='wadah bg-white'>
-          <h3>Export Subitem Awal</h3>
+          <h3>Export Item Kumulatif Awal</h3>
           <div>Berikut adalah Stock Data Awal per sub item barang dalam bentuk file CSV.</div>
           <div class='mt2 mb1 abu miring kecil'>999 records</div>
-          <button class='btn btn-sm btn-success w-100' name=btn_export>Export Subitem</button>
+          <button class='btn btn-sm btn-success w-100' name=btn_export>Export Item Kumulatif</button>
         </div>
       </div>
 

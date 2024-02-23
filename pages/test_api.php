@@ -7,13 +7,18 @@ $api_url = "http://103.110.9.21:81/api/purchasing/purchase-order/get-po-by?numbe
 
 // Create a stream
 $opts = [
+		
     "http" => [
         "method" => "GET",
         "header" => "Accept-language: en\r\n" .
             "Content-Type: application/json\r\n".
             "Accept: application/json\r\n".
             "Authorization: Bearer 1|ew9TqiRCqH3U1QjaBP893g2uBpjWAIntkSWZ0GxH18783f4b\r\n"
-    ]
+		],
+		"ssl" => [
+			"verify_peer" => false,
+			"verify_peer_name" => false,
+		],
 ];
 
 // DOCS: https://www.php.net/manual/en/function.stream-context-create.php
@@ -22,6 +27,10 @@ $context = stream_context_create($opts);
 
 // Read JSON file
 $json_data = file_get_contents($api_url,false,$context);
+
+echo '<pre>';
+var_dump($json_data);
+echo '</pre>';
 
 // Decode JSON data into PHP array
 $response_data = json_decode($json_data);
@@ -41,7 +50,7 @@ if($response_data){
 	
 	$debug .= "<br>PO Item Count FROM API | arr_item_po : ".count($arr_item_po);
 }else{
-	echo 'No response from API.';
+	echo 'No data response from API.';
 }
 
 

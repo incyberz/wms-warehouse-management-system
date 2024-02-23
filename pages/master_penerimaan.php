@@ -119,67 +119,67 @@ e.nama as nama_barang,
 e.keterangan as keterangan_barang,
 e.satuan,
 (
-  SELECT SUM(qty) FROM tb_sj_subitem 
+  SELECT SUM(qty) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id 
   ) qty_diterima,
 (
-  SELECT COUNT(1) FROM tb_sj_subitem 
+  SELECT COUNT(1) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id 
   ) jumlah_subitem,
 -- ==================================================
 -- GET REGULAR DATA
 -- ==================================================
 (
-  SELECT SUM(p.qty) FROM tb_sj_subitem p 
+  SELECT SUM(p.qty) FROM tb_sj_kumulatif p 
   JOIN tb_retur q ON p.id=q.id 
   WHERE p.id_sj_item=a.id AND is_fs is null
   ) qty_diterima_with_qc_no_fs,
 (
-  SELECT count(1) FROM tb_sj_subitem 
+  SELECT count(1) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id AND is_fs is null
   ) count_subitem_no_fs,
 (
   SELECT sum(p.qty) FROM tb_retur p 
-  JOIN tb_sj_subitem q ON p.id=q.id  
+  JOIN tb_sj_kumulatif q ON p.id=q.id  
   WHERE q.id_sj_item=a.id AND q.is_fs is null 
   ) qty_retur,  
 (
   SELECT count(1) FROM tb_retur p 
-  JOIN tb_sj_subitem q ON p.id=q.id  
+  JOIN tb_sj_kumulatif q ON p.id=q.id  
   WHERE q.id_sj_item=a.id  AND q.is_fs is null 
   ) count_retur,  
 (
   SELECT sum(p.qty) FROM tb_terima_retur p 
   JOIN tb_retur q ON p.id=q.id 
-  JOIN tb_sj_subitem r ON q.id=r.id  
+  JOIN tb_sj_kumulatif r ON q.id=r.id  
   WHERE r.id_sj_item=a.id  AND r.is_fs is null 
   ) qty_balik,
 -- ==================================================
 -- GET FS DATA
 -- ==================================================
 (
-  SELECT SUM(p.qty) FROM tb_sj_subitem p 
+  SELECT SUM(p.qty) FROM tb_sj_kumulatif p 
   JOIN tb_retur q ON p.id=q.id 
   WHERE p.id_sj_item=a.id AND is_fs is not null
   ) qty_diterima_with_qc_fs,
 (
-  SELECT count(1) FROM tb_sj_subitem 
+  SELECT count(1) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id AND is_fs is not null
   ) count_subitem_fs,
 (
   SELECT sum(p.qty) FROM tb_retur p 
-  JOIN tb_sj_subitem q ON p.id=q.id  
+  JOIN tb_sj_kumulatif q ON p.id=q.id  
   WHERE q.id_sj_item=a.id AND q.is_fs is not null 
   ) qty_retur_fs,  
 (
   SELECT count(1) FROM tb_retur p 
-  JOIN tb_sj_subitem q ON p.id=q.id  
+  JOIN tb_sj_kumulatif q ON p.id=q.id  
   WHERE q.id_sj_item=a.id  AND q.is_fs is not null 
   ) count_retur_fs,  
 (
   SELECT sum(p.qty) FROM tb_terima_retur p 
   JOIN tb_retur q ON p.id=q.id 
-  JOIN tb_sj_subitem r ON q.id=r.id  
+  JOIN tb_sj_kumulatif r ON q.id=r.id  
   WHERE r.id_sj_item=a.id  AND r.is_fs is not null 
   ) qty_balik_fs
 
@@ -251,7 +251,7 @@ while($d=mysqli_fetch_assoc($q)){
 
   if($d['jumlah_subitem']){
     $s2 = "SELECT a.kode_lokasi, b.brand  
-    FROM tb_sj_subitem a 
+    FROM tb_sj_kumulatif a 
     JOIN tb_lokasi b ON a.kode_lokasi=b.kode 
     WHERE a.id_sj_item=$id";
     $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
@@ -271,7 +271,7 @@ while($d=mysqli_fetch_assoc($q)){
     $locations = "<ul style='padding-left:15px'>$li</ul>";
   }else{
 
-    $locations = "<a href='?penerimaan&p=manage_sj_subitem&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
+    $locations = "<a href='?penerimaan&p=manage_sj_kumulatif&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
   }
 
   $count_subitem_with_fs = $count_subitem_no_fs+$count_subitem_fs;
@@ -332,7 +332,7 @@ while($d=mysqli_fetch_assoc($q)){
       </td>
       <td>
         <div>
-          <a href='?penerimaan&p=manage_sj_subitem&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>
+          <a href='?penerimaan&p=manage_sj_kumulatif&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>
             $d[kode_barang] | 
             <span class=kecil>$count_subitem_no_fs subitems</span> $fs_count_show
           </a>

@@ -58,7 +58,7 @@
     let id = rid[1];
 
     // console.log(id,kode_do,id_kategori);
-    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_sj_subitem=${id}&id_do=${id_do}`;
+    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_sj_kumulatif=${id}&id_do=${id_do}`;
     console.log(link_ajax);
     $.ajax({
       url:link_ajax,

@@ -16,7 +16,7 @@ $arr_cat[1] = 'aks';
 $arr_cat[2] = 'fab';
 
 // set auto login
-// $_SESSION['wms_username'] = 'whas';
+$_SESSION['wms_username'] = 'wh';
 
 // set logout
 // unset($_SESSION['wms_username']);

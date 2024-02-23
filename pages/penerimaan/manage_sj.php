@@ -1,5 +1,5 @@
 <?php 
-$judul = 'Manage Surat Jalan'; 
+$judul = 'Manage Item'; 
 set_title($judul); 
 ?>
 <style>

@@ -145,7 +145,10 @@ if(isset($_POST['btn_get_po_items'])){
     ");
 
   }else{
-    echo '<br>no response dari API...';
+    die("
+      <div class=red>Data item dari PO <u>$kode_po</u> tidak ditemukan.</div>
+    </div>
+    ");
   }
   echo '</div>';
 }

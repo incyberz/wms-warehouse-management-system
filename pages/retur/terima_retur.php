@@ -47,7 +47,7 @@ e.kode as kategori,
 e.nama as nama_kategori,
 f.step,
 (
-  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_retur=a.id and is_fs is null) qty_subitem,
+  SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_retur=a.id and is_fs is null) qty_subitem,
 (
   SELECT qty FROM tb_retur WHERE id=a.id) qty_retur
 
@@ -157,7 +157,7 @@ if($is_lebih){
   </tr> -->
   <?=$tr_free_supplier?>
   <tr>
-    <td>QTY Subitem</td>
+    <td>QTY Item Kumulatif</td>
     <td>
       <span id="qty_subitem"><?=$qty_subitem?></span> <?=$satuan?> 
     </td>
@@ -207,7 +207,7 @@ if($get_id_retur!=''){
   # =======================================================================
   # INFO LOKASI dan BRAND
   # =======================================================================
-  $s = "SELECT a.kode_lokasi,b.brand FROM tb_sj_subitem a 
+  $s = "SELECT a.kode_lokasi,b.brand FROM tb_sj_kumulatif a 
   JOIN tb_lokasi b ON a.kode_lokasi=b.kode 
   WHERE id_retur=$id_retur";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));

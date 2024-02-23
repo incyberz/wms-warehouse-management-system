@@ -50,20 +50,20 @@ $arr_proses = [
   ],
   'managing' => [
     2,
-    'Manage Sub Item',
-    'Mengalokasikan QTY diterima menjadi Sub Item berdasarkan kemasan, roll, atau nomor lot',
+    'Manage Item Kumulatif',
+    'Mengalokasikan QTY diterima menjadi Item Kumulatif berdasarkan kemasan, roll, atau nomor lot',
     '?penerimaan&p=penempatan'
   ],
   'putting' => [
     2,
     'Pemilihan Lokasi',
-    'Memilih rak yang tersedia untuk tiap-tiap Sub Item',
+    'Memilih rak yang tersedia untuk tiap-tiap Item Kumulatif',
     '?penerimaan&p=pemilihan_lokasi'
   ],
   'labeling' => [
     2,
     'Cetak Label',
-    'Mencetak label untuk tiap-tiap Sub Item',
+    'Mencetak label untuk tiap-tiap Item Kumulatif',
     '?penerimaan&p=cetak_label_info'
   ],
   'buat_do' => [

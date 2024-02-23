@@ -79,7 +79,7 @@ $s = "SELECT 1 $sql_from $sql_where ";
 $s = "SELECT 
 a.qty as qty_pick,
 a.id as id_pick,
-a.id_sj_subitem,
+a.id_sj_kumulatif,
 a.qty_allocate,
 b.kode_lokasi,
 b.is_fs,
@@ -97,35 +97,35 @@ i.tanggal_delivery,
 i.kode_artikel,
 i.kode_do,
 (
-  SELECT p.qty FROM tb_sj_subitem p 
+  SELECT p.qty FROM tb_sj_kumulatif p 
   WHERE p.is_fs is not null 
-  AND p.id=a.id_sj_subitem) qty_fs,
+  AND p.id=a.id_sj_kumulatif) qty_fs,
 (
-  SELECT p.qty FROM tb_sj_subitem p 
+  SELECT p.qty FROM tb_sj_kumulatif p 
   JOIN tb_retur q ON p.id=q.id 
   WHERE p.is_fs is null 
-  AND p.id=a.id_sj_subitem) qty_diterima_with_qc_no_fs,
+  AND p.id=a.id_sj_kumulatif) qty_diterima_with_qc_no_fs,
 (
   SELECT p.qty FROM tb_retur p 
-  JOIN tb_sj_subitem q ON p.id=q.id 
-  WHERE q.id= a.id_sj_subitem
+  JOIN tb_sj_kumulatif q ON p.id=q.id 
+  WHERE q.id= a.id_sj_kumulatif
   ) qty_retur,
 (
   SELECT p.qty FROM tb_terima_retur p
   JOIN tb_retur q ON p.id=q.id 
-  JOIN tb_sj_subitem r ON q.id=r.id 
-  WHERE r.id=a.id_sj_subitem) qty_balik,
+  JOIN tb_sj_kumulatif r ON q.id=r.id 
+  WHERE r.id=a.id_sj_kumulatif) qty_balik,
 (
   SELECT SUM(p.qty) FROM tb_picking p 
   WHERE p.id != a.id 
-  AND p.id_sj_subitem = a.id_sj_subitem) qty_pick_by,
+  AND p.id_sj_kumulatif = a.id_sj_kumulatif) qty_pick_by,
 (
   SELECT COUNT(1) FROM tb_roll  
-  WHERE id_sj_subitem = b.id) count_roll
+  WHERE id_sj_kumulatif = b.id) count_roll
 
 
 FROM tb_picking a 
-JOIN tb_sj_subitem b ON a.id_sj_subitem=b.id 
+JOIN tb_sj_kumulatif b ON a.id_sj_kumulatif=b.id 
 JOIN tb_sj_item c ON b.id_sj_item=c.id 
 JOIN tb_sj d ON c.kode_sj=d.kode 
 JOIN tb_bbm e ON e.kode_sj=d.kode 
@@ -273,8 +273,8 @@ while($d=mysqli_fetch_assoc($q)){
       </td>
       <td>
         <div class='abu f12 mb1'>
-          <span class=miring>id.$d[id_sj_subitem]</span> ~ 
-          <a target=_blank href='?penerimaan&p=manage_sj_subitem&id_sj_item=$d[id_sj_item]&id_sj_subitem=$d[id_sj_subitem]'>
+          <span class=miring>id.$d[id_sj_kumulatif]</span> ~ 
+          <a target=_blank href='?penerimaan&p=manage_sj_kumulatif&id_sj_item=$d[id_sj_item]&id_sj_kumulatif=$d[id_sj_kumulatif]'>
             Lot: $no_lot 
           </a> ~ $d[kode_lokasi]
         </div>
@@ -371,7 +371,7 @@ $bread = "<li class='breadcrumb-item'><a href='?master_pengeluaran&cat=aks'>Akse
         <td>Artikel</td>
         <td>PO / Supplier</td>
         <td>ID / Item / Keterangan</td>
-        <td>QTY Subitem</td>
+        <td>QTY Item Kumulatif</td>
         <td>Pick/Allocate</td>
         <td class=darkred>Pick by<br><span class=f12>Other DO</span></td>
         <td>Stok Akhir</td>

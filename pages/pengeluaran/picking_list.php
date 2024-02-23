@@ -57,19 +57,19 @@ if($jumlah_item){
   g.step, 
   h.brand, 
   (
-    SELECT p.qty FROM tb_sj_subitem p
+    SELECT p.qty FROM tb_sj_kumulatif p
     JOIN tb_retur q ON p.id=q.id
-    WHERE p.id=a.id_sj_subitem AND p.is_fs is null) qty_qc,
+    WHERE p.id=a.id_sj_kumulatif AND p.is_fs is null) qty_qc,
   (
     SELECT SUM(p.qty) FROM tb_picking p 
     WHERE p.id != a.id 
-    AND p.id_sj_subitem = a.id_sj_subitem) qty_pick_by,
+    AND p.id_sj_kumulatif = a.id_sj_kumulatif) qty_pick_by,
   (
     SELECT count(1) FROM tb_roll 
-    WHERE id_sj_subitem = b.id) count_roll
+    WHERE id_sj_kumulatif = b.id) count_roll
 
   FROM tb_picking a 
-  JOIN tb_sj_subitem b ON a.id_sj_subitem=b.id 
+  JOIN tb_sj_kumulatif b ON a.id_sj_kumulatif=b.id 
   JOIN tb_sj_item c ON b.id_sj_item=c.id 
   JOIN tb_sj d ON c.kode_sj=d.kode 
   JOIN tb_bbm e ON d.kode=e.kode_sj  

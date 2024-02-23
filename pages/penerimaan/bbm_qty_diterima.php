@@ -28,7 +28,7 @@ b.id as id_barang,
 b.kode as kode_barang,
 b.nama as nama_barang,
 (SELECT step FROM tb_satuan WHERE satuan=b.satuan) step,
-(SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id) qty_subitem
+(SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id) qty_subitem
 
 FROM tb_sj_item a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
@@ -103,7 +103,7 @@ if(mysqli_num_rows($q)==0){
       $select_proyeksi = "<select class='form-control form-control-sm select_save' name=proyeksi__$id id=proyeksi__$id>$opt_proyeksi</select>";
       $select_ppic = "<select class='form-control form-control-sm select_save' name=kode_ppic__$id id=kode_ppic__$id>$opt_ppic</select>";
       $link_manage_sub_item = "
-        <a href='?penerimaan&p=manage_sj_subitem&kode_sj=$kode_sj&id_sj_item=$id'>
+        <a href='?penerimaan&p=manage_sj_kumulatif&kode_sj=$kode_sj&id_sj_item=$id'>
           <span class='kecil $qty_subitem_color'>$qty_subitem $satuan</span>
           <span class=hide_cetak>$img_next</span>
         </a>
@@ -159,7 +159,7 @@ $tb_items = "
       <th>Kode / Item</th>
       <th>QTY-PO</th>
       <th>QTY Diterima</th>
-      <th class=hide_cetak>QTY Subitems</th>
+      <th class=hide_cetak>QTY Item Kumulatif</th>
       <th class='hide_cetak hideit'>Proyeksi</th>
       <th class='hide_cetak hideit'>PPIC</th>
     </thead>

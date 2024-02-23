@@ -10,9 +10,10 @@ if ($online_version) {
   $db_pass = "hq'qC3D}+Hzj@TT";
   $db_name = "pesc7881_wms";
 
-  // $db_user = "iotikain_insho";
-  // $db_pass = "hq'qC3D}+Hzj@TT";
-  // $db_name = "iotikain_wms";
+  $db_user = "iotikain_insho";
+  $db_pass = "hq'qC3D}+Hzj@TT";
+  $db_name = "iotikain_wms";
+
 }else{
   $db_server = "localhost";
   $db_user = "root";

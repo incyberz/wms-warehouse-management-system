@@ -33,7 +33,9 @@ b.id as id_barang,
 b.kode as kode_barang,  
 b.nama as nama_barang,
 c.step,
-(SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id) qty_diterima,   
+(SELECT SUM(p.qty) FROM tb_roll p 
+JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id 
+WHERE q.id_sj_item=a.id) qty_diterima,   
 (SELECT stok FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) stok,   
 (SELECT tanggal FROM tb_trx WHERE id_barang=b.id ORDER BY tanggal DESC LIMIT 1) last_trx
 
@@ -62,7 +64,7 @@ if($count_item){
     // update value is_valid_all_qty
     if(!$qty) $is_valid_all_qty = false;
 
-    $qty_diterima_show = $qty_diterima ? $qty_diterima : '<span class="kecil miring abu">(belum ada)</span>';
+    $qty_diterima_show = $qty_diterima ? $qty_diterima : '<span class="kecil miring red">(belum ada)</span>';
     $qty_disabled = $qty_diterima ? 'disabled' : '';
 
     $tr .= "
@@ -80,7 +82,7 @@ if($count_item){
         </td>
         <td>
           $qty_diterima_show 
-          <a href='?penerimaan&p=manage_sj_subitem&id_sj_item=$id_sj_item'>$img_next</a>
+          <a href='?penerimaan&p=manage_sj_kumulatif&id_sj_item=$id_sj_item'>$img_next</a>
         </td>
       </tr>
     ";

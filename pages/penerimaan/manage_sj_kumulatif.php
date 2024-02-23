@@ -1,12 +1,13 @@
 <?php
-set_title('Manage Subitem Penerimaan');
+$judul = 'Manage Item Kumulatif';
+set_title($judul);
 
 $pesan_tambah = '';
 if(isset($_POST['btn_simpan'])){
-  $id = $_POST['id_sj_subitem'];
+  $id = $_POST['id_sj_kumulatif'];
 
   $s = "SELECT a.is_fs,b.kode_barang,c.kode_po  
-  FROM tb_sj_subitem a 
+  FROM tb_sj_kumulatif a 
   JOIN tb_sj_item b ON a.id_sj_item=b.id 
   JOIN tb_sj c ON b.kode_sj=c.kode 
   WHERE a.id=$id";
@@ -27,7 +28,7 @@ if(isset($_POST['btn_simpan'])){
   $kode_kumulatif = "$kode_barang~$kode_po~$no_lot~$kode_lokasi~$is_fs";
   $kode_kumulatif = strtoupper(str_replace(' ','',$kode_kumulatif));
 
-  $s = "SELECT 1 FROM tb_sj_subitem WHERE kode_kumulatif='$kode_kumulatif'";
+  $s = "SELECT 1 FROM tb_sj_kumulatif WHERE kode_kumulatif='$kode_kumulatif'";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)){
     echo div_alert('danger', "Untuk Lot $no_lot dan lokasi $kode_lokasi sudah ada. Silahkan pakai kode lot/lokasi lainnya!<hr><a href='javascript:history.go(-1)'>Kembali</a>");
@@ -35,7 +36,7 @@ if(isset($_POST['btn_simpan'])){
   }
 
 
-  unset($_POST['id_sj_subitem']);
+  unset($_POST['id_sj_kumulatif']);
   unset($_POST['btn_simpan']);
   unset($_POST['keterangan_barang']);
 
@@ -48,7 +49,7 @@ if(isset($_POST['btn_simpan'])){
   $pairs .= ",kode_kumulatif = '$kode_kumulatif'";
   $pairs = str_replace('__,','',$pairs);
 
-  $s = "UPDATE tb_sj_subitem SET $pairs WHERE id=$id";
+  $s = "UPDATE tb_sj_kumulatif SET $pairs WHERE id=$id";
   echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
@@ -61,18 +62,18 @@ if(isset($_POST['btn_tambah_subitem']) || isset($_POST['btn_tambah_subitem_fs'])
   $id_sj_item = $_POST['id_sj_item'] ?? die(erid('id_sj_item'));
 
   $is_fs = isset($_POST['btn_tambah_subitem_fs']) ? 1 : 'NULL';
-  $s = "INSERT INTO tb_sj_subitem (id_sj_item,nomor,is_fs) VALUES ($id_sj_item,$_POST[nomor],$is_fs)";
+  $s = "INSERT INTO tb_sj_kumulatif (id_sj_item,nomor,is_fs) VALUES ($id_sj_item,$_POST[nomor],$is_fs)";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
   $pesan_tambah = div_alert('success','Tambah Sub item sukses.');
 
-  $s = "SELECT id as id_sj_subitem FROM tb_sj_subitem WHERE id_sj_item=$id_sj_item ORDER BY nomor DESC LIMIT 1";
+  $s = "SELECT id as id_sj_kumulatif FROM tb_sj_kumulatif WHERE id_sj_item=$id_sj_item ORDER BY nomor DESC LIMIT 1";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $d = mysqli_fetch_assoc($q);
-  $id_sj_subitem = $d['id_sj_subitem'];
+  $id_sj_kumulatif = $d['id_sj_kumulatif'];
 
   
-  jsurl("?penerimaan&p=manage_sj_subitem&id_sj_item=$id_sj_item&id_sj_subitem=$id_sj_subitem");
+  jsurl("?penerimaan&p=manage_sj_kumulatif&id_sj_item=$id_sj_item&id_sj_kumulatif=$id_sj_kumulatif");
   exit;
   
 }
@@ -90,15 +91,21 @@ a.qty as qty_adjusted,
 b.tanggal_terima,
 d.nama as nama_barang,
 d.kode as kode_barang,
+d.kode_lama,
 d.satuan,
 e.kode as kategori,
 e.nama as nama_kategori,
 f.step,
-(SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id) qty_diterima, 
 (
-  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is null) qty_subitem,
+  SELECT SUM(p.qty) 
+  FROM tb_roll p 
+  JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id  
+  WHERE q.id_sj_item=a.id and q.is_fs is null) qty_kumulatif,
 (
-  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is not null) qty_subitem_fs
+  SELECT SUM(p.qty) 
+  FROM tb_roll p 
+  JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id  
+  WHERE q.id_sj_item=a.id and q.is_fs is not null) qty_kumulatif_fs
 
 FROM tb_sj_item a 
 JOIN tb_sj b ON a.kode_sj=b.kode 
@@ -108,18 +115,19 @@ JOIN tb_satuan f ON d.satuan=f.satuan
 WHERE a.id=$id_sj_item 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(!mysqli_num_rows($q)) die(div_alert('danger','Data Subitem tidak ditemukan'));
+if(!mysqli_num_rows($q)) die(div_alert('danger','Data Item Kumulatif tidak ditemukan'));
 $d = mysqli_fetch_assoc($q);
 
 $nama_barang = $d['nama_barang'];
 $kode_barang = $d['kode_barang'];
+$kode_lama = $d['kode_lama'];
 $id_sj_item = $d['id_sj_item'];
 $kode_po = $d['kode_po'];
 $kode_sj = $d['kode_sj'];
 $qty_adjusted = $d['qty_adjusted'];
-$qty_diterima = $d['qty_diterima'];
-$qty_subitem = $d['qty_subitem'];
-$qty_subitem_fs = $d['qty_subitem_fs'];
+// $qty_diterima = $d['qty_diterima'];
+$qty_kumulatif = $d['qty_kumulatif'];
+$qty_kumulatif_fs = $d['qty_kumulatif_fs'];
 $satuan = $d['satuan'];
 $step = $d['step'];
 // $pengiriman_ke = $d['pengiriman_ke'];
@@ -128,10 +136,11 @@ $nama_kategori = $d['nama_kategori'];
 $tanggal_terima = $d['tanggal_terima'];
 
 $qty_adjusted = floatval($qty_adjusted);
-$qty_diterima = floatval($qty_diterima);
-$qty_subitem = floatval($qty_subitem);
-$qty_subitem_fs = floatval($qty_subitem_fs);
+// $qty_diterima = floatval($qty_diterima);
+$qty_kumulatif = floatval($qty_kumulatif);
+$qty_kumulatif_fs = floatval($qty_kumulatif_fs);
 
+$qty_diterima = $qty_kumulatif + $qty_kumulatif_fs;
 
 $nama_kategori = ucwords(strtolower($nama_kategori));
 
@@ -152,20 +161,19 @@ if($is_lebih){
 ?>
 <div id="blok_manage_subitem">
   <div class="pagetitle">
-    <h1>Manage Subitem Penerimaan</h1>
+    <h1><?=$judul?></h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
         <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
         <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?=$kode_sj?>">Manage SJ</a></li>
-        <li class="breadcrumb-item"><a href="?penerimaan&p=bbm&kode_sj=<?=$kode_sj?>">BBM</a></li>
-        <li class="breadcrumb-item active">BBM Subitems</li>
+        <li class="breadcrumb-item active">Item Kumulatif</li>
       </ol>
     </nav>
   </div>
 
 
-  <p>Page ini digunakan untuk pencatatan Sub Item dan Pencetakan Label.</p>
+  <p>Page ini digunakan untuk pencatatan Item Kumulatif dan Pencetakan Label.</p>
 
 
 <?php
@@ -202,18 +210,23 @@ if($is_lebih){
 
 <?php
 $with_fs = $qty_fs ? '/ Free Supplier' : '';
-echo "<h2 class='mb3 mt4'>Sub Items $with_fs</h2>";
+echo "<h2 class='mb3 mt4'>Item Kumulatif $with_fs</h2>";
 echo $pesan_tambah;
 
-$s = "SELECT a.*,
-a.id as id_sj_subitem,
+$s = "SELECT 
+a.no_lot,
+a.is_fs,
+a.kode_lokasi,
+a.id as id_sj_kumulatif,
 c.keterangan as keterangan_barang  ,
 (
-  SELECT sum(qty) FROM tb_picking WHERE id_sj_subitem=a.id ) sum_pick, 
+  SELECT sum(qty) FROM tb_roll WHERE id_sj_kumulatif=a.id ) qty, 
 (
-  SELECT count(1) FROM tb_roll WHERE id_sj_subitem=a.id ) count_roll 
+  SELECT sum(qty) FROM tb_picking WHERE id_sj_kumulatif=a.id ) sum_pick, 
+(
+  SELECT count(1) FROM tb_roll WHERE id_sj_kumulatif=a.id ) count_roll 
 
-FROM tb_sj_subitem a  
+FROM tb_sj_kumulatif a  
 JOIN tb_sj_item b ON a.id_sj_item=b.id 
 JOIN tb_barang c ON b.kode_barang=c.kode 
 WHERE a.id_sj_item=$id_sj_item
@@ -223,14 +236,14 @@ $jumlah_sub_item = mysqli_num_rows($q);
 $div_subitem = '';
 $i=0;
 $ada_kosong=0;
-$get_id_sj_subitem = $_GET['id_sj_subitem'] ?? '';
+$get_id_sj_kumulatif = $_GET['id_sj_kumulatif'] ?? '';
 $last_no_lot = '';
 $last_no_roll = '';
 $last_keterangan_barang = '';
 $last_kode_lokasi = '';
 while($d=mysqli_fetch_assoc($q)){
   $i++;
-  $id_sj_subitem=$d['id_sj_subitem'];
+  $id_sj_kumulatif=$d['id_sj_kumulatif'];
   $qty=$d['qty'];
 
   if($qty){
@@ -239,18 +252,18 @@ while($d=mysqli_fetch_assoc($q)){
     $last_kode_lokasi = $d['kode_lokasi'];
 
     $qty = floatval($qty);
-    $qty_show = "<span class=green>QTY: <span class=qty_subitem id=qty_subitem__$id_sj_subitem>$qty</span></span>";
+    $qty_show = "<span class=green>QTY: <span class=qty_kumulatif id=qty_kumulatif__$id_sj_kumulatif>$qty</span></span>";
     $pesan_kosong = '';
   }else{
     $pesan_kosong = '<div>Silahkan isi dahulu lot, lokasi, dan roll!</div>';
     $ada_kosong=1;
-    $qty_show = "<span class=yellow>QTY: <span class=qty_subitem id=qty_subitem__$id_sj_subitem>0</span></span>";
+    $qty_show = "<span class=yellow>QTY: <span class=qty_kumulatif id=qty_kumulatif__$id_sj_kumulatif>0</span></span>";
   }
 
 
   $gradasi = $d['is_fs'] ? 'kuning' : 'hijau';
   $gradasi = $qty ? $gradasi : 'merah';
-  $sty_border = $get_id_sj_subitem==$id_sj_subitem ? 'style="border: solid 3px blue"' : 'style="border: solid 3px #ccc"';
+  $sty_border = $get_id_sj_kumulatif==$id_sj_kumulatif ? 'style="border: solid 3px blue"' : 'style="border: solid 3px #ccc"';
 
   $fs_info = $d['is_fs'] ? "<div class='biru f12'>Free Supplier</div>" : '';
 
@@ -267,17 +280,17 @@ while($d=mysqli_fetch_assoc($q)){
   }else{
     $btn_delete = "    
       <div>
-        <span class='btn_aksi' id=sj_subitem__delete__$id_sj_subitem>$img_delete</span>
+        <span class='btn_aksi' id=sj_subitem__delete__$id_sj_kumulatif>$img_delete</span>
       </div>
     ";
   }
 
 
   $div_subitem.= "
-  <div id=sj_subitem__$id_sj_subitem class='btn gradasi-$gradasi flexy' $sty_border>
+  <div id=sj_subitem__$id_sj_kumulatif class='btn gradasi-$gradasi flexy' $sty_border>
     <div>
-      <a href='?penerimaan&p=manage_sj_subitem&id_sj_item=$id_sj_item&id_sj_subitem=$id_sj_subitem'>
-        <div class='f12'>Subitem-$i</div>
+      <a href='?penerimaan&p=manage_sj_kumulatif&id_sj_item=$id_sj_item&id_sj_kumulatif=$id_sj_kumulatif'>
+        <div class='f12'>Item Kumulatif-$i</div>
         $fs_info
         <div class=kecil>$qty_show</div>
         <div class=kecil>Lot: $d[no_lot]</div>
@@ -301,17 +314,21 @@ $debug .= "
 
 if($qty_diterima<$qty_adjusted){
   // barang kurang
-  $sisa_qty = $qty_diterima-$qty_subitem;
+  // $qty_sisa = $qty_diterima-$qty_kumulatif;
+  // $debug.= "qty_sisa:$qty_sisa = qty_diterima:$qty_diterima-qty_kumulatif:$qty_kumulatif;";
   $sisa_fs = 0;
 }else{
-  $sisa_qty = $qty_adjusted-$qty_subitem;
-  $sisa_fs = $qty_fs-$qty_subitem_fs;
+  $sisa_fs = $qty_fs-$qty_kumulatif_fs;
 }
+
+$qty_sisa = $qty_adjusted-$qty_kumulatif;
+$debug.= "<br>qty_sisa:$qty_sisa = qty_adjusted:$qty_adjusted-qty_kumulatif:$qty_kumulatif";
+
 
 $sisa_fs_info = $qty_fs? "<div class=biru>Sisa Free Supplier: <span id=sisa_fs>$sisa_fs</span> $satuan</div>":'';
 
 $sisa_qty_show = "
-  <div>Sisa QTY: <span id=sisa_qty>$sisa_qty</span> $satuan</div>
+  <div>Sisa QTY: <span id=qty_sisa>$qty_sisa</span> $satuan</div>
   $sisa_fs_info
 ";
 
@@ -319,14 +336,15 @@ $sisa_qty_show = "
 # ======================================================
 # FORM TAMBAH SUB-ITEM || FREE ITEM
 # ======================================================
-if($qty_diterima==$qty_subitem || $ada_kosong){
+if($qty_diterima==$qty_adjusted || $ada_kosong){
   // qty habis || ada yg kosong
   // tidak boleh nambah
+  $debug .= "<br>qty_diterima:$qty_diterima==qty_adjusted:$qty_adjusted || ada_kosong:$ada_kosong";
   $form = '';
 }else{
   // boleh nambah
   $nomor = $jumlah_sub_item+1;
-  if($sisa_qty>0){
+  if($qty_sisa>0){
     $form = "
     <form method=post>
       <button class='btn btn-primary btn-sm' name=btn_tambah_subitem>Tambah Sub item</button>
@@ -354,7 +372,7 @@ if($qty_diterima==$qty_subitem || $ada_kosong){
 
 $form_pertama = "
   <form method=post>
-    <button class='btn btn-primary btn-sm' name=btn_tambah_subitem>Tambah Subitem / Nomor Lot</button>
+    <button class='btn btn-primary btn-sm' name=btn_tambah_subitem>Tambah Item Kumulatif / Nomor Lot</button>
     <div class='mb2 f12 darkabu mt1'><b>Catatan:</b> QTY diterima akan terkunci jika Anda sudah menambahkan subitem.</div>
 
     <input type='hidden' name=id_sj_item value='$id_sj_item'>
@@ -362,7 +380,7 @@ $form_pertama = "
   </form>
 ";
 
-echo $div_subitem=='' ? div_alert('danger', "<div class=mb2>Belum ada sub-item.</div>  $form_pertama") : "
+echo $div_subitem=='' ? div_alert('danger', "<div class=mb2>Belum ada item kumulatif.</div>  $form_pertama") : "
   <div class=flexy>
     $div_subitem
     <div class=kecil>
@@ -371,12 +389,12 @@ echo $div_subitem=='' ? div_alert('danger', "<div class=mb2>Belum ada sub-item.<
       $form
     </div>
   </div>
-  <div class='f12 mt2'>Catatan: Subitem tidak bisa dihapus jika sudah di pick atau sudah ada roll.</div>
+  <div class='f12 mt2'>Catatan: Item Kumulatif tidak bisa dihapus jika sudah di pick atau sudah ada roll.</div>
 ";
 
 
-if($get_id_sj_subitem!=''){
-  $id_sj_subitem = $get_id_sj_subitem;
+if($get_id_sj_kumulatif!=''){
+  $id_sj_kumulatif = $get_id_sj_kumulatif;
 
   ?>
   <style>
@@ -396,22 +414,27 @@ if($get_id_sj_subitem!=''){
   $keterangan_barang = '';
   $kode_lokasi = '';
   
-  $s = "SELECT a.*,
+  $s = "SELECT 
+  a.is_fs,
+  a.no_lot,
+  a.kode_lokasi,
   c.kode as kode_barang,
   c.keterangan as keterangan_barang,
   (
     SELECT brand FROM tb_lokasi WHERE kode=a.kode_lokasi) brand,
   (
-    SELECT sum(qty) FROM tb_picking WHERE id_sj_subitem=a.id ) sum_pick, 
+    SELECT sum(qty) FROM tb_roll WHERE id_sj_kumulatif=a.id ) qty, 
   (
-    SELECT sum(qty) FROM tb_roll WHERE id_sj_subitem=a.id ) sum_qty_roll, 
+    SELECT sum(qty) FROM tb_picking WHERE id_sj_kumulatif=a.id ) sum_pick, 
   (
-    SELECT count(1) FROM tb_roll WHERE id_sj_subitem=a.id ) count_roll 
+    SELECT sum(qty) FROM tb_roll WHERE id_sj_kumulatif=a.id ) sum_qty_roll, 
+  (
+    SELECT count(1) FROM tb_roll WHERE id_sj_kumulatif=a.id ) count_roll 
 
-  FROM tb_sj_subitem a 
+  FROM tb_sj_kumulatif a 
   JOIN tb_sj_item b ON a.id_sj_item=b.id 
   JOIN tb_barang c ON b.kode_barang=c.kode 
-  WHERE a.id=$get_id_sj_subitem";
+  WHERE a.id=$get_id_sj_kumulatif";
   // echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) die(div_alert('danger','Data subitem tidak ditemukan'));
@@ -523,16 +546,16 @@ if($get_id_sj_subitem!=''){
 
 
   /*
-  // echo "<h1>$qty - $sisa_qty</h1>";
+  // echo "<h1>$qty - $qty_sisa</h1>";
   if($qty_diterima<$qty_adjusted){
-    $max_input_qty = $qty ? ($qty_diterima - $qty_subitem + $qty) : $sisa_qty;
+    $max_input_qty = $qty ? ($qty_diterima - $qty_kumulatif + $qty) : $qty_sisa;
   }else{
-    $max_input_qty = $qty ? ($qty_adjusted - $qty_subitem + $qty) : $sisa_qty;
+    $max_input_qty = $qty ? ($qty_adjusted - $qty_kumulatif + $qty) : $qty_sisa;
   }
-  // echo "<hr>max_input_qty:$max_input_qty = qty:$qty ? (qty_adjusted:$qty_adjusted - qty_subitem:$qty_subitem + qty:$qty) : sisa_qty:$sisa_qty;";
+  // echo "<hr>max_input_qty:$max_input_qty = qty:$qty ? (qty_adjusted:$qty_adjusted - qty_kumulatif:$qty_kumulatif + qty:$qty) : qty_sisa:$qty_sisa;";
   if($is_fs){
-    $max_input_qty = $qty ? ($qty_diterima - $qty_adjusted - $qty_subitem_fs + $qty) : $sisa_fs;
-    // echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_adjusted:$qty_adjusted - qty_subitem_fs:$qty_subitem_fs + qty:$qty) : sisa_fs:$sisa_fs;";
+    $max_input_qty = $qty ? ($qty_diterima - $qty_adjusted - $qty_kumulatif_fs + $qty) : $sisa_fs;
+    // echo "max_input_qty:$max_input_qty = qty:$qty ? (qty_diterima:$qty_diterima - qty_adjusted:$qty_adjusted - qty_kumulatif_fs:$qty_kumulatif_fs + qty:$qty) : sisa_fs:$sisa_fs;";
   }
   */
 
@@ -540,13 +563,16 @@ if($get_id_sj_subitem!=''){
   // QTY ($satuan) $bintang ~ <u class='pointer darkblue kecil' id=set_max_qty>Set Max: <span id=max_input_qty>$max_input_qty</span></u>
   // <input class='form-control mb2' type=number min=$step max=$max_input_qty step=$step required name=qty id=qty value=$qty $disabled>  
 
+
+  $debug .= "
+    <div>id_sj_item:$id_sj_item</div>
+    <div>id_sj_kumulatif:$id_sj_kumulatif</div>
+  ";
   
   echo "
   <div class='wadah mt2'>
-    <div class=debug>id_sj_item:$id_sj_item</div>
-    <div class=debug>id_sj_subitem:$id_sj_subitem</div>
     <form method=post>
-      <input type='hidden' name=id_sj_subitem value=$get_id_sj_subitem>
+      <input type='hidden' name=id_sj_kumulatif value=$get_id_sj_kumulatif>
 
       QTY : $sum_qty_roll $satuan (<span class='consolas abu miring kecil'> AutoSum dari Sub-Roll </span>) 
       $picked_info

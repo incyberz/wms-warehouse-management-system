@@ -97,9 +97,9 @@ e.kode as kategori,
 e.nama as nama_kategori,
 f.step,
 (
-  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is null) qty_subitem,
+  SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id and is_fs is null) qty_subitem,
 (
-  SELECT SUM(qty) FROM tb_sj_subitem WHERE id_sj_item=a.id and is_fs is not null) qty_subitem_fs
+  SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id and is_fs is not null) qty_subitem_fs
 
 FROM tb_sj_item a 
 JOIN tb_sj b ON a.kode_sj=b.kode 
@@ -192,7 +192,7 @@ set_title('Retur Barang');
   </tr>
   <?=$tr_free_supplier?>
   <tr>
-    <td>QTY Subitem</td>
+    <td>QTY Item Kumulatif</td>
     <td>
       <span id="qty_subitem"><?=$qty_subitem?></span> <?=$satuan?> 
     </td>
@@ -222,7 +222,7 @@ if($get_id_sj_item!=''){
   (SELECT alasan_retur FROM tb_retur WHERE id=a.id) alasan_retur,
   (SELECT tanggal_retur FROM tb_retur WHERE id=a.id) tanggal_retur,
   1
-  FROM tb_sj_subitem a 
+  FROM tb_sj_kumulatif a 
   JOIN tb_sj_item b ON a.id_sj_item=b.id 
   JOIN tb_barang c ON b.kode_barang=c.kode   
   JOIN tb_satuan d ON c.satuan=d.satuan   
@@ -304,7 +304,7 @@ if($get_id_sj_item!=''){
         <th>No</th>
         <th>ID</th>
         <th>Lokasi / Lot / Roll</th>
-        <th>QTY Subitem</th>
+        <th>QTY Item Kumulatif</th>
         <th>QTY Retur</th>
         <th>QC & Retur</th>
         <th>Stok Terima</th>

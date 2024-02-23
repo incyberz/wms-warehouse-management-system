@@ -19,14 +19,14 @@ $sql_keyword = $keyword=='' ? '1' : "
 ";
 
 $sql_from = "
-  FROM tb_sj_subitem a 
+  FROM tb_sj_kumulatif a 
   JOIN tb_sj_item b ON a.id_sj_item=b.id 
   JOIN tb_sj c ON b.kode_sj=c.kode 
   JOIN tb_bbm d ON c.kode=d.kode_sj  
   JOIN tb_barang e ON b.kode_barang=e.kode 
   JOIN tb_satuan f ON e.satuan=f.satuan 
   JOIN tb_lokasi g ON a.kode_lokasi=g.kode 
-  LEFT JOIN tb_picking h ON a.id=h.id_sj_subitem AND h.id_do='$id_do'
+  LEFT JOIN tb_picking h ON a.id=h.id_sj_kumulatif AND h.id_do='$id_do'
   WHERE h.id is null 
   AND e.id_kategori = $id_kategori 
   AND $sql_keyword  
@@ -48,12 +48,12 @@ f.satuan,
 f.step, 
 g.brand, 
 (
-  SELECT p.qty FROM tb_sj_subitem p
+  SELECT p.qty FROM tb_sj_kumulatif p
   JOIN tb_retur q ON p.id=q.id
   WHERE p.id=a.id AND p.is_fs is null) qty_terima,
 (
   SELECT sum(p.qty) FROM tb_picking p 
-  WHERE p.id_sj_subitem=a.id 
+  WHERE p.id_sj_kumulatif=a.id 
   ) qty_pick_by ,
 (
   SELECT p.qty FROM tb_retur p 

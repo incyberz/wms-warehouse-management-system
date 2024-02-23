@@ -8,7 +8,7 @@
   </nav>
 </div>
 
-<p>Untuk Cetak Label / QRCode baik satuan maupun sekaligus per item Surat jalan dapat dilakukan pada saat Manage Subitems. Silahkan menuju tahapan sebelumnya terlebih dahulu!</p>
+<p>Untuk Cetak Label / QRCode baik satuan maupun sekaligus per item Surat jalan dapat dilakukan pada saat Manage Item Kumulatif. Silahkan menuju tahapan sebelumnya terlebih dahulu!</p>
 
 <div class="alert alert-info">
   Tahapan sebelumnya: 
@@ -16,6 +16,6 @@
     <li><a href="?penerimaan&p=terima_barang"><?=$img_prev?> Pencarian atau Penerimaan Surat Jalan Baru</a></li>
     <li>Manage Surat Jalan (Pengisian Item QTY sesuai PO)</li>
     <li>Pengisian Item QTY Diterima dan Cetak BBM</li>
-    <li>Manage Subitems | Cetak Label | Penempatan Barang</li>
+    <li>Manage Item Kumulatif | Cetak Label | Penempatan Barang</li>
   </ol>
 </div>

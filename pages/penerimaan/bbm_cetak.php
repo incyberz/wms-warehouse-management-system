@@ -82,7 +82,7 @@ $hide_blok_cetak = $masih_bisa_edit ? 'hideit' : '';
       </div>
 
     </li>
-    <li>Semua QTY Diterima sudah dialokasikan menjadi QTY Subitem
+    <li>Semua QTY Diterima sudah dialokasikan menjadi QTY Item Kumulatif
       <ul class='kecil mb2'>
         <li>Total QTY diterima: <?=$total_qty_diterima?></li>
         <li>Total QTY subitem: <?=$total_qty_subitem?></li>

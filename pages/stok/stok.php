@@ -95,7 +95,7 @@ a.qty,
 a.no_lot,
 a.is_fs,
 a.kode_lokasi,
-a.id as id_sj_subitem,
+a.id as id_sj_kumulatif,
 c.id_kategori,
 c.kode as kode_barang,
 c.nama as nama_barang,
@@ -116,12 +116,12 @@ g.tanggal_terima,
   WHERE q.id=a.id) qty_balik,
 (
   SELECT sum(p.qty) FROM tb_picking p 
-  WHERE p.id_sj_subitem=a.id) qty_pick,
+  WHERE p.id_sj_kumulatif=a.id) qty_pick,
 (
   SELECT count(1) FROM tb_roll p 
-  WHERE p.id_sj_subitem=a.id) count_roll
+  WHERE p.id_sj_kumulatif=a.id) count_roll
 
-FROM tb_sj_subitem a 
+FROM tb_sj_kumulatif a 
 JOIN tb_sj_item b ON a.id_sj_item=b.id 
 JOIN tb_barang c ON b.kode_barang=c.kode 
 JOIN tb_lokasi d ON a.kode_lokasi=d.kode 
@@ -151,8 +151,8 @@ $tr_csv = '';
 $i = 0;
 while($d=mysqli_fetch_assoc($q)){
   $i++;
-  $id = $d['id_sj_subitem'];
-  $id_sj_subitem = $d['id_sj_subitem'];
+  $id = $d['id_sj_kumulatif'];
+  $id_sj_kumulatif = $d['id_sj_kumulatif'];
   $kode_po = $d['kode_po'];
   $tanggal_terima = $d['tanggal_terima'];
 

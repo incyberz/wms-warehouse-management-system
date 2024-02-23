@@ -14,32 +14,38 @@ if(isset($_POST['btn_cetak_label'])){
 }
 
 
-if(isset($_POST['btn_cetak_semua_label'])){
+if(isset($_POST['btn_cetak_semua_label']) || isset($_GET['id_roll'])){
+
+  $get_id_roll = $_GET['id_roll'] ?? '';
+  $sql_where = $get_id_roll ? "h.id=$get_id_roll" : "a.id=$_POST[btn_cetak_semua_label]";
+
   include 'conn.php';
-  $s = "SELECT 
-  a.*,
+  $s = "SELECT
+  a.no_lot,
+  a.kode_lokasi, 
   e.kode as kode_po,
   d.kode as kode_barang,
+  d.kode_lama as kode_lama,
   d.nama as nama_barang,
   d.keterangan as keterangan_barang,
   d.satuan,
-  f.tanggal_masuk,
-  g.brand as this_brand
+  e.tanggal_terima,
+  g.brand as this_brand,
+  h.no_roll,
+  h.qty 
 
 
-  FROM tb_sj_subitem a 
+  FROM tb_sj_kumulatif a 
   JOIN tb_sj_item c ON a.id_sj_item=c.id 
   JOIN tb_barang d ON c.kode_barang=d.kode 
   JOIN tb_sj e ON c.kode_sj=e.kode 
-  JOIN tb_bbm f ON e.kode=f.kode_sj 
   JOIN tb_lokasi g ON a.kode_lokasi=g.kode 
+  JOIN tb_roll h ON a.id=h.id_sj_kumulatif 
 
-  WHERE a.id_sj_item=$_POST[btn_cetak_semua_label]";
-
-
+  WHERE $sql_where";
 
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0) die('Data BBM subitem tidak ditemukan.');
+  if(mysqli_num_rows($q)==0) die('Data Item Kumulatif tidak ditemukan.');
 
 
   $i=0;
@@ -47,25 +53,21 @@ if(isset($_POST['btn_cetak_semua_label'])){
 
     $nama_barang = $d['nama_barang'];
     $kode_barang = $d['kode_barang'];
+    $kode_lama = $d['kode_lama'];
     $keterangan_barang = $d['keterangan_barang'];
-    // $id_bbm_item = $d['id_bbm_item'];
     $kode_po = $d['kode_po'];
     $no_lot = $d['no_lot'];
     $no_roll = $d['no_roll'];
     $kode_lokasi = $d['kode_lokasi'];
     $this_brand = $d['this_brand'];
-    // $no_bbm = $d['no_bbm'];
     $qty = $d['qty'];
     $satuan = $d['satuan'];
-    // $pengiriman_ke = $d['pengiriman_ke'];
-    // $nama_kategori = $d['nama_kategori'];
-    $tanggal_masuk = $d['tanggal_masuk'];
-    $tgl = date('d-m-y',strtotime($tanggal_masuk));
+    $tanggal_terima = $d['tanggal_terima'];
+    $tgl = date('d-m-y',strtotime($tanggal_terima));
 
-    $qty = str_replace('.0000','',$qty);
+    $qty = floatval($qty);
+    $this_brand = $this_brand ? " $this_brand" : '';
 
-
-    // $id=$d['id'];
     $arr_is_fs[$i] = $d['is_fs'] ?? 0;
     $arr_kode_barang[$i] = $kode_barang;
     $arr_no_po_dll[$i] =  "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_lokasi $this_brand) $tgl";
@@ -83,11 +85,11 @@ if(isset($arr_kode_barang)){
     $nama_barang = $arr_nama_barang[$key];
     $is_fs = $arr_is_fs[$key];
 
-    include 'pages/penerimaan/cetak_label.php';
+    include 'cetak_label.php';
   }
 
 }elseif(isset($kode_barang)){
-  include 'pages/penerimaan/cetak_label.php';
+  include 'cetak_label.php';
 }else{
   echo '<h1>Page ini tidak dapat diakses secara langsung.</h1>';
   ?><script>
