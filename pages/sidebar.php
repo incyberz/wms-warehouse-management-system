@@ -36,6 +36,13 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="?master_kumulatif">
+        <i class="bi bi-arrow-down-square"></i>
+        <span>Master Kumulatif <?=$locked_icon?></span>
+      </a>
+    </li>
+
+    <li class="nav-item">
       <a class="nav-link collapsed" href="?master_penerimaan">
         <i class="bi bi-arrow-down-square"></i>
         <span>Master Penerimaan <?=$locked_icon?></span>

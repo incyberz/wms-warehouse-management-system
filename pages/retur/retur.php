@@ -97,9 +97,9 @@ e.kode as kategori,
 e.nama as nama_kategori,
 f.step,
 (
-  SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id and is_fs is null) qty_subitem,
+  SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id and is_fs is null) qty_kumulatif_item,
 (
-  SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id and is_fs is not null) qty_subitem_fs
+  SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id and is_fs is not null) qty_kumulatif_item_fs
 
 FROM tb_sj_item a 
 JOIN tb_sj b ON a.kode_sj=b.kode 
@@ -122,9 +122,9 @@ $kode_po = $d['kode_po'];
 $kode_sj = $d['kode_sj'];
 $no_bbm = $d['no_bbm'];
 $qty_po = $d['qty_po'];
-$qty_diterima = $d['qty_diterima'];
-$qty_subitem = $d['qty_subitem'];
-$qty_subitem_fs = $d['qty_subitem_fs'];
+$qty_datang = $d['qty_datang'];
+$qty_kumulatif_item = $d['qty_kumulatif_item'];
+$qty_kumulatif_item_fs = $d['qty_kumulatif_item_fs'];
 $satuan = $d['satuan'];
 $step = $d['step'];
 // $pengiriman_ke = $d['pengiriman_ke'];
@@ -133,17 +133,17 @@ $nama_kategori = $d['nama_kategori'];
 $tanggal_masuk = $d['tanggal_masuk'];
 
 $qty_po = floatval($qty_po);
-$qty_diterima = floatval($qty_diterima);
-$qty_subitem = floatval($qty_subitem);
-$qty_subitem_fs = floatval($qty_subitem_fs);
+$qty_datang = floatval($qty_datang);
+$qty_kumulatif_item = floatval($qty_kumulatif_item);
+$qty_kumulatif_item_fs = floatval($qty_kumulatif_item_fs);
 
 
 $nama_kategori = ucwords(strtolower($nama_kategori));
 
-$is_lebih = $qty_po<$qty_diterima ? 1 : 0;
+$is_lebih = $qty_po<$qty_datang ? 1 : 0;
 $qty_fs = 0;
 if($is_lebih){
-  $qty_fs = $qty_diterima-$qty_po;
+  $qty_fs = $qty_datang-$qty_po;
   $tr_free_supplier = "
     <tr class=blue>
       <td>QTY Lebih (Free Supplier)</td>
@@ -194,7 +194,7 @@ set_title('Retur Barang');
   <tr>
     <td>QTY Item Kumulatif</td>
     <td>
-      <span id="qty_subitem"><?=$qty_subitem?></span> <?=$satuan?> 
+      <span id="qty_kumulatif_item"><?=$qty_kumulatif_item?></span> <?=$satuan?> 
     </td>
   </tr>
 

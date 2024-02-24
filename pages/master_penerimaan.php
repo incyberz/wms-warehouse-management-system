@@ -109,9 +109,6 @@ a.kode_sj,
 b.kode_po,
 b.awal_terima,
 b.akhir_terima,
-c.tanggal_masuk,
-c.awal_masuk,
-c.akhir_masuk,
 d.kode as kode_supplier,
 d.nama as nama_supplier,
 e.kode as kode_barang,
@@ -121,23 +118,23 @@ e.satuan,
 (
   SELECT SUM(qty) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id 
-  ) qty_diterima,
+  ) qty_datang,
 (
   SELECT COUNT(1) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id 
-  ) jumlah_subitem,
+  ) jumlah_kumulatif_item,
 -- ==================================================
 -- GET REGULAR DATA
 -- ==================================================
 (
-  SELECT SUM(p.qty) FROM tb_sj_kumulatif p 
+  SELECT SUM(p.tmp_qty) FROM tb_sj_kumulatif p 
   JOIN tb_retur q ON p.id=q.id 
   WHERE p.id_sj_item=a.id AND is_fs is null
   ) qty_diterima_with_qc_no_fs,
 (
   SELECT count(1) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id AND is_fs is null
-  ) count_subitem_no_fs,
+  ) count_kumulatif_item_no_fs,
 (
   SELECT sum(p.qty) FROM tb_retur p 
   JOIN tb_sj_kumulatif q ON p.id=q.id  
@@ -158,14 +155,14 @@ e.satuan,
 -- GET FS DATA
 -- ==================================================
 (
-  SELECT SUM(p.qty) FROM tb_sj_kumulatif p 
+  SELECT SUM(p.tmp_qty) FROM tb_sj_kumulatif p 
   JOIN tb_retur q ON p.id=q.id 
   WHERE p.id_sj_item=a.id AND is_fs is not null
   ) qty_diterima_with_qc_fs,
 (
   SELECT count(1) FROM tb_sj_kumulatif 
   WHERE id_sj_item=a.id AND is_fs is not null
-  ) count_subitem_fs,
+  ) count_kumulatif_item_fs,
 (
   SELECT sum(p.qty) FROM tb_retur p 
   JOIN tb_sj_kumulatif q ON p.id=q.id  
@@ -185,8 +182,7 @@ e.satuan,
 
 FROM tb_sj_item a  
 JOIN tb_sj b ON a.kode_sj=b.kode
-JOIN tb_bbm c ON b.kode=c.kode_sj
-JOIN tb_supplier d ON b.id_supplier=d.id 
+JOIN tb_supplier d ON b.kode_supplier=d.kode 
 JOIN tb_barang e ON a.kode_barang=e.kode 
 
 $sql_where
@@ -202,8 +198,8 @@ while($d=mysqli_fetch_assoc($q)){
   $id=$d['id'];
   $satuan=$d['satuan'];
   $kode_sj=$d['kode_sj'];
-  $count_subitem_no_fs=$d['count_subitem_no_fs'];
-  $count_subitem_fs=$d['count_subitem_fs'];
+  $count_kumulatif_item_no_fs=$d['count_kumulatif_item_no_fs'];
+  $count_kumulatif_item_fs=$d['count_kumulatif_item_fs'];
   $count_retur=$d['count_retur'];
   $count_retur_fs=$d['count_retur_fs'];
   $kode_ppic=$d['kode_ppic'] ?? "PIC: $unset";
@@ -224,7 +220,6 @@ while($d=mysqli_fetch_assoc($q)){
   $masuk = $akhir_masuk=='' ? $masuk : "$masuk s.d ". date('h:i',strtotime($akhir_masuk));
 
   $datang = $datang=='' ? '' : "<a href='?penerimaan&p=manage_sj&kode_sj=$d[kode_sj]'>$datang</a>";
-  $masuk = $masuk=='' ? '' : "<a href='?penerimaan&p=bbm&kode_sj=$d[kode_sj]'>$masuk</a>";
 
 
   $qty = floatval($d['qty']);
@@ -232,24 +227,24 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_balik_fs = floatval($d['qty_balik_fs']);
   $qty_retur_fs = floatval($d['qty_retur_fs']);
   $qty_balik = floatval($d['qty_balik']);
-  $qty_diterima = floatval($d['qty_diterima']);
+  $qty_datang = floatval($d['qty_datang']);
   $qty_diterima_with_qc_no_fs = floatval($d['qty_diterima_with_qc_no_fs']);
   $qty_diterima_with_qc_fs = floatval($d['qty_diterima_with_qc_fs']);
 
 
 
-  $qty_lebih = $qty_diterima - $qty;
-  $qty_kurang = $qty - $qty_diterima;
+  $qty_lebih = $qty_datang - $qty;
+  $qty_kurang = $qty - $qty_datang;
   $qty_fs = $qty_lebih>0 ? $qty_lebih : 0;
   
-  $pas = $qty==$qty_diterima ? '<img src=assets/img/icons/check.png height=14px>' : '';
-  $qty_diterima_show = "diterima: <a href='?penerimaan&p=bbm&kode_sj=$d[kode_sj]'>$qty_diterima $satuan</a> $pas";
+  $pas = $qty==$qty_datang ? '<img src=assets/img/icons/check.png height=14px>' : '';
+  $qty_diterima_show = "diterima: $qty_datang $satuan $pas";
   $qty_lebih_show = $qty_lebih>0 ? "<img src=assets/img/icons/wms/qty_lebih.png height=14px> $qty_lebih" : '';
   $qty_kurang_show = $qty_kurang>0 ? "<img src=assets/img/icons/wms/qty_kurang.png height=14px> $qty_kurang" : '';
   
 
 
-  if($d['jumlah_subitem']){
+  if($d['jumlah_kumulatif_item']){
     $s2 = "SELECT a.kode_lokasi, b.brand  
     FROM tb_sj_kumulatif a 
     JOIN tb_lokasi b ON a.kode_lokasi=b.kode 
@@ -274,10 +269,10 @@ while($d=mysqli_fetch_assoc($q)){
     $locations = "<a href='?penerimaan&p=manage_sj_kumulatif&kode_sj=$kode_sj&id_sj_item=$id'>$img_warning  <span class='red kecil'>Belum ada subitem</span></a>";
   }
 
-  $count_subitem_with_fs = $count_subitem_no_fs+$count_subitem_fs;
+  $count_kumulatif_item_with_fs = $count_kumulatif_item_no_fs+$count_kumulatif_item_fs;
 
-  $fs_count_show = $count_subitem_fs ? " | <span class='kecil tebal biru'>$count_subitem_fs FS</span>" : '';
-  if($count_subitem_with_fs!=$count_retur){
+  $fs_count_show = $count_kumulatif_item_fs ? " | <span class='kecil tebal biru'>$count_kumulatif_item_fs FS</span>" : '';
+  if($count_kumulatif_item_with_fs!=$count_retur){
     if($count_retur){
       $retur_show = "<span class=red>QC Sebagian</span>";
     }else{
@@ -287,12 +282,12 @@ while($d=mysqli_fetch_assoc($q)){
     if($qty_retur){
       $retur_show = "Retur: $qty_retur";
     }else{
-      $retur_show = $count_subitem_no_fs ? "<span class=green>No Retur $img_check</span>" : '-';
+      $retur_show = $count_kumulatif_item_no_fs ? "<span class=green>No Retur $img_check</span>" : '-';
     }
   }
 
   if($qty_retur){
-    if($qty_retur==$qty_balik && $count_retur==$count_subitem_no_fs){
+    if($qty_retur==$qty_balik && $count_retur==$count_kumulatif_item_no_fs){
       $terima_retur_show = "<div><a href='?retur&id_sj_item=$id_sj_item'>Balik: $qty_balik $img_check</a></div>";
     }else{
       $terima_retur_show = "<div><a href='?retur&id_sj_item=$id_sj_item'><span class=red>Balik: $qty_balik</span> $img_warning</a></div>";
@@ -307,18 +302,18 @@ while($d=mysqli_fetch_assoc($q)){
 
   $count_retur_with_fs = $count_retur + $count_retur_fs;
 
-  $qc_show = $count_retur_with_fs==$count_subitem_with_fs ? "<div class=green>QC $count_retur_with_fs of $count_subitem_with_fs $img_check</div>" : "<div>QC $count_retur_with_fs of $count_subitem_with_fs</div>";
-  $qc_show = $count_subitem_no_fs ? $qc_show : '-';
+  $qc_show = $count_retur_with_fs==$count_kumulatif_item_with_fs ? "<div class=green>QC $count_retur_with_fs of $count_kumulatif_item_with_fs $img_check</div>" : "<div>QC $count_retur_with_fs of $count_kumulatif_item_with_fs</div>";
+  $qc_show = $count_kumulatif_item_no_fs ? $qc_show : '-';
 
 
   $qty_stok = $qty_diterima_with_qc_no_fs - $qty_retur + $qty_balik;
   $qty_stok_fs = $qty_diterima_with_qc_fs - $qty_retur_fs + $qty_balik_fs;
-  $qty_transit = $qty_diterima - $qty_stok -$qty_fs -$qty_retur + $qty_balik;
+  $qty_transit = $qty_datang - $qty_stok -$qty_fs -$qty_retur + $qty_balik;
 
-  $fs_show = $count_subitem_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
+  $fs_show = $count_kumulatif_item_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
   $qty_stok_fs_show = $qty_stok_fs ? "$qty_stok_fs $fs_show" : '';
   
-  // echo "<h1>qty_transit:$qty_transit = qty_diterima:$qty_diterima - qty_stok:$qty_stok -qty_retur:$qty_retur + qty_balik:$qty_balik;</h1>";
+  // echo "<h1>qty_transit:$qty_transit = qty_datang:$qty_datang - qty_stok:$qty_stok -qty_retur:$qty_retur + qty_balik:$qty_balik;</h1>";
 
 
   $tr_hasil .= "
@@ -334,7 +329,7 @@ while($d=mysqli_fetch_assoc($q)){
         <div>
           <a href='?penerimaan&p=manage_sj_kumulatif&kode_sj=$d[kode_sj]&id_sj_item=$d[id_sj_item]'>
             $d[kode_barang] | 
-            <span class=kecil>$count_subitem_no_fs subitems</span> $fs_count_show
+            <span class=kecil>$count_kumulatif_item_no_fs subitems</span> $fs_count_show
           </a>
         </div>
         <div class='kecil abu'>$d[nama_barang]</div>

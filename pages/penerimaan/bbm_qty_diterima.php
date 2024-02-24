@@ -28,7 +28,7 @@ b.id as id_barang,
 b.kode as kode_barang,
 b.nama as nama_barang,
 (SELECT step FROM tb_satuan WHERE satuan=b.satuan) step,
-(SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id) qty_subitem
+(SELECT SUM(qty) FROM tb_sj_kumulatif WHERE id_sj_item=a.id) qty_kumulatif_item
 
 FROM tb_sj_item a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
@@ -49,32 +49,32 @@ if(mysqli_num_rows($q)==0){
     $id = $d['id_sj_item'];
     $step = $d['step'] ?? 0.0001;
     $qty = $d['qty'];
-    $qty_subitem = $d['qty_subitem'];
-    $qty_diterima = $d['qty_diterima'];
+    $qty_kumulatif_item = $d['qty_kumulatif_item'];
+    $qty_datang = $d['qty_datang'];
     $qty_sebelumnya = $d['qty_sebelumnya'];
     $satuan = $d['satuan'];
 
     $qty = floatval($qty);
-    $qty_subitem = floatval($qty_subitem);
-    $qty_diterima = floatval($qty_diterima);
+    $qty_kumulatif_item = floatval($qty_kumulatif_item);
+    $qty_datang = floatval($qty_datang);
     $qty_sebelumnya = floatval($qty_sebelumnya);
 
     // pernah terima maka set partial
-    if($qty_diterima) $pernah_terima = 1;
+    if($qty_datang) $pernah_terima = 1;
     
     $qty = $step==1 ? round($qty,0) : $qty;
-    $qty_sama = $qty==$qty_diterima ? 1 : 0;
+    $qty_sama = $qty==$qty_datang ? 1 : 0;
 
     $qty_final = $qty-$qty_sebelumnya;
-    $qty_sama_final = $qty_final==$qty_diterima ? 1 : 0;
+    $qty_sama_final = $qty_final==$qty_datang ? 1 : 0;
     
     $hideit_check = $qty_sama_final ? '' : 'hideit';
-    $hideit_sesuai = ($qty_sama_final || $qty_diterima>0) ? 'hideit' : '';
+    $hideit_sesuai = ($qty_sama_final || $qty_datang>0) ? 'hideit' : '';
     
     if($qty_sama_final){
       $sisa_show='';
     }else{
-      $selisih = $qty_diterima-$qty;
+      $selisih = $qty_datang-$qty;
       if($selisih<0){
         $selisih_abs = abs($selisih);
         $sisa_show = "Kurang $selisih_abs $satuan";
@@ -87,24 +87,24 @@ if(mysqli_num_rows($q)==0){
 
     $qty_sebelumnya_show = $d['qty_sebelumnya'] ? "<div class='kecil miring abu'>-<span id=qty_sebelumnya__$id>$d[qty_sebelumnya]</span></div>" : '';
 
-    $qty_subitem_color = $qty_diterima==$qty_subitem ? 'hijau' : 'red';
-    if($qty_diterima!=$qty_subitem) $all_qty_allocated = 0;
+    $qty_kumulatif_item_color = $qty_datang==$qty_kumulatif_item ? 'hijau' : 'red';
+    if($qty_datang!=$qty_kumulatif_item) $all_qty_allocated = 0;
 
-    $total_qty_diterima += $qty_diterima;
-    $total_qty_subitem += $qty_subitem;
+    $total_qty_diterima += $qty_datang;
+    $total_qty_kumulatif_item += $qty_kumulatif_item;
 
     $qty_max = $qty * 2;
 
     //disabled edit qty diterima jika sudah ada subitem
-    $qty_diterima_disabled = $qty_subitem ? 'disabled' : '';
-    if(!$qty_subitem) $masih_bisa_edit = 1;
+    $qty_diterima_disabled = $qty_kumulatif_item ? 'disabled' : '';
+    if(!$qty_kumulatif_item) $masih_bisa_edit = 1;
 
-    if($qty_diterima){
+    if($qty_datang){
       $select_proyeksi = "<select class='form-control form-control-sm select_save' name=proyeksi__$id id=proyeksi__$id>$opt_proyeksi</select>";
       $select_ppic = "<select class='form-control form-control-sm select_save' name=kode_ppic__$id id=kode_ppic__$id>$opt_ppic</select>";
       $link_manage_sub_item = "
         <a href='?penerimaan&p=manage_sj_kumulatif&kode_sj=$kode_sj&id_sj_item=$id'>
-          <span class='kecil $qty_subitem_color'>$qty_subitem $satuan</span>
+          <span class='kecil $qty_kumulatif_item_color'>$qty_kumulatif_item $satuan</span>
           <span class=hide_cetak>$img_next</span>
         </a>
       ";
@@ -129,7 +129,7 @@ if(mysqli_num_rows($q)==0){
         <td>
           <div class=flexy>
             <div>
-              <input id='qty_diterima__$id' class='form-control form-control-sm qty_diterima' type=number step='$step' required name=qty_diterima__$id min=0 max=$qty_max value='$qty_diterima' $qty_diterima_disabled>
+              <input id='qty_diterima__$id' class='form-control form-control-sm qty_datang' type=number step='$step' required name=qty_diterima__$id min=0 max=$qty_max value='$qty_datang' $qty_diterima_disabled>
               <div class='mt1 abu kecil' id=selisih__$id>$sisa_show</div>
             </div>
             <div>
@@ -158,7 +158,7 @@ $tb_items = "
       <th>No</th>
       <th>Kode / Item</th>
       <th>QTY-PO</th>
-      <th>QTY Diterima</th>
+      <th>QTY Datang</th>
       <th class=hide_cetak>QTY Item Kumulatif</th>
       <th class='hide_cetak hideit'>Proyeksi</th>
       <th class='hide_cetak hideit'>PPIC</th>
@@ -182,7 +182,7 @@ $tb_items = "
 # =======================================================================
 # QTY DITERIMA PADA BBM
 # =======================================================================
-echo "<h2>QTY Diterima pada BBM $no_bbm</h2>";
+echo "<h2>QTY Datang pada BBM $no_bbm</h2>";
 include 'bbm_process_simpan_item.php';
 
 $hide_cek = $masih_bisa_edit ? '' : 'style="display:none"';

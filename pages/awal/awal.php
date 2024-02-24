@@ -271,10 +271,10 @@ echo $tr=='' ? div_alert('danger mt-4', $info) : "
           <form method=post enctype='multipart/form-data'>
             <div class=flexy>
               <div>
-                <input class='form-control form-control-sm' type=file name=file_csv_subitem required accept='.csv'>
+                <input class='form-control form-control-sm' type=file name=file_csv_kumulatif_item required accept='.csv'>
               </div>
               <div>
-                <button class='btn btn-sm btn-success' name=btn_import_subitem>Import Item Kumulatif</button>
+                <button class='btn btn-sm btn-success' name=btn_import_kumulatif_item>Import Item Kumulatif</button>
               </div>
             </div>
           </form>

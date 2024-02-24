@@ -15,7 +15,27 @@ a.kode as kode_sj ,
 a.kode_po,
 a.tanggal_terima,
 a.kode_supplier,
-(SELECT SUM(qty) FROM tb_sj_item WHERE kode_sj=a.kode) as total_qty
+a.id_kategori,
+(
+  SELECT SUM(p.qty_po) FROM tb_sj_item p 
+  WHERE p.kode_sj=a.kode) as qty_po,
+(
+  SELECT SUM(p.tmp_qty) FROM tb_sj_kumulatif p 
+  JOIN tb_sj_item q ON p.id_sj_item=q.id  
+  WHERE q.kode_sj=a.kode) as sum_qty_datang,
+  -- per item surat jalan
+(
+  SELECT SUM(p.tmp_qty) FROM tb_sj_kumulatif p 
+  JOIN tb_sj_item q ON p.id_sj_item=q.id  
+  WHERE q.kode_sj!=a.kode) as qty_parsial,
+  -- qty di surat jalan lain di satu PO
+(
+  SELECT SUM(p.tmp_qty) FROM tb_sj_kumulatif p 
+  JOIN tb_sj_item q ON p.id_sj_item=q.id  
+  JOIN tb_sj r ON q.kode_sj=r.kode  
+  WHERE r.kode_po=a.kode_po) as total_qty_datang
+  -- per PO
+
 FROM tb_sj a 
 WHERE 1 
 AND (a.kode LIKE '%$keyword%' ) 
@@ -33,13 +53,18 @@ if($jumlah_row==0){
     $i++;
     $id=$d['id_sj'];
     $id_sj=$d['id_sj'];
+    $id_kategori=$d['id_kategori'];
+    $kode_supplier=$d['kode_supplier'];
     $kode_sj=$d['kode_sj'];
     $kode_po=$d['kode_po'];
-    $total_qty=$d['total_qty'] ?? 0;
+    $qty_po=$d['qty_po'] ?? 0;
+    $qty_parsial=$d['qty_parsial'] ?? 0;
+    $sum_qty_datang=$d['sum_qty_datang'] ?? 0;
+    $total_qty_datang=$d['total_qty_datang'] ?? 0;
 
-    $total_qty = floatval($total_qty);
+    $sum_qty_datang = floatval($sum_qty_datang);
 
-    if($total_qty){
+    if($sum_qty_datang){
       # =================================================
       # JUMLAH SURAT JALAN
       # =================================================
@@ -60,15 +85,16 @@ if($jumlah_row==0){
 
       $new_kode_sj = "$kode_po-new-$d[kode_supplier]";
 
-      $btn_add = "
+      $btn_add_parsial = "
       <form method=post style='display: inline-block'>
-        <button class='btn btn-primary btn-sm' name=btn_tambah_sj_selanjutnya value='$new_kode_sj' onclick='return confirm(\"Tambah Penerimaan Parsial dari PO ini?\")'>Penerimaan Parsial</button>
+        <input type=hidden name=id_kategori value=$id_kategori>
+        <input type=hidden name=kode_supplier value=$kode_supplier>
+        <button class='btn btn-primary btn-sm' name=btn_add_parsial value='$new_kode_sj' onclick='return confirm(\"Tambah Penerimaan Parsial dari PO ini?\")'>Add Parsial</button>
       </form>
       ";
       
     }else{
-      $btn_add = '<span class=abu>Total QTY masih nol</span>';
-      
+      $btn_add_parsial = '<span class=abu>Total QTY masih nol</span>';
     }
 
 
@@ -82,16 +108,27 @@ if($jumlah_row==0){
       $age_show = round($age/365,0)."<span class='miring abu'>y</span>";
     }
 
-    $merah = $total_qty==0 ? 'merah' : '';
+    $merah = $sum_qty_datang==0 ? 'merah' : '';
+
+    $qty_kurang = $qty_po - $qty_parsial - $sum_qty_datang;
+
+    $qty_po_show = number_format($qty_po,0);
+    $sum_qty_datang_show = number_format($sum_qty_datang,0);
+    $qty_parsial_show = number_format($qty_parsial,0);
+    $qty_kurang_show = number_format($qty_kurang,0);
+    $tanggal_terima_show = date('d-M-y',strtotime($d['tanggal_terima']));
 
     $tr .= "
       <tr class='gradasi-$merah'>
         <td>$d[kode_sj]</td>
-        <td>$d[tanggal_terima]</td>
-        <td>$total_qty</td>
+        <td>$tanggal_terima_show</td>
+        <td>$qty_po_show</td>
+        <td>$sum_qty_datang_show</td>
+        <td>$qty_parsial_show</td>
+        <td>$qty_kurang_show</td>
         <td>
           <a href='?penerimaan&p=manage_sj&kode_sj=$kode_sj' class='btn btn-success btn-sm'>Manage SJ</a>
-          $btn_add
+          $btn_add_parsial
         </td>
       </tr>
     ";
@@ -103,12 +140,16 @@ $limited = $jumlah_row>$i ? "<div class='alert alert-info bordered br5 p2'>$i da
 
 echo "
 <div class='abu f12 mb2'>Nomor PO diatas sudah ada pada database. Silahkan Pilih Manage atau Penerimaan Parsial</div>
+<div class='hasil_ajax'>Hasil AJAX Pencarian Nomor SJ</div>
 <table class='table table-hover'>
   $limited
   <thead>
     <th>Surat Jalan</th>
     <th>Tanggal Terima</th>
-    <th>Total QTY</th>
+    <th>QTY PO</th>
+    <th>QTY Datang</th>
+    <th>QTY Parsial</th>
+    <th>QTY Kurang</th>
     <th>Aksi</th>
   </thead>
   $tr

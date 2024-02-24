@@ -46,7 +46,7 @@ $s = "SELECT
 a.id as id_po_item,
 a.qty,
 a.harga_manual,
-b.tmp_harga as harga,
+b.harga,
 b.satuan,
 b.keterangan,
 b.tmp_stok,  

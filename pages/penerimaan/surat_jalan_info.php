@@ -28,6 +28,8 @@ $kode_po = $d['kode_po'];
 $tanggal_terima = $d['tanggal_terima'];
 $tanggal_verifikasi_bbm = $d['tanggal_verifikasi_bbm'];
 
+$tanggal_terima_tgl = date('Y-m-d',strtotime($tanggal_terima));
+
 $debug .= "<br>id_sj: $id_sj";
 $debug .= "<br>kode_po: $kode_po";
 $debug .= "<br>tanggal_terima: $tanggal_terima";
@@ -97,7 +99,7 @@ echo "<span id=id_sj class=hideit>$id_sj</span>";
       Tanggal Terima
     </div>
     <div>
-      <input type="date" class="mt1 mb2 editable form-control form-control-sm" id=tanggal_terima__sj__<?=$id_sj?> value='<?=$tanggal_terima?>'>
+      <input type="date" class="mt1 mb2 editable form-control form-control-sm" id=tanggal_terima__sj__<?=$id_sj?> value='<?=$tanggal_terima_tgl?>'>
     </div>
     <div class=pt2>
       <span id="tanggal_terima__check__<?=$id_sj?>" class=hideit><?=$img_check?></span>

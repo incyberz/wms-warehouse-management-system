@@ -15,7 +15,7 @@
   <ol>
     <li><a href="?penerimaan&p=terima_barang"><?=$img_prev?> Pencarian atau Penerimaan Surat Jalan Baru</a></li>
     <li>Manage Surat Jalan (Pengisian Item QTY sesuai PO)</li>
-    <li>Pengisian Item QTY Diterima dan Cetak BBM</li>
+    <li>Pengisian Item QTY Datang dan Cetak BBM</li>
     <li>Manage Item Kumulatif | Cetak Label | Penempatan Barang</li>
   </ol>
 </div>

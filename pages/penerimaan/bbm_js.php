@@ -18,19 +18,19 @@
     });
 
 
-    $('.qty_diterima').change(function(){
+    $('.qty_datang').change(function(){
       let tid = $(this).prop('id');
       let rid = tid.split('__');
       let aksi = rid[0];
       let id = rid[1];
       
-      let qty_diterima = $(this).val();
-      if(qty_diterima==''){
+      let qty_datang = $(this).val();
+      if(qty_datang==''){
         $('#btn_sesuai__'+id).show();
         $('#selisih__'+id).html('');
         return;
       }
-      qty_diterima = parseFloat(qty_diterima);
+      qty_datang = parseFloat(qty_datang);
 
       let satuan = $('#satuan__'+id).text();
       let qty_po = parseFloat($('#qty_po__'+id).text());
@@ -39,13 +39,13 @@
       if(isNaN(qty_sebelumnya)) qty_sebelumnya = 0;
 
       $('#img_check__'+id).hide();
-      if(isNaN(qty_diterima)||isNaN(qty_po)){
+      if(isNaN(qty_datang)||isNaN(qty_po)){
         $('#selisih__'+id).html('masukan QTY yang benar..');
         $('#btn_sesuai__'+id).fadeOut();
       }else{
         // $('#btn_sesuai__'+id).fadeIn();
-        console.log('qty_po, qty_diterima, qty_sebelumnya: ',qty_po, qty_diterima, qty_sebelumnya);
-        let selisih = Math.round((qty_po - qty_diterima - qty_sebelumnya)*10000) / 10000;
+        console.log('qty_po, qty_datang, qty_sebelumnya: ',qty_po, qty_datang, qty_sebelumnya);
+        let selisih = Math.round((qty_po - qty_datang - qty_sebelumnya)*10000) / 10000;
         if(selisih==0){
           $('#btn_sesuai__'+id).hide();
           $('#img_check__'+id).show();
@@ -60,7 +60,7 @@
         }
       }
 
-      console.log(qty_diterima,qty_po);
+      console.log(qty_datang,qty_po);
 
 
     })

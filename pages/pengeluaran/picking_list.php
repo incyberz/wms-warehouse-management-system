@@ -48,7 +48,7 @@ if($jumlah_item){
   b.no_lot,
   b.kode_lokasi,
   b.is_fs,
-  b.qty as qty_subitem,
+  b.qty as qty_kumulatif_item,
   d.kode_po,
   f.kode as kode_barang,
   f.nama as nama_barang, 
@@ -89,7 +89,7 @@ if($jumlah_item){
     $id=$d['id'];
     $qty=floatval($d['qty']);
     $qty_qc=floatval($d['qty_qc']);
-    $qty_subitem=floatval($d['qty_subitem']);
+    $qty_kumulatif_item=floatval($d['qty_kumulatif_item']);
     $lot_info = $d['no_lot'] ? "<div>Lot: $d[no_lot]</div>" : "<div>Lot: $unset</div>";
     $roll_info = $d['count_roll'] ? "<div>Count Roll: $d[count_roll]</div>" : '-';
     $satuan = $d['satuan'];
@@ -105,12 +105,12 @@ if($jumlah_item){
 
 
     if($is_fs){
-      $qty_fs = $qty_subitem;
+      $qty_fs = $qty_kumulatif_item;
       $qty = 0;
       // $tr_gradasi = 'biru';
       $qty_transit = 0;
     }else{
-      $qty_transit = $qty_subitem-$qty_qc;
+      $qty_transit = $qty_kumulatif_item-$qty_qc;
       // $tr_gradasi = '';
       $qty_fs = 0;
     }

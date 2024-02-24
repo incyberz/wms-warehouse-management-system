@@ -4,12 +4,12 @@ if(isset($_POST['btn_simpan'])){
   var_dump($_POST);
   echo '</pre>';
 
-  foreach ($_POST as $key => $qty_diterima) {
+  foreach ($_POST as $key => $qty_datang) {
     if(strpos("salt$key",'qty_diterima__')){
       $arr = explode('__',$key);
       $id_sj_item = $arr[1];
 
-      $s = "UPDATE tb_sj_item SET qty_diterima=$qty_diterima WHERE id=$id_sj_item";
+      $s = "UPDATE tb_sj_item SET qty_datang=$qty_datang WHERE id=$id_sj_item";
       echo $s;
       $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     }

@@ -41,14 +41,14 @@ if(isset($_POST['btn_get_po_items'])){
         $nama = $item_po->item_name;
         $keterangan = $item_po->item_desc;
         $satuan = $item_po->uom;
-        $tmp_harga = $item_po->price;
+        $harga = floatval($item_po->price);
         $kode_lama = $item_po->kode_lama;
         $kode_lama = $kode_lama=='NULL' ? 'NULL' : "'$kode_lama'";
 
         echo 'barang belum ada... Inserting barang... ';
         $s2 = "INSERT INTO tb_barang 
-        (id_kategori,kode,nama,keterangan,kode_lama,satuan) VALUES 
-        ('$id_kategori','$kode','$nama','$keterangan',$kode_lama,'$satuan')";
+        (id_kategori,kode,nama,keterangan,kode_lama,satuan,harga) VALUES 
+        ('$id_kategori','$kode','$nama','$keterangan',$kode_lama,'$satuan',$harga)";
         $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
         echo 'insert success.';
       }
@@ -156,24 +156,26 @@ if(isset($_POST['btn_get_po_items'])){
 # ========================================================
 # HANDLER PENERIMAAN PARSIAL
 # ========================================================
-if(isset($_POST['btn_tambah_sj_selanjutnya'])){
+if(isset($_POST['btn_add_parsial'])){
 
-  // $id_kategori = $_POST['id_kategori'] ?? die(erid('id_kategori'));
-  $id_kategori = $_POST['id_kategori'] ?? 1; // zzz debug here
-  echo div_alert('danger','id_kategori by passed.');
+  $pesan = '';
+  $id_kategori = $_POST['id_kategori'] ?? die(erid('id_kategori'));
+  $kode_supplier = $_POST['kode_supplier'] ?? die(erid('kode_supplier'));
 
-  $arr = explode('-',$_POST['btn_tambah_sj_selanjutnya']);
+  $arr = explode('-',$_POST['btn_add_parsial']);
   $kode_po = $arr[0];
   $no = 0;
   if($arr[1]=='new'){
     // get max nomor
-    $s = "SELECT kode FROM tb_sj WHERE kode_po='$kode_po'";
+    $s = "SELECT kode as kode_sj_max FROM tb_sj WHERE kode_po='$kode_po' 
+    ORDER BY kode DESC LIMIT 1;";
+    $pesan.= '<br>selecting kode_sj_max... ';
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-    while($d=mysqli_fetch_assoc($q)){
-      $arr2 = explode('-',$d['kode']);
-      $no_db = intval($arr2[1]);
-      if($no_db>$no) $no = $no_db; 
-    }
+    $d=mysqli_fetch_assoc($q);
+    $kode_sj_max = $d['kode_sj_max'];
+    $pesan .= "kode_sj_max: $kode_sj_max";
+    $arr2 = explode('-',$kode_sj_max);
+    $no = intval($arr2[1]);
 
     //max nomor++
     $no++;
@@ -184,19 +186,40 @@ if(isset($_POST['btn_tambah_sj_selanjutnya'])){
     }else{
       $no = $no;
     }
+    $pesan.= "<br>incrementing counter... no: $no";
   }else{
     die('Not `new` parameter at btn_new value.');
   }
-  $kode = "$arr[0]-$no";
-  $id_supplier = 1; /// zzz debug bypassed
-
+  $new_kode_sj = "$arr[0]-$no";
+  $pesan.= "<br>creating new_kode_sj... new_kode_sj: $new_kode_sj";
+  
   $s = "INSERT INTO tb_sj 
-  (kode,kode_po,id_supplier,id_kategori) VALUES 
-  ('$kode','$kode_po','$id_supplier',$id_kategori) 
+  (kode,kode_po,kode_supplier,id_kategori) VALUES 
+  ('$new_kode_sj','$kode_po','$kode_supplier',$id_kategori) 
   ";
-
+  $pesan.= "<br>inserting data with new_kode_sj... ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl("?penerimaan&p=manage_sj&kode_sj=$kode");
+  $pesan.= 'success.';
+  
+  // get items from kode_sj_max
+  $s = "SELECT kode_barang,qty_po,qty FROM tb_sj_item WHERE kode_sj='$kode_sj_max'";
+  $pesan.= "<br>selecting items with kode_sj_max... ";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  while($d=mysqli_fetch_assoc($q)){
+    // insert sj_item 
+    $s2 = "INSERT INTO tb_sj_item 
+    (
+      kode_sj, kode_barang, qty_po, qty
+    ) VALUES (
+      '$new_kode_sj', '$d[kode_barang]', $d[qty_po], $d[qty]
+    )";
+    $pesan.= "<br>inserting item to new_kode_sj... kode_barang: $d[kode_barang]... ";
+    $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+    $pesan.= 'success.';
+  }
+  
+  $pesan.= '<hr>All process penerimaan parsial success.';
+  jsurl("?penerimaan&p=manage_sj&kode_sj=$new_kode_sj",2000);
   exit;
 }
 

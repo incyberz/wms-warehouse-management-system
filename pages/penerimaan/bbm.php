@@ -36,7 +36,7 @@ $btn_simpan_caption = "Simpan BBM";
 $arr_no_bbm = [];
 $all_qty_allocated = 1;
 $total_qty_diterima = 0;
-$total_qty_subitem = 0;
+$total_qty_kumulatif_item = 0;
 
 # =======================================================================
 # SURAT JALAN

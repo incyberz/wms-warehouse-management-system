@@ -51,7 +51,7 @@ if($terverifikasi && $sudah_upload){
   $btn_cetak_bbm = "<button class='btn btn-success w-100' disabled'>Belum bisa Cetak BBM</button>";
 }
 
-$status_total_qty = $total_qty_diterima==$total_qty_subitem ? "<span class=hijau>All allocated.</span>" : "<span class=red>Belum semua dialokasikan.</span>";
+$status_total_qty = $total_qty_diterima==$total_qty_kumulatif_item ? "<span class=hijau>All allocated.</span>" : "<span class=red>Belum semua dialokasikan.</span>";
 
 $hide_blok_cetak = $masih_bisa_edit ? 'hideit' : '';
 
@@ -82,10 +82,10 @@ $hide_blok_cetak = $masih_bisa_edit ? 'hideit' : '';
       </div>
 
     </li>
-    <li>Semua QTY Diterima sudah dialokasikan menjadi QTY Item Kumulatif
+    <li>Semua QTY Datang sudah dialokasikan menjadi QTY Item Kumulatif
       <ul class='kecil mb2'>
         <li>Total QTY diterima: <?=$total_qty_diterima?></li>
-        <li>Total QTY subitem: <?=$total_qty_subitem?></li>
+        <li>Total QTY subitem: <?=$total_qty_kumulatif_item?></li>
         <li><?=$status_total_qty?></li>
       </ul>
     </li>
