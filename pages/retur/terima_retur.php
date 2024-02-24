@@ -20,7 +20,7 @@ if(isset($_POST['btn_terima_retur'])){
   $koloms = str_replace('__,','',$koloms);
   $values = str_replace('__,','',$values);
 
-  $s = "INSERT INTO tb_terima_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
+  $s = "INSERT INTO tb_ganti ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
   echo $s;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
@@ -185,7 +185,7 @@ if($get_id_retur!=''){
   c.kode as kode_barang,
   c.keterangan as keterangan_barang
 
-  FROM tb_terima_retur a 
+  FROM tb_ganti a 
   JOIN tb_sj_item b ON a.id=b.id 
   JOIN tb_barang c ON b.kode_barang=c.kode 
   WHERE a.id=$get_id_retur";

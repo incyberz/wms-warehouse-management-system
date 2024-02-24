@@ -6,6 +6,7 @@ set_title($judul);
 include 'include/date_managements.php';
 $p = 'penerimaan'; // untuk navigasi
 $cat= $_GET['cat'] ?? 'aks'; //default AKS
+$get_csv= $_GET['get_csv'] ?? '';
 $jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
 
 $arr_waktu = [
@@ -50,11 +51,11 @@ $bg_ppic = $filter_ppic=='' ? '' : 'bg-hijau';
 $id_kategori = $cat=='aks' ? 1 : 2;
 
 if($filter_waktu=='all_time'){$where_date = '1';}else 
-if($filter_waktu=='hari_ini'){$where_date = "c.tanggal_masuk >= '$today' ";}else 
-if($filter_waktu=='kemarin'){$where_date = "c.tanggal_masuk >= '$kemarin' AND c.tanggal_masuk < '$today' ";}else 
-if($filter_waktu=='minggu_ini'){$where_date = "c.tanggal_masuk >= '$ahad_skg' AND c.tanggal_masuk < '$ahad_depan' ";}else 
-if($filter_waktu=='bulan_ini'){$where_date = "c.tanggal_masuk >= '$awal_bulan' ";}else
-if($filter_waktu=='tahun_ini'){$where_date = "c.tanggal_masuk >= '$awal_tahun' ";} 
+if($filter_waktu=='hari_ini'){$where_date = "a.tanggal_masuk >= '$today' ";}else 
+if($filter_waktu=='kemarin'){$where_date = "a.tanggal_masuk >= '$kemarin' AND a.tanggal_masuk < '$today' ";}else 
+if($filter_waktu=='minggu_ini'){$where_date = "a.tanggal_masuk >= '$ahad_skg' AND a.tanggal_masuk < '$ahad_depan' ";}else 
+if($filter_waktu=='bulan_ini'){$where_date = "a.tanggal_masuk >= '$awal_bulan' ";}else
+if($filter_waktu=='tahun_ini'){$where_date = "a.tanggal_masuk >= '$awal_tahun' ";} 
 
 
 $where_po = $filter_po=='' ? '1' : "c.kode_po LIKE '%$filter_po%' ";
@@ -76,7 +77,15 @@ AND $where_proyeksi
 AND $where_ppic 
 ";
 
+# =====================================================
+# CSV URL HANDLER
+# =====================================================
+$arr = explode('?',$_SERVER['REQUEST_URI']);
+$href_get_csv = $arr[1] . '&get_csv=1';
 
+# =====================================================
+# FORM CARI / FILTER
+# =====================================================
 $form_cari = "
   <form method=post>
     <div class=flexy>
@@ -90,6 +99,9 @@ $form_cari = "
       <div class=hideit><input type='text' class='form-control form-control-sm $bg_ppic' placeholder='ppic' name=filter_ppic value='$filter_ppic' ></div>
       <div>
         <button class='btn btn-success btn-sm' name=btn_cari>Cari</button>
+      </div>
+      <div>
+        <a href='?$href_get_csv' class='btn btn-info btn-sm'>Get CSV</a>
       </div>
     </div>
   </form>
@@ -109,7 +121,7 @@ a.id as id_kumulatif,
 a.no_lot,
 a.kode_lokasi,
 b.kode_sj,
-c.tanggal_masuk,
+a.tanggal_masuk,
 c.kode_po,
 d.kode as kode_barang, 
 d.nama as nama_barang, 
@@ -118,15 +130,15 @@ d.kode_lama,
 d.satuan,
 (
   SELECT sum(qty) FROM tb_roll 
-  WHERE id_sj_kumulatif=a.id 
+  WHERE id_kumulatif=a.id 
   AND is_fs is null) qty,
 (
   SELECT sum(qty) FROM tb_roll 
-  WHERE id_sj_kumulatif=a.id 
+  WHERE id_kumulatif=a.id 
   AND is_fs is not null) qty_fs,
 (
   SELECT count(1) FROM tb_roll 
-  WHERE id_sj_kumulatif=a.id ) count_roll,
+  WHERE id_kumulatif=a.id ) count_roll,
 
 1
 
@@ -139,6 +151,8 @@ WHERE c.id_kategori = $id_kategori
 AND $where_date 
 AND $where_po 
 AND $where_id 
+
+ORDER BY a.tanggal_masuk DESC 
 ";
 
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -190,6 +204,7 @@ while($d=mysqli_fetch_assoc($q)){
   ";
 }
 
+$download_csv = $get_csv ? "<a class='btn btn-success btn-sm' href='#'>Download CSV</a>" : '';
 
 # =====================================================
 # FINAL ECHO
@@ -206,7 +221,15 @@ echo "
 </div>
 
 $form_cari
-<div><span class='darkblue'>$jumlah_row_limited</span> <span class='abu kecil'>data dari <b>$total_row </b> records</span></div>
+<div class=flexy>
+  <div>
+    <span class='darkblue'>$jumlah_row_limited</span> 
+    <span class='abu kecil'>
+      data dari <b>$total_row </b> records
+    </span>
+  </div>
+  <div>$download_csv</div>
+</div>
 <table class='table'>
   <thead class='gradasi-hijau '>
     <th>NO</th>

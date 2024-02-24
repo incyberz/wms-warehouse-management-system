@@ -35,7 +35,7 @@ if(isset($_POST['btn_terima_retur'])){
   $koloms = 'id,qty,tanggal_terima';
   $values = "$_POST[id_retur],$_POST[qty_balik],CURRENT_TIMESTAMP";
   $pairs = "qty=$_POST[qty_balik],tanggal_terima=CURRENT_TIMESTAMP";
-  $s = "INSERT INTO tb_terima_retur ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
+  $s = "INSERT INTO tb_ganti ($koloms) VALUES ($values) ON DUPLICATE KEY UPDATE $pairs ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $arr = explode('?',$_SERVER['REQUEST_URI']);
   jsurl("?$arr[1]");
@@ -217,7 +217,7 @@ if($get_id_sj_item!=''){
   d.satuan,
   d.step,
   (SELECT qty FROM tb_retur WHERE id=a.id) qty_retur,
-  (SELECT qty FROM tb_terima_retur WHERE id=a.id) qty_balik,
+  (SELECT qty FROM tb_ganti WHERE id=a.id) qty_balik,
   (SELECT metode_qc FROM tb_retur WHERE id=a.id) metode_qc,
   (SELECT alasan_retur FROM tb_retur WHERE id=a.id) alasan_retur,
   (SELECT tanggal_retur FROM tb_retur WHERE id=a.id) tanggal_retur,

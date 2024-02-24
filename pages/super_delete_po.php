@@ -22,37 +22,37 @@ if(isset($_POST['kode_sj_for_delete'])){
     while($d2=mysqli_fetch_assoc($q2)){
       $id_sj_item=$d2['id_sj_item'];
       
-      $s3 = "SELECT id as id_sj_kumulatif FROM tb_sj_kumulatif WHERE id_sj_item='$id_sj_item'";
+      $s3 = "SELECT id as id_kumulatif FROM tb_sj_kumulatif WHERE id_sj_item='$id_sj_item'";
       echo "<hr>looping... $s3";
       $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
       while($d3=mysqli_fetch_assoc($q3)){
-        $id_sj_kumulatif=$d3['id_sj_kumulatif'];
+        $id_kumulatif=$d3['id_kumulatif'];
         
-        $s4 = "DELETE FROM tb_picking WHERE id_sj_kumulatif='$id_sj_kumulatif'";
+        $s4 = "DELETE FROM tb_pick WHERE id_kumulatif='$id_kumulatif'";
         echo "<br>deleting... $s4";
         $q4 = mysqli_query($cn,$s4) or die(mysqli_error($cn));
         
-        $s4 = "SELECT id as id_retur FROM tb_retur WHERE id='$id_sj_kumulatif'";
+        $s4 = "SELECT id as id_retur FROM tb_retur WHERE id='$id_kumulatif'";
         echo "<hr>looping... $s4";
         $q4 = mysqli_query($cn,$s4) or die(mysqli_error($cn));
         while($d4=mysqli_fetch_assoc($q4)){
           $id_retur=$d4['id_retur'];
-          $s5 = "DELETE FROM tb_terima_retur WHERE id='$id_retur'";
+          $s5 = "DELETE FROM tb_ganti WHERE id='$id_retur'";
           echo "<br>deleting... $s5";
           $q5 = mysqli_query($cn,$s5) or die(mysqli_error($cn));
         }
 
 
-        $s4 = "DELETE FROM tb_retur WHERE id='$id_sj_kumulatif'";
+        $s4 = "DELETE FROM tb_retur WHERE id='$id_kumulatif'";
         echo "<br>deleting... $s4";
         $q4 = mysqli_query($cn,$s4) or die(mysqli_error($cn));
 
-        $s4 = "DELETE FROM tb_roll WHERE id_sj_kumulatif='$id_sj_kumulatif'";
+        $s4 = "DELETE FROM tb_roll WHERE id_kumulatif='$id_kumulatif'";
         echo "<br>deleting... $s4";
         $q4 = mysqli_query($cn,$s4) or die(mysqli_error($cn));
       }
 
-      // $s3 = "SELECT id as id_sj_kumulatif FROM tb_sj_kumulatif WHERE id_sj_item='$id_sj_item'";
+      // $s3 = "SELECT id as id_kumulatif FROM tb_sj_kumulatif WHERE id_sj_item='$id_sj_item'";
       // echo "<hr>looping... $s3";
       // $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
       // while($d3=mysqli_fetch_assoc($q3)){}      

@@ -79,7 +79,7 @@ $s = "SELECT 1 $sql_from $sql_where ";
 $s = "SELECT 
 a.qty as qty_pick,
 a.id as id_pick,
-a.id_sj_kumulatif,
+a.id_kumulatif,
 a.qty_allocate,
 b.kode_lokasi,
 b.is_fs,
@@ -97,41 +97,41 @@ i.tanggal_delivery,
 i.kode_artikel,
 i.kode_do,
 (
-  SELECT p.qty FROM tb_sj_kumulatif p 
+  SELECT p.tmp_qty FROM tb_sj_kumulatif p 
   WHERE p.is_fs is not null 
-  AND p.id=a.id_sj_kumulatif) qty_fs,
+  AND p.id=a.id_kumulatif) qty_fs,
 (
-  SELECT p.qty FROM tb_sj_kumulatif p 
+  SELECT p.tmp_qty FROM tb_sj_kumulatif p 
   JOIN tb_retur q ON p.id=q.id 
   WHERE p.is_fs is null 
-  AND p.id=a.id_sj_kumulatif) qty_diterima_with_qc_no_fs,
+  AND p.id=a.id_kumulatif) qty_diterima_with_qc_no_fs,
 (
   SELECT p.qty FROM tb_retur p 
   JOIN tb_sj_kumulatif q ON p.id=q.id 
-  WHERE q.id= a.id_sj_kumulatif
+  WHERE q.id= a.id_kumulatif
   ) qty_retur,
 (
-  SELECT p.qty FROM tb_terima_retur p
+  SELECT p.qty FROM tb_ganti p
   JOIN tb_retur q ON p.id=q.id 
   JOIN tb_sj_kumulatif r ON q.id=r.id 
-  WHERE r.id=a.id_sj_kumulatif) qty_balik,
+  WHERE r.id=a.id_kumulatif) qty_balik,
 (
-  SELECT SUM(p.qty) FROM tb_picking p 
+  SELECT SUM(p.qty) FROM tb_pick p 
   WHERE p.id != a.id 
-  AND p.id_sj_kumulatif = a.id_sj_kumulatif) qty_pick_by,
+  AND p.id_kumulatif = a.id_kumulatif) qty_pick_by,
 (
   SELECT COUNT(1) FROM tb_roll  
-  WHERE id_sj_kumulatif = b.id) count_roll
+  WHERE id_kumulatif = b.id) count_roll
 
 
-FROM tb_picking a 
-JOIN tb_sj_kumulatif b ON a.id_sj_kumulatif=b.id 
+FROM tb_pick a 
+JOIN tb_sj_kumulatif b ON a.id_kumulatif=b.id 
 JOIN tb_sj_item c ON b.id_sj_item=c.id 
 JOIN tb_sj d ON c.kode_sj=d.kode 
 JOIN tb_bbm e ON e.kode_sj=d.kode 
 JOIN tb_barang f ON c.kode_barang=f.kode 
 JOIN tb_lokasi g ON b.kode_lokasi=g.kode 
-JOIN tb_supplier h ON d.id_supplier=h.id  
+JOIN tb_supplier h ON d.kode_supplier=h.kode  
 JOIN tb_do i ON a.id_do=i.id  
 
 $sql_where 
@@ -273,8 +273,8 @@ while($d=mysqli_fetch_assoc($q)){
       </td>
       <td>
         <div class='abu f12 mb1'>
-          <span class=miring>id.$d[id_sj_kumulatif]</span> ~ 
-          <a target=_blank href='?penerimaan&p=manage_sj_kumulatif&id_sj_item=$d[id_sj_item]&id_sj_kumulatif=$d[id_sj_kumulatif]'>
+          <span class=miring>id.$d[id_kumulatif]</span> ~ 
+          <a target=_blank href='?penerimaan&p=manage_sj_kumulatif&id_sj_item=$d[id_sj_item]&id_kumulatif=$d[id_kumulatif]'>
             Lot: $no_lot 
           </a> ~ $d[kode_lokasi]
         </div>

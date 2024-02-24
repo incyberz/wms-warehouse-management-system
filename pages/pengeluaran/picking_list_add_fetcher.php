@@ -26,7 +26,7 @@ $sql_from = "
   JOIN tb_barang e ON b.kode_barang=e.kode 
   JOIN tb_satuan f ON e.satuan=f.satuan 
   JOIN tb_lokasi g ON a.kode_lokasi=g.kode 
-  LEFT JOIN tb_picking h ON a.id=h.id_sj_kumulatif AND h.id_do='$id_do'
+  LEFT JOIN tb_pick h ON a.id=h.id_kumulatif AND h.id_do='$id_do'
   WHERE h.id is null 
   AND e.id_kategori = $id_kategori 
   AND $sql_keyword  
@@ -52,8 +52,8 @@ g.brand,
   JOIN tb_retur q ON p.id=q.id
   WHERE p.id=a.id AND p.is_fs is null) qty_terima,
 (
-  SELECT sum(p.qty) FROM tb_picking p 
-  WHERE p.id_sj_kumulatif=a.id 
+  SELECT sum(p.qty) FROM tb_pick p 
+  WHERE p.id_kumulatif=a.id 
   ) qty_pick_by ,
 (
   SELECT p.qty FROM tb_retur p 
@@ -64,7 +64,7 @@ g.brand,
   WHERE p.id=a.id 
   ) tanggal_retur,
 (
-  SELECT p.qty FROM tb_terima_retur p 
+  SELECT p.qty FROM tb_ganti p 
   JOIN tb_retur q ON p.id=q.id  
   WHERE q.id=a.id 
   ) qty_balik 

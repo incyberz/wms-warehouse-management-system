@@ -31,10 +31,10 @@ $sql_filter = $keyword ? "
 $s = "SELECT 
 a.*,
 a.id as id_do,
-(SELECT SUM(qty) FROM tb_picking WHERE id_do=a.id AND is_hutangan is null) sum_pick, 
-(SELECT SUM(qty_allocate) FROM tb_picking WHERE id_do=a.id AND is_hutangan is null) sum_allocate, 
-(SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id) jumlah_pick, 
-(SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id AND qty_allocate is not null) jumlah_allocate 
+(SELECT SUM(qty) FROM tb_pick WHERE id_do=a.id AND is_hutangan is null) sum_pick, 
+(SELECT SUM(qty_allocate) FROM tb_pick WHERE id_do=a.id AND is_hutangan is null) sum_allocate, 
+(SELECT COUNT(1) FROM tb_pick WHERE id_do=a.id) jumlah_pick, 
+(SELECT COUNT(1) FROM tb_pick WHERE id_do=a.id AND qty_allocate is not null) jumlah_allocate 
 FROM tb_do a 
 WHERE $sql_filter  
 ORDER BY tanggal_delivery DESC

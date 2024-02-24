@@ -40,7 +40,7 @@ if(isset($_POST['btn_cetak_semua_label']) || isset($_GET['id_roll'])){
   JOIN tb_barang d ON c.kode_barang=d.kode 
   JOIN tb_sj e ON c.kode_sj=e.kode 
   JOIN tb_lokasi g ON a.kode_lokasi=g.kode 
-  JOIN tb_roll h ON a.id=h.id_sj_kumulatif 
+  JOIN tb_roll h ON a.id=h.id_kumulatif 
 
   WHERE $sql_where";
 

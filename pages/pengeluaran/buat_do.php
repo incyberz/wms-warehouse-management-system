@@ -156,7 +156,7 @@ if($kode_do!=''){
 
 
   $s = "SELECT a.*, a.id as id_do,
-  (SELECT COUNT(1) FROM tb_picking WHERE id_do=a.id) jumlah_item 
+  (SELECT COUNT(1) FROM tb_pick WHERE id_do=a.id) jumlah_item 
   FROM tb_do a 
   WHERE a.kode_do='$kode_do' 
   AND a.id_kategori=$id_kategori 

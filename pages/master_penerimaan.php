@@ -109,6 +109,7 @@ a.kode_sj,
 b.kode_po,
 b.awal_terima,
 b.akhir_terima,
+b.tanggal_terima,
 d.kode as kode_supplier,
 d.nama as nama_supplier,
 e.kode as kode_barang,
@@ -146,7 +147,7 @@ e.satuan,
   WHERE q.id_sj_item=a.id  AND q.is_fs is null 
   ) count_retur,  
 (
-  SELECT sum(p.qty) FROM tb_terima_retur p 
+  SELECT sum(p.qty) FROM tb_ganti p 
   JOIN tb_retur q ON p.id=q.id 
   JOIN tb_sj_kumulatif r ON q.id=r.id  
   WHERE r.id_sj_item=a.id  AND r.is_fs is null 
@@ -174,7 +175,7 @@ e.satuan,
   WHERE q.id_sj_item=a.id  AND q.is_fs is not null 
   ) count_retur_fs,  
 (
-  SELECT sum(p.qty) FROM tb_terima_retur p 
+  SELECT sum(p.qty) FROM tb_ganti p 
   JOIN tb_retur q ON p.id=q.id 
   JOIN tb_sj_kumulatif r ON q.id=r.id  
   WHERE r.id_sj_item=a.id  AND r.is_fs is not null 
@@ -207,7 +208,7 @@ while($d=mysqli_fetch_assoc($q)){
 
   $id_sj_item = $id;
 
-  $tgl = date('d M Y',strtotime($d['tanggal_masuk']));
+  $tanggal_terima = date('d M Y',strtotime($d['tanggal_terima']));
   $awal_terima = $d['awal_terima'] ?? '';
   $akhir_terima = $d['akhir_terima'] ?? '';
   $awal_masuk = $d['awal_masuk'] ?? '';
@@ -336,7 +337,7 @@ while($d=mysqli_fetch_assoc($q)){
         <div class='kecil abu'>$d[keterangan_barang]</div>
       </td>
       <td>
-        <div>$tgl</div>
+        <div>$tanggal_terima</div>
         <div class='kecil abu'>$datang</div>
         <div class='kecil abu'>$masuk</div>
       </td>

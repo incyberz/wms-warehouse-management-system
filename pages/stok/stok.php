@@ -91,19 +91,21 @@ $bg_select = $tipe_stok=='all' ? '' : 'style="background:#0f0"';
 $select = "<select class='form-control form-control-sm' name=tipe_stok $bg_select>$select</select>";
 
 $s = "SELECT 
-a.qty,
+a.tmp_qty as qty,
 a.no_lot,
 a.is_fs,
 a.kode_lokasi,
-a.id as id_sj_kumulatif,
+a.id as id_kumulatif,
+a.tanggal_masuk,
+b.kode_sj,
 c.id_kategori,
 c.kode as kode_barang,
 c.nama as nama_barang,
 c.keterangan as keterangan_barang,
+c.kode_lama,
 c.satuan,
 d.brand,
 g.kode_po,
-g.tanggal_terima,
 (
   SELECT tanggal_retur FROM tb_retur 
   WHERE id=a.id) tanggal_retur,
@@ -111,15 +113,15 @@ g.tanggal_terima,
   SELECT qty FROM tb_retur 
   WHERE id=a.id) qty_retur,
 (
-  SELECT p.qty FROM tb_terima_retur p 
+  SELECT p.qty FROM tb_ganti p 
   JOIN tb_retur q ON p.id=q.id  
   WHERE q.id=a.id) qty_balik,
 (
-  SELECT sum(p.qty) FROM tb_picking p 
-  WHERE p.id_sj_kumulatif=a.id) qty_pick,
+  SELECT sum(p.qty) FROM tb_pick p 
+  WHERE p.id_kumulatif=a.id) qty_pick,
 (
   SELECT count(1) FROM tb_roll p 
-  WHERE p.id_sj_kumulatif=a.id) count_roll
+  WHERE p.id_kumulatif=a.id) count_roll
 
 FROM tb_sj_kumulatif a 
 JOIN tb_sj_item b ON a.id_sj_item=b.id 
@@ -133,7 +135,7 @@ WHERE $sql_filter
 AND $sql_tipe_stok 
 AND $left_join_where 
 AND c.id_kategori = $id_kategori 
-ORDER BY g.tanggal_terima DESC, c.kode 
+ORDER BY a.tanggal_masuk DESC, c.kode 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
@@ -151,12 +153,12 @@ $tr_csv = '';
 $i = 0;
 while($d=mysqli_fetch_assoc($q)){
   $i++;
-  $id = $d['id_sj_kumulatif'];
-  $id_sj_kumulatif = $d['id_sj_kumulatif'];
+  $id = $d['id_kumulatif'];
+  $id_kumulatif = $d['id_kumulatif'];
   $kode_po = $d['kode_po'];
-  $tanggal_terima = $d['tanggal_terima'];
+  $tanggal_masuk = $d['tanggal_masuk'];
 
-  $tgl = date('d M y',strtotime($tanggal_terima));
+  $tanggal_masuk = date('d-m-y',strtotime($tanggal_masuk));
 
   $satuan = $d['satuan'];
   $idz = "<span class='abu f12'>id-</span>$id" ;
@@ -164,30 +166,11 @@ while($d=mysqli_fetch_assoc($q)){
 
   $is_fs = $d['is_fs'];
   $qty_retur = floatval($d['qty_retur']);
-  $qty_balik = floatval($d['qty_balik']);
-  $qty = floatval($d['qty']) - $qty_retur + $qty_balik;
+  $qty_ganti = floatval($d['qty_balik']);
+  $qty_retur_balik = floatval($d['qty']) - $qty_retur + $qty_ganti;
   $qty_pick = floatval($d['qty_pick']);
 
   $fs_show = $is_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
-
-  $info = "
-    <div>
-      $idz 
-      $lot 
-      $fs_show 
-      <span class=btn_aksi id=info_barang$id"."__toggle>$img_detail</span>
-    </div>
-
-    <ul id=info_barang$id class='hideit fs12 abu'>
-      <li>Nama: $d[nama_barang]</li>
-      <li>Keterangan: $d[keterangan_barang]</li>
-      <li>QTY: $qty</li>
-      <li>Retur: $qty_retur</li>
-      <li>Balik: $qty_balik</li>
-    </ul>
-  
-  
-  ";
 
   // transit or after QC
   $qty_transit = 0;
@@ -196,15 +179,15 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_qc_fs = 0;
   if($d['tanggal_retur']==''){ //belum QC
     if($is_fs){
-      $qty_transit_fs = $qty;
+      $qty_transit_fs = $qty_retur_balik;
     }else{
-      $qty_transit = $qty;
+      $qty_transit = $qty_retur_balik;
     }
   }else{ //sudah QC
     if($is_fs){
-      $qty_qc_fs = $qty;
+      $qty_qc_fs = $qty_retur_balik;
     }else{
-      $qty_qc = $qty;
+      $qty_qc = $qty_retur_balik;
     }
   }
 
@@ -215,45 +198,51 @@ while($d=mysqli_fetch_assoc($q)){
     $fs_text = $is_fs ? "FREE SUPPLIER" : "NO-FS";
     $info_text = "$d[nama_barang] / $d[keterangan_barang]";
     $info_text = str_replace(',',';',$info_text);
-    $tr_csv.= "$i,$d[kode_po],$d[kode_barang],$info_text,$d[no_lot],$d[no_roll],$fs_text,$qty,$qty_retur,$qty_balik,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$d[kode_lokasi],$d[brand]\n";
+    $tr_csv.= "$i,$d[kode_po],$d[kode_barang],$info_text,$d[no_lot],$d[no_roll],$fs_text,$qty_retur_balik,$qty_retur,$qty_ganti,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$d[kode_lokasi],$d[brand]\n";
   }else{
     $nol = '<span class="abu miring kecil">0</span>';
-    $qty_transit_show = $qty_transit ? "<span class='tebal red'>PO: $qty_transit</span>" : $nol;
-    $qty_transit_fs_show = $qty_transit_fs ? "<span class='tebal purple'>FS: $qty_transit_fs</span>" : $nol;
-    $qty_qc_show = $qty_qc ? "<span class='tebal darkblue'>PO: $qty_qc</span>" : $nol;
-    $qty_qc_fs_show = $qty_qc_fs ? "<span class='tebal hijau'>FS: $qty_qc_fs</span>" : $nol;
+    $qty_transit_show = $qty_transit ? "<span class='tebal red'>$qty_transit</span>" : $nol;
+    $qty_transit_fs_show = $qty_transit_fs ? "<span class='tebal purple'>$qty_transit_fs</span>" : $nol;
+    $qty_qc_show = $qty_qc ? "<span class='tebal darkblue'>$qty_qc</span>" : $nol;
+    $qty_qc_fs_show = $qty_qc_fs ? "<span class='tebal hijau'>$qty_qc_fs</span>" : $nol;
     $stok_akhir_show = $stok_akhir ? "<span class='tebal biru'>$stok_akhir $satuan</span>" : $nol;
     $qty_pick_show = $qty_pick ? "<span class='tebal darkred'>$qty_pick $satuan</span>" : $nol;
 
-    $kode_lokasi_brand = "$d[kode_lokasi] <span class='abu f12'>$d[brand]</span>";
+    $kode_lokasi_brand = "$d[kode_lokasi] <div class='abu f12'>$d[brand]</div>";
     $lokasi_show = ($qty_pick || $stok_akhir) ? "<span class='darkblue f16'>$kode_lokasi_brand</span>" : "<span class=abu>$kode_lokasi_brand</span>";
 
+    $jam_terima = date('H:i', strtotime($d['tanggal_masuk']));
+    $tanggal_terima_show = "$tanggal_masuk<div class='f12 abu'>$jam_terima</div>";
+
+    # ===================================================
+    # FINAL TR LOOP
+    # ===================================================
     $tr .= "
       <tr>
         <td>$i</td>
         
+        <td>$tanggal_terima_show</td>
         <td>
           <div>$d[kode_po]</div>
-          <div class='kecil abu'>$tgl</div>
+          <div class='f12 abu'>SJ: $d[kode_sj]</div>
         </td>
         <td>
           $d[kode_barang]
-          <div class='kecil abu'>$d[nama_barang]</div>
+          <div class='abu f12'>Kode lama: $d[kode_lama]</div>
+          <div class='abu f12'>$d[nama_barang]</div>
+          <div class='abu f12'>$d[keterangan_barang]</div>
         </td>
-        <td>$info</td>
-        <td>
-          <div>$qty_transit_show</div>
-          <div>$qty_transit_fs_show</div>
-        </td>
-        <td>
-          <div>$qty_qc_show</div>
-          <div>$qty_qc_fs_show</div>
-        </td>
+        <td>$d[no_lot]</td>
+        <td>$d[count_roll]</td>
+        <td>$lokasi_show</td>
+        <td>$qty_transit_show</td>
+        <td>$qty_transit_fs_show</td>
+        <td>$qty_retur</td>
+        <td>$qty_ganti</td>
+        <td>$qty_qc_show</td>
+        <td>$qty_qc_fs_show</td>
         <td>$qty_pick_show</td>
-        <td>
-          <div>$stok_akhir_show </div>
-          <div class='abu f12'>$lokasi_show</div>
-        </td>
+        <td>$stok_akhir_show</td>
       </tr>
     ";    
   }
@@ -292,7 +281,7 @@ if($get_csv){
   }
 
 
-  $view_output = "
+  $tb_stok = "
     <a href='$path_csv' class='btn btn-primary btn-sm'>Download CSV</a>
     <hr>
     History CSV lainnya:
@@ -302,20 +291,29 @@ if($get_csv){
   ";
 
 }else{
-  $view_output = "
-    <table class=table>
-      <thead>
-        <th>NO</th>
-        <th>PO</th>
-        <th>ID</th>
-        <th>INFO</th>
-        <th class=darkred>Transit</th>
-        <th class=darkblue>After QC</th>
-        <th class=darkred>Pick</th>
-        <th>Stok Akhir</th>
-      </thead>
-      $tr
-    </table>
+  $tb_stok = "
+    <div style='overflow:scroll'>
+      <table class='table table-striped' style='widsth:2000px'>
+        <thead>
+          <th>NO</th>
+          <th>TGL MASUK</th>
+          <th>PO</th>
+          <th>ID</th>
+          <th>LOT</th>
+          <th>ROLL</th>
+          <th>LOKASI</th>
+          <th class=darkred>TRANSIT</th>
+          <th class=darkred>TR-FS</th>
+          <th>RETUR</th>
+          <th>GANTI</th>
+          <th class=darkblue>PASS-QC</th>
+          <th class=darkblue>PASS-QC-FS</th>
+          <th class=darkred>PICK</th>
+          <th>STOCK</th>
+        </thead>
+        $tr
+      </table>
+    </div>
   ";
 }
 
@@ -350,5 +348,5 @@ echo
     </div>
   </div>  
 
-  $view_output
+  $tb_stok
 ";

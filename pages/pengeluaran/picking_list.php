@@ -8,7 +8,7 @@ if(isset($_POST['btn_simpan_qty_pl'])){
   echo 'Processing Update QTY Pick ...<hr>';
   foreach ($_POST as $key => $qty_pick) {
     $arr = explode('__',$key);
-    $s = "UPDATE tb_picking SET qty=$qty_pick WHERE id=$arr[1]";
+    $s = "UPDATE tb_pick SET qty=$qty_pick WHERE id=$arr[1]";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
   }
@@ -21,7 +21,7 @@ if(isset($_POST['btn_simpan_allocate'])){
   echo 'Processing Update Allocate ...<hr>';
   foreach ($_POST as $key => $qty_pick) {
     $arr = explode('__',$key);
-    $s = "UPDATE tb_picking SET qty_allocate=$qty_pick WHERE id=$arr[1]";
+    $s = "UPDATE tb_pick SET qty_allocate=$qty_pick WHERE id=$arr[1]";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
   }
@@ -31,7 +31,7 @@ if(isset($_POST['btn_simpan_allocate'])){
 
 if(isset($_POST['btn_delete_item_picking'])){
   echo 'Processing Delete DO Item ...<hr>';
-  $s = "DELETE FROM tb_picking WHERE id=$_POST[btn_delete_item_picking]";
+  $s = "DELETE FROM tb_pick WHERE id=$_POST[btn_delete_item_picking]";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   unset($_POST['btn_delete_item_picking']);
   echo div_alert('success','Delete DO Item success.');
@@ -59,17 +59,17 @@ if($jumlah_item){
   (
     SELECT p.qty FROM tb_sj_kumulatif p
     JOIN tb_retur q ON p.id=q.id
-    WHERE p.id=a.id_sj_kumulatif AND p.is_fs is null) qty_qc,
+    WHERE p.id=a.id_kumulatif AND p.is_fs is null) qty_qc,
   (
-    SELECT SUM(p.qty) FROM tb_picking p 
+    SELECT SUM(p.qty) FROM tb_pick p 
     WHERE p.id != a.id 
-    AND p.id_sj_kumulatif = a.id_sj_kumulatif) qty_pick_by,
+    AND p.id_kumulatif = a.id_kumulatif) qty_pick_by,
   (
     SELECT count(1) FROM tb_roll 
-    WHERE id_sj_kumulatif = b.id) count_roll
+    WHERE id_kumulatif = b.id) count_roll
 
-  FROM tb_picking a 
-  JOIN tb_sj_kumulatif b ON a.id_sj_kumulatif=b.id 
+  FROM tb_pick a 
+  JOIN tb_sj_kumulatif b ON a.id_kumulatif=b.id 
   JOIN tb_sj_item c ON b.id_sj_item=c.id 
   JOIN tb_sj d ON c.kode_sj=d.kode 
   JOIN tb_bbm e ON d.kode=e.kode_sj  
@@ -189,7 +189,7 @@ if($jumlah_item){
 // PIC only
 $btn_verif_disabled = ($jumlah_item_valid && $jumlah_item_valid==$jumlah_item AND $id_role==7) ? '' : 'disabled';
 
-
+$btn_simpan_allocate = '&nbsp;';
 if($jumlah_item){
   $valid_user_show = $id_role==7 ? "
     <span class=green>Anda berhak melakukan verifikasi.</span>

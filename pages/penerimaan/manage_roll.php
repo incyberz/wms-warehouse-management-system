@@ -1,7 +1,7 @@
 <?php
 $judul = 'Manage Roll dan Cetak Label';
 set_title($judul);
-$id_sj_kumulatif = $_GET['id_sj_kumulatif'] ?? die(erid('id_sj_kumulatif'));
+$id_kumulatif = $_GET['id_kumulatif'] ?? die(erid('id_kumulatif'));
 $last_kode_lokasi = $_GET['last_kode_lokasi'] ?? '';
 $last_no_lot = $_GET['last_no_lot'] ?? '';
 
@@ -30,28 +30,28 @@ e.step,
 (
   SELECT sum(qty) 
   FROM tb_roll 
-  WHERE id_sj_kumulatif=a.id ) qty, 
+  WHERE id_kumulatif=a.id ) qty, 
 (
   SELECT sum(qty) 
-  FROM tb_picking 
-  WHERE id_sj_kumulatif=a.id ) sum_pick, 
+  FROM tb_pick 
+  WHERE id_kumulatif=a.id ) sum_pick, 
 (
   SELECT sum(qty) 
   FROM tb_roll 
-  WHERE id_sj_kumulatif=a.id ) sum_qty_roll, 
+  WHERE id_kumulatif=a.id ) sum_qty_roll, 
 (
   SELECT count(1) 
   FROM tb_roll 
-  WHERE id_sj_kumulatif=a.id ) count_roll,
+  WHERE id_kumulatif=a.id ) count_roll,
 (
   SELECT SUM(p.qty) 
   FROM tb_roll p 
-  JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id  
+  JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id  
   WHERE q.id_sj_item=b.id and q.is_fs is null) qty_kumulatif,
 (
   SELECT SUM(p.qty) 
   FROM tb_roll p 
-  JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id  
+  JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id  
   WHERE q.id_sj_item=b.id and q.is_fs is not null) qty_kumulatif_fs
 
 FROM tb_sj_kumulatif a 
@@ -59,7 +59,7 @@ JOIN tb_sj_item b ON a.id_sj_item=b.id
 JOIN tb_barang c ON b.kode_barang=c.kode 
 JOIN tb_sj d ON b.kode_sj=d.kode 
 JOIN tb_satuan e ON c.satuan=e.satuan 
-WHERE a.id=$id_sj_kumulatif";
+WHERE a.id=$id_kumulatif";
 // echo $s;
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die(div_alert('danger','Data subitem tidak ditemukan'));
@@ -215,10 +215,10 @@ if(isset($_POST['btn_hapus_roll'])){
 # PROCESSORS: TAMBAH ROLL
 # =============================================================
 if(isset($_POST['btn_tambah_roll'])){
-  $id_sj_kumulatif = $_POST['btn_tambah_roll'];
+  $id_kumulatif = $_POST['btn_tambah_roll'];
   $roll_multiplier = $_POST['roll_multiplier'];
 
-  $s = "SELECT COUNT(1) as count_roll FROM tb_roll WHERE id_sj_kumulatif=$id_sj_kumulatif";
+  $s = "SELECT COUNT(1) as count_roll FROM tb_roll WHERE id_kumulatif=$id_kumulatif";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $counter = 1;
   if(mysqli_num_rows($q)){
@@ -229,13 +229,13 @@ if(isset($_POST['btn_tambah_roll'])){
     if($counter<100){$counter_str = "0$counter";}else{$counter_str = $counter;}
   }
 
-  $s = "INSERT INTO tb_roll (id_sj_kumulatif, no_roll) VALUES ($id_sj_kumulatif,'$counter_str')";
+  $s = "INSERT INTO tb_roll (id_kumulatif, no_roll) VALUES ($id_kumulatif,'$counter_str')";
   if($roll_multiplier>1){
     for ($i=1; $i < $roll_multiplier; $i++) { 
       $counter++;
       if($counter<10) {$counter_str = "00$counter";}else
       if($counter<100){$counter_str = "0$counter";}else{$counter_str = $counter;}
-      $s .= ",($id_sj_kumulatif,'$counter_str')";
+      $s .= ",($id_kumulatif,'$counter_str')";
     }
   }
   // die($s);
@@ -249,8 +249,8 @@ if(isset($_POST['btn_tambah_roll'])){
 # PROCESSORS: DELETE ALL ROLL
 # =============================================================
 if(isset($_POST['btn_delete_all_roll'])){
-  $id_sj_kumulatif = $_GET['id_sj_kumulatif'] ?? die(erid('id_sj_kumulatif'));
-  $s = "DELETE FROM tb_roll WHERE id_sj_kumulatif=$id_sj_kumulatif";
+  $id_kumulatif = $_GET['id_kumulatif'] ?? die(erid('id_kumulatif'));
+  $s = "DELETE FROM tb_roll WHERE id_kumulatif=$id_kumulatif";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   jsurl();
 }
@@ -263,7 +263,7 @@ if(isset($_POST['btn_save_roll'])){
   var_dump($_POST);
   echo '</pre>';
 
-  $id_sj_kumulatif = $_GET['id_sj_kumulatif'] ?? die(erid('id_sj_kumulatif'));
+  $id_kumulatif = $_GET['id_kumulatif'] ?? die(erid('id_kumulatif'));
 
   $total_qty = 0;
 
@@ -283,7 +283,7 @@ if(isset($_POST['btn_save_roll'])){
     }
   }
 
-  $s = "UPDATE tb_sj_kumulatif SET tmp_qty=$total_qty WHERE id=$id_sj_kumulatif";
+  $s = "UPDATE tb_sj_kumulatif SET tmp_qty=$total_qty WHERE id=$id_kumulatif";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   jsurl();
 
@@ -302,7 +302,7 @@ $form_tambah_roll = "
   <form method=post class=kanan>
     <div class=flexy style='gap:3px'>
       <div>
-        <button class='btn btn-success btn-sm' name=btn_tambah_roll value=$id_sj_kumulatif>Tambah $free_supplier_caption</button>
+        <button class='btn btn-success btn-sm' name=btn_tambah_roll value=$id_kumulatif>Tambah $free_supplier_caption</button>
       </div>
       <div>
         $select_roll_multiplier
@@ -319,7 +319,7 @@ $form_tambah_roll = "
 $sisa_qty_roll = $qty_sisa;
 $sisa_qty_roll -= $sum_qty_roll;
 
-$s = "SELECT * FROM tb_roll WHERE id_sj_kumulatif=$id_sj_kumulatif ORDER BY no_roll";
+$s = "SELECT * FROM tb_roll WHERE id_kumulatif=$id_kumulatif ORDER BY no_roll";
 // echo "<h1>$s</h1>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
@@ -334,7 +334,7 @@ if(mysqli_num_rows($q)==0){
 
   $max_input_qty = $qty_adjusted;
   
-  $btn_cetak_all = "<button class='btn btn-success ' name=btn_cetak_semua_label value=$id_sj_kumulatif>Cetak Semua Label</button>";
+  $btn_cetak_all = "<button class='btn btn-success ' name=btn_cetak_semua_label value=$id_kumulatif>Cetak Semua Label</button>";
   while($d=mysqli_fetch_assoc($q)){
     $i++;
     $id_roll=$d['id'];
@@ -427,7 +427,7 @@ if(mysqli_num_rows($q)==0){
       <button id=btn_save_roll name=btn_save_roll value=$id_roll  class='btn btn-primary'>$img_save Save QTY Roll</button>
     </form>
     <form method=post class=wadah>
-      <button id=btn_delete_all_roll name=btn_delete_all_roll value=$id_sj_kumulatif  class='btn btn-danger' onclick='return confirm(\"Yakin untuk hapus semua roll?\")'>$img_delete_disabled Delete All Data Roll</button>
+      <button id=btn_delete_all_roll name=btn_delete_all_roll value=$id_kumulatif  class='btn btn-danger' onclick='return confirm(\"Yakin untuk hapus semua roll?\")'>$img_delete_disabled Delete All Data Roll</button>
       <div class='f12 darkred mt1 consolas'><b>Perhatian!</b> Delete All artinya semua data roll diatas akan hilang, namun tidak di item kumulatif lain.</div>
     </form>
   ";

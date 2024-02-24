@@ -36,7 +36,7 @@ b.nama as nama_barang,
 c.step,
 (
   SELECT SUM(p.qty) FROM tb_roll p 
-  JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id 
+  JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
   JOIN tb_sj_item r ON q.id_sj_item=r.id 
   WHERE q.id_sj_item!=a.id 
   AND q.is_fs is null 
@@ -44,12 +44,12 @@ c.step,
     -- QTY Parsial adalah qty_datang pada penerimaan lain 
 (
   SELECT SUM(p.qty) FROM tb_roll p 
-  JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id 
+  JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
   WHERE q.id_sj_item=a.id 
   AND q.is_fs is null) qty_datang,   
 (
   SELECT SUM(p.qty) FROM tb_roll p 
-  JOIN tb_sj_kumulatif q ON p.id_sj_kumulatif=q.id 
+  JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
   WHERE q.id_sj_item=a.id 
   AND q.is_fs is not null) qty_diterima_fs,   
 (
