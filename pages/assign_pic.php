@@ -1,9 +1,9 @@
 <div class="pagetitle">
-  <h1>Assign PIC</h1>
+  <h1>Assign PIC-CD</h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?">Dashboard</a></li>
-      <li class="breadcrumb-item active">Assign PIC</li>
+      <li class="breadcrumb-item active">Assign PIC-CD</li>
     </ol>
   </nav>
 </div>
@@ -51,7 +51,7 @@ foreach ($arr_pic as $key => $value) {
 
 echo "
 <div class=mb2>Kode Artikel: <span class='consolas f24 darkblue' style='letter-spacing: 5px'>$kode_artikel</span></div>
-<div>Assign PIC untuk:</div>
+<div>Assign PIC-CD untuk:</div>
 <ul class=abu>
   <li>Brand: <b class=darkblue>$brand ~ $kode_brand</b></li>
   <li>Gender: <b class=darkblue>$gender ~ $kode_gender</b></li>
@@ -64,7 +64,7 @@ echo "
   <input type=hidden name=kode_gender value='$kode_gender'>
   <input type=hidden name=kode_apparel value='$kode_apparel'>
   $radio_pic
-  <button class='btn btn-primary mt2' name=btn_assign_pic>Assign PIC</button>
+  <button class='btn btn-primary mt2' name=btn_assign_pic>Assign PIC-CD</button>
 </form>
 ";
 ?>

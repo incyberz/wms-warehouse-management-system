@@ -197,13 +197,13 @@ $qty_kurang = $qty_adjusted - $qty_parsial;
 $nama_kategori = ucwords(strtolower($nama_kategori));
 
 $is_lebih = $qty_adjusted<$qty_datang ? 1 : 0;
-$qty_fs = 0;
+$qty_tr_fs = 0;
 if($is_lebih){
-  $qty_fs = $qty_datang-$qty_adjusted;
+  $qty_tr_fs = $qty_datang-$qty_adjusted; // zzz uncheck
   $tr_free_supplier = "
     <tr class=blue>
       <td>QTY Lebih (Free Supplier)</td>
-      <td>$qty_fs $satuan</td>
+      <td>$qty_tr_fs $satuan</td>
     </tr>
   ";
 
@@ -254,7 +254,7 @@ if($is_lebih){
 </table>
 
 <?php
-$with_fs = $qty_fs ? '/ Free Supplier' : '';
+$with_fs = $qty_tr_fs ? '/ Free Supplier' : '';
 echo "<h2 class='mb3 mt4'>Item Kumulatif $with_fs</h2>";
 echo $pesan;
 
@@ -384,7 +384,7 @@ if($qty_datang<$qty_adjusted){
   // $debug.= "qty_sisa:$qty_sisa = qty_datang:$qty_datang-qty_kumulatif:$qty_kumulatif;";
   $sisa_fs = 0;
 }else{
-  $sisa_fs = $qty_fs-$qty_kumulatif_fs;
+  $sisa_fs = $qty_tr_fs-$qty_kumulatif_fs;
 }
 
 $qty_sisa = $qty_kurang - $qty_datang;

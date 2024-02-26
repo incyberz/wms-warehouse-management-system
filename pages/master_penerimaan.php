@@ -236,7 +236,7 @@ while($d=mysqli_fetch_assoc($q)){
 
   $qty_lebih = $qty_datang - $qty;
   $qty_kurang = $qty - $qty_datang;
-  $qty_fs = $qty_lebih>0 ? $qty_lebih : 0;
+  $qty_tr_fs = $qty_lebih>0 ? $qty_lebih : 0;
   
   $pas = $qty==$qty_datang ? '<img src=assets/img/icons/check.png height=14px>' : '';
   $qty_diterima_show = "diterima: $qty_datang $satuan $pas";
@@ -309,7 +309,7 @@ while($d=mysqli_fetch_assoc($q)){
 
   $qty_stok = $qty_diterima_with_qc_no_fs - $qty_retur + $qty_balik;
   $qty_stok_fs = $qty_diterima_with_qc_fs - $qty_retur_fs + $qty_balik_fs;
-  $qty_transit = $qty_datang - $qty_stok -$qty_fs -$qty_retur + $qty_balik;
+  $qty_transit = $qty_datang - $qty_stok -$qty_tr_fs -$qty_retur + $qty_balik;
 
   $fs_show = $count_kumulatif_item_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
   $qty_stok_fs_show = $qty_stok_fs ? "$qty_stok_fs $fs_show" : '';

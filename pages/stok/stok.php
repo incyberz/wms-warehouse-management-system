@@ -16,7 +16,7 @@ $jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
 $bg_keyword = $keyword ? 'style="background:#0f0"' : '';
 $hide_clear = ($keyword || $tipe_stok!='all') ? '' : 'hideit';
 
-$judul = "Stok Opname $jenis_barang";
+$judul = "Stok Kumulatif $jenis_barang";
 set_title($judul);
 echo "
 <div class='pagetitle'>
@@ -24,7 +24,7 @@ echo "
   <nav>
     <ol class='breadcrumb'>
       <li class='breadcrumb-item'><a href='?'>Dashboard</a></li>
-      <li class='breadcrumb-item'><a href='?stok&cat=$cat_lainnya'>Stok Opname $jenis_barang_lainnya</a></li>
+      <li class='breadcrumb-item'><a href='?stok&cat=$cat_lainnya'>Stok Kumulatif $jenis_barang_lainnya</a></li>
       <li class='breadcrumb-item active'>$judul</li>
     </ol>
   </nav>
@@ -214,6 +214,8 @@ while($d=mysqli_fetch_assoc($q)){
     $jam_terima = date('H:i', strtotime($d['tanggal_masuk']));
     $tanggal_terima_show = "$tanggal_masuk<div class='f12 abu'>$jam_terima</div>";
 
+    $qty_retur_do_show = '0'; // zzz debug
+
     # ===================================================
     # FINAL TR LOOP
     # ===================================================
@@ -242,6 +244,7 @@ while($d=mysqli_fetch_assoc($q)){
         <td>$qty_qc_show</td>
         <td>$qty_qc_fs_show</td>
         <td>$qty_pick_show</td>
+        <td>$qty_retur_do_show</td>
         <td>$stok_akhir_show</td>
       </tr>
     ";    
@@ -309,6 +312,7 @@ if($get_csv){
           <th class=darkblue>PASS-QC</th>
           <th class=darkblue>PASS-QC-FS</th>
           <th class=darkred>PICK</th>
+          <th class=green>RETUR-DO</th>
           <th>STOCK</th>
         </thead>
         $tr

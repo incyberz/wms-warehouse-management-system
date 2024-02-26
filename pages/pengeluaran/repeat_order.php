@@ -143,6 +143,24 @@ echo "
         </td>
       </tr>
       <tr>
+        <td>QTY Apparel</td>
+        <td>
+          <input required type=number min=0 max=9999 placeholder='QTY Apparel' name=qty_apparel class='form-control mb2'>
+        </td>
+      </tr>
+      <tr>
+        <td>Jenis Permintaan</td>
+        <td>
+          <select name=id_permintaan class='form-control mb2'>
+            <option value=1>LPKP (reguler)</option>
+            <option value=2>Hutangan</option>
+            <option value=3>Tambahan Cutting</option>
+            <option value=4>BAKB (Berita Acara Kehilangan Barang)</option>
+            <option value=5>Kenaikan ...</option>
+          </select>
+        </td>
+      </tr>      
+      <tr>
         <td>&nbsp;</td>
         <td>
           <button class='btn btn-primary mt2' name=btn_repeat_order id=btn_repeat_order >Create Repeat Order</button>

@@ -16,7 +16,7 @@ $arr_cat[1] = 'aks';
 $arr_cat[2] = 'fab';
 
 // set auto login
-$_SESSION['wms_username'] = 'wh';
+// $_SESSION['wms_username'] = 'wh';
 
 // set logout
 // unset($_SESSION['wms_username']);
@@ -132,6 +132,11 @@ if($parameter=='logout'){
   ?>
   <style>
     section{min-height: 100vh}
+    h1{
+      font-size: 12px; 
+      font-weight: bold;
+      color: #66a;
+    }
     h2{
       font-size: 16px; 
       background: linear-gradient(#efe,#cfc);

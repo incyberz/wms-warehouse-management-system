@@ -89,13 +89,13 @@ $qty_retur = floatval($qty_retur);
 $nama_kategori = ucwords(strtolower($nama_kategori));
 
 $is_lebih = $qty_po<$qty_datang ? 1 : 0;
-$qty_fs = 0;
+$qty_tr_fs = 0;
 if($is_lebih){
-  $qty_fs = $qty_datang-$qty_po;
+  $qty_tr_fs = $qty_datang-$qty_po;
   $tr_free_supplier = "
     <tr class=blue>
       <td>QTY Lebih (Free Supplier)</td>
-      <td>$qty_fs $satuan</td>
+      <td>$qty_tr_fs $satuan</td>
     </tr>
   ";
 

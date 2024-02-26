@@ -1,3 +1,4 @@
+<div class="sub_form">Sub Form Picking List Add</div>
 <table width=100% class=mb2>
   <tr>
     <td>
@@ -51,20 +52,45 @@
 
   });
 
+  // toggle qty available
+  $(document).on("click",".toggle",function(){
+    let tid = $(this).prop('id');
+    let rid = tid.split('__');
+    let aksi = rid[0];
+    let id_form = rid[1];
+    $('#'+id_form).slideToggle();
+  });
   $(document).on("click",".btn_add",function(){
     let tid = $(this).prop('id');
     let rid = tid.split('__');
     let aksi = rid[0];
     let id = rid[1];
 
+    let is_hutangan = '';
+
+    if(aksi=='btn_add'){
+
+    }else if(aksi=='btn_hutangan'){
+      is_hutangan = 1;
+    }else{
+      alert(`Aksi ${aksi} belum terdapat handler.`);
+      return;
+    }
+
     // console.log(id,kode_do,id_kategori);
-    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_kumulatif=${id}&id_do=${id_do}`;
+    let link_ajax = `pages/pengeluaran/picking_list_add_assign.php?id_kumulatif=${id}&id_do=${id_do}&is_hutangan=${is_hutangan}`;
     console.log(link_ajax);
     $.ajax({
       url:link_ajax,
       success:function(a){
         if(a.trim()=='sukses'){
-          $('#div_btn_add__'+id).html('<span class="kecil green miring">success.</span>');
+          if(aksi=='btn_hutangan'){
+            $('#div_btn_hutangan__'+id).html('<span class="kecil green miring">success.</span>');
+          }else if(aksi=='btn_add'){
+            $('#div_btn_add__'+id).html('<span class="kecil green miring">success.</span>');
+          }else{
+            alert('Sukses AJAX namun belum ada handler sukses.');
+          }
         }else{
           alert('Tidak dapat assign item.');
           console.log(a);

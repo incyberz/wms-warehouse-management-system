@@ -18,6 +18,7 @@ switch($parameter){
   case 'master_pengeluaran' : include 'pages/pengeluaran/master_pengeluaran.php'; break;
   case 'stok' : include 'pages/stok/stok.php'; break;
   case 'retur' : include 'pages/retur/retur.php'; break;
+  case 'ganti' : include 'pages/retur/ganti_retur.php'; break;
   case 'terima_retur' : include 'pages/retur/terima_retur.php'; break;
   case 'cetak_label_penerimaan' : include 'cetak_label.php'; break;
   default:

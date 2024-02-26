@@ -1,12 +1,11 @@
 
 <?php 
-$judul = 'Master Kumulatif';
+$judul = 'Rekap Kumulatif';
 set_title($judul);
 // to do : fix decimal
 include 'include/date_managements.php';
 $p = 'penerimaan'; // untuk navigasi
 $cat= $_GET['cat'] ?? 'aks'; //default AKS
-$get_csv= $_GET['get_csv'] ?? '';
 $jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
 
 $arr_waktu = [
@@ -77,11 +76,6 @@ AND $where_proyeksi
 AND $where_ppic 
 ";
 
-# =====================================================
-# CSV URL HANDLER
-# =====================================================
-$arr = explode('?',$_SERVER['REQUEST_URI']);
-$href_get_csv = $arr[1] . '&get_csv=1';
 
 # =====================================================
 # FORM CARI / FILTER
@@ -101,16 +95,53 @@ $form_cari = "
         <button class='btn btn-success btn-sm' name=btn_cari>Cari</button>
       </div>
       <div>
-        <a href='?$href_get_csv' class='btn btn-info btn-sm'>Get CSV</a>
+        <a href='?stok_kumulatif' class='btn btn-info btn-sm' onclick='return confirm(\"Menuju Stok Kumulatif untuk Get CSV?\")'>Get CSV</a>
       </div>
     </div>
   </form>
 
 ";
 
-$bread = "<li class='breadcrumb-item'><a href='?master_kumulatif&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
+$bread = "<li class='breadcrumb-item'><a href='?rekap_kumulatif&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
 if($cat=='fab')
-$bread = "<li class='breadcrumb-item'><a href='?master_kumulatif&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
+$bread = "<li class='breadcrumb-item'><a href='?rekap_kumulatif&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ==================================================
@@ -122,6 +153,7 @@ a.no_lot,
 a.kode_lokasi,
 b.kode_sj,
 a.tanggal_masuk,
+a.tanggal_qc,
 c.kode_po,
 d.kode as kode_barang, 
 d.nama as nama_barang, 
@@ -131,11 +163,30 @@ d.satuan,
 (
   SELECT sum(qty) FROM tb_roll 
   WHERE id_kumulatif=a.id 
-  AND is_fs is null) qty,
+  AND is_fs is null
+  AND tanggal_qc is null) qty_transit,
 (
   SELECT sum(qty) FROM tb_roll 
   WHERE id_kumulatif=a.id 
-  AND is_fs is not null) qty_fs,
+  AND is_fs is not null
+  AND tanggal_qc is null) qty_tr_fs,
+(
+  SELECT sum(qty) FROM tb_roll 
+  WHERE id_kumulatif=a.id 
+  AND is_fs is null
+  AND tanggal_qc is not null) qty_qc,
+(
+  SELECT sum(qty) FROM tb_roll 
+  WHERE id_kumulatif=a.id 
+  AND is_fs is not null
+  AND tanggal_qc is not null) qty_qc_fs,
+(
+  SELECT sum(qty) FROM tb_retur 
+  WHERE id_kumulatif=a.id) qty_retur,
+(
+  SELECT sum(p.qty) FROM tb_ganti p 
+  JOIN tb_retur q ON p.id_retur=q.id  
+  WHERE q.id_kumulatif=a.id) qty_ganti,
 (
   SELECT count(1) FROM tb_roll 
   WHERE id_kumulatif=a.id ) count_roll,
@@ -167,8 +218,17 @@ while($d=mysqli_fetch_assoc($q)){
   $i++;
   $id_kumulatif=$d['id_kumulatif'];
 
-  $qty_show = $d['qty'] ? number_format($d['qty'],2) : '-';
-  $qty_fs_show = $d['qty_fs'] ? number_format($d['qty_fs'],2)." $img_fs" : '-';
+  $qty_transit_show = $d['qty_transit'] ? floatval($d['qty_transit']) : '-';
+  $qty_retur_show = $d['qty_retur'] ? floatval($d['qty_retur']) : '-';
+  $qty_ganti_show = $d['qty_ganti'] ? floatval($d['qty_ganti']) : '-';
+  $qty_tr_fs_show = $d['qty_tr_fs'] ? floatval($d['qty_tr_fs'])." $img_fs" : '-';
+
+  // belum QC
+  if(!$d['tanggal_qc']) $qty_retur_show = '<span class="red tebal f14">Belum QC</span>';
+  
+  $qty_qc_show = $d['qty_qc'] ? floatval($d['qty_qc']) : '-';
+  $qty_qc_fs_show = $d['qty_qc_fs'] ? floatval($d['qty_qc_fs']) : '-';
+
   $tanggal_masuk_show = date('d-M-y',strtotime($d['tanggal_masuk']));
   $jam_masuk_show = date('H:i',strtotime($d['tanggal_masuk']));
   $tanggal_masuk_show = "$tanggal_masuk_show<div class='f14 abu'>$jam_masuk_show</div>";
@@ -196,15 +256,18 @@ while($d=mysqli_fetch_assoc($q)){
       <td>$d[no_lot]</td>
       <td>$d[kode_lokasi]</td>
       <td>$d[count_roll]</td>
-      <td>$qty_show</td>
-      <td>$qty_fs_show</td>
-      <td>$d[satuan]</td>
+      <td class=darkred>$qty_transit_show</td>
+      <td class=darkred>$qty_tr_fs_show</td>
+      <td class=green>$qty_qc_show</td>
+      <td class=green>$qty_qc_fs_show</td>
+      <td class=abu>$d[satuan]</td>
+      <td>$qty_retur_show <a href='?retur&id_kumulatif=$id_kumulatif'>$img_next</a></td>
+      <td>$qty_ganti_show</td>
       
     </tr>
   ";
 }
 
-$download_csv = $get_csv ? "<a class='btn btn-success btn-sm' href='#'>Download CSV</a>" : '';
 
 # =====================================================
 # FINAL ECHO
@@ -228,7 +291,6 @@ $form_cari
       data dari <b>$total_row </b> records
     </span>
   </div>
-  <div>$download_csv</div>
 </div>
 <table class='table'>
   <thead class='gradasi-hijau '>
@@ -239,9 +301,13 @@ $form_cari
     <th>LOT</th>
     <th>LOKASI</th>
     <th>ROLL</th>
-    <th>QTY</th>
-    <th>FS</th>
-    <th>UOM</th>
+    <th class=darkred>TRANSIT</th>
+    <th class=darkred>TR-FS</th>
+    <th class=green>QC</th>
+    <th class=green>QC-FS</th>
+    <th class=abu>UOM</th>
+    <th>RETUR</th>
+    <th>GANTI</th>
   </thead>
   $tr_kumulatif
 </table>

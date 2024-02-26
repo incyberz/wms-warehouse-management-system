@@ -38,12 +38,12 @@ if(isset($_POST['btn_get_po_items'])){
         echo 'barang sudah ada pada database.';
       }else{
         $kode = $item_po->kode;
-        $nama = $item_po->item_name;
-        $keterangan = $item_po->item_desc;
+        $nama = clean_sql($item_po->item_name);
+        $keterangan = clean_sql($item_po->item_desc);
         $satuan = $item_po->uom;
         $harga = floatval($item_po->price);
         $kode_lama = $item_po->kode_lama;
-        $kode_lama = $kode_lama=='NULL' ? 'NULL' : "'$kode_lama'";
+        $kode_lama = (!$kode_lama || strtoupper($kode_lama)=='NULL') ? 'NULL' : "'$kode_lama'";
 
         echo 'barang belum ada... Inserting barang... ';
         $s2 = "INSERT INTO tb_barang 
@@ -140,7 +140,7 @@ if(isset($_POST['btn_get_po_items'])){
       <hr>
       <div>
         <div class='f12 mb2'>Semua proses telah selesai. Silahkan menuju Manage Surat Jalan</div>
-        <a href='?penerimaan&p=manage_sj&kode_sj=AK202401026-001' class='btn btn-primary'>Manage Surat Jalan</a>
+        <a href='?penerimaan&p=manage_sj&kode_sj=$kode_sj' class='btn btn-primary'>Manage Surat Jalan</a>
       </div>
     ");
 

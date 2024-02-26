@@ -99,7 +99,7 @@ i.kode_do,
 (
   SELECT p.tmp_qty FROM tb_sj_kumulatif p 
   WHERE p.is_fs is not null 
-  AND p.id=a.id_kumulatif) qty_fs,
+  AND p.id=a.id_kumulatif) qty_tr_fs,
 (
   SELECT p.tmp_qty FROM tb_sj_kumulatif p 
   JOIN tb_retur q ON p.id=q.id 
@@ -128,7 +128,6 @@ FROM tb_pick a
 JOIN tb_sj_kumulatif b ON a.id_kumulatif=b.id 
 JOIN tb_sj_item c ON b.id_sj_item=c.id 
 JOIN tb_sj d ON c.kode_sj=d.kode 
-JOIN tb_bbm e ON e.kode_sj=d.kode 
 JOIN tb_barang f ON c.kode_barang=f.kode 
 JOIN tb_lokasi g ON b.kode_lokasi=g.kode 
 JOIN tb_supplier h ON d.kode_supplier=h.kode  
@@ -163,7 +162,7 @@ while($d=mysqli_fetch_assoc($q)){
   $akhir_terima = $d['akhir_terima'] ?? '';
 
   $no_lot = $d['no_lot'] ?? $unset;
-  $qty_fs = $d['qty_fs'];
+  $qty_tr_fs = $d['qty_tr_fs'];
   $qty_retur = $d['qty_retur'];
   $qty_balik = $d['qty_balik'];
   $qty_pick = $d['qty_pick'];
@@ -171,7 +170,7 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_pick_by = $d['qty_pick_by'];
   $qty_diterima_with_qc_no_fs = $d['qty_diterima_with_qc_no_fs'];
   
-  $qty_fs = $qty_fs ? floatval($qty_fs) : '-';
+  $qty_tr_fs = $qty_tr_fs ? floatval($qty_tr_fs) : '-';
   $qty_retur = $qty_retur ? floatval($qty_retur) : 0;
   $qty_balik = $qty_balik ? floatval($qty_balik) : 0;
   $qty_pick = $qty_pick ? floatval($qty_pick) : 0;
@@ -180,7 +179,7 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_diterima_with_qc_no_fs = $qty_diterima_with_qc_no_fs ? floatval($d['qty_diterima_with_qc_no_fs']) : 0;
 
   $qty_real = $qty_diterima_with_qc_no_fs - $qty_retur + $qty_balik;
-  $qty_real = $qty_real<$qty_fs ? $qty_fs : $qty_real;
+  $qty_real = $qty_real<$qty_tr_fs ? $qty_tr_fs : $qty_real;
 
   $stok_akhir = $qty_real - $qty_pick - $qty_pick_by;
   $stok_akhir_show = $stok_akhir ? "<span class='tebal darkblue'>$stok_akhir $satuan</span>" : '<span class=abu>0</span>';
@@ -302,7 +301,7 @@ while($d=mysqli_fetch_assoc($q)){
         </div>
         <div class='hideit wadah br5 kecil mt1' id=detail_qty$id>
           <div>QC: $qty_diterima_with_qc_no_fs</div>
-          <div>QC-FS: $qty_fs</div>
+          <div>QC-FS: $qty_tr_fs</div>
           <div>Retur: $qty_retur</div>
           <div>Balik: $qty_balik</div>
         </div>

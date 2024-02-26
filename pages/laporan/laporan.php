@@ -22,7 +22,7 @@ if($p!=''){
 
 <p>Page laporan dapat menampilkan:</p>
 <ul>
-  <li>Stok Opname Gudang</li>
+  <li>Stok Kumulatif Gudang</li>
   <li>QTY PO + retur per tanggal/minggu/bulan</li>
   <li>QTY DO + retur per tanggal/minggu/bulan</li>
 </ul>

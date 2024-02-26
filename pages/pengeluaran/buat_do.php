@@ -216,7 +216,7 @@ if($kode_do!=''){
       </ul>
     ";
   }else{
-    $pic_info = "<div class='mb2 pic_only'>Assign PIC: $unset | <a href='?assign_pic&kode_artikel=$kode_artikel'>Assign PIC</a></div>";
+    $pic_info = "<div class='mb2 pic_only'>Assign PIC-CD: $unset | <a href='?assign_pic&kode_artikel=$kode_artikel'>Assign PIC-CD</a></div>";
   }
 }
 
@@ -240,7 +240,7 @@ while($d=mysqli_fetch_assoc($q)){
   $brands .= "$kode,";
   $li .= "<li class='brand hideit' id=brand__$kode><span class='abu '>Brand:</span> $d[brand]</li>";
 }
-echo "<span class=hideit id=brands>$brands</span>";
+$debug.= "<br>brands: <span id=brands>$brands</span>";
 $help .= "<div class=flexy><div class='help hideit' id=brand_help><ul>$brand_help</ul></div></div>";
 
 $li.= "
@@ -259,7 +259,7 @@ while($d=mysqli_fetch_assoc($q)){
   $genders .= "$kode,";
   $li .= "<li class='gender hideit' id=gender__$kode><span class='abu '>Gender:</span> $d[gender]</li>";
 }
-echo "<span class=hideit id=genders>$genders</span>";
+$debug.= "<br>genders: <span id=genders>$genders</span>";
 $help .= "<div class=flexy><div class='help hideit' id=gender_help><ul>$gender_help</ul></div></div>";
 
 $s = "SELECT * FROM tb_apparel";
@@ -272,17 +272,53 @@ while($d=mysqli_fetch_assoc($q)){
   $apparels .= "$kode,";
   $li .= "<li class='apparel hideit' id=apparel__$kode><span class='abu '>Apparel:</span> $d[apparel]</li>";
 }
-echo "<span class=hideit id=apparels>$apparels</span>";
+$debug.= "<br>apparels: <span id=apparels>$apparels</span>";
 $help .= "<div class=flexy><div class='help hideit' id=apparel_help><ul>$apparel_help</ul></div></div>";
 
 $today = $d_do['tanggal_delivery'] ?? date('Y-m-d');
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =========================================================
+# FINAL ECHO
+# =========================================================
 echo "
   $page_title
   $kode_do_div
   $pic_info
-  <form method=post id=form_do class=$form_do_hide>
-    <table class=tablez>
+  <form method=post id=form_do class='$form_do_hide wadah'>
+    <div class=sub_form>Form Buat DO</div>
+    <table>
       <tr>
         <td valign=top class=pt2>Kode Artikel</td>
         <td>
@@ -298,7 +334,7 @@ echo "
           
         </td>
       </tr>
-      <tr>
+      <tr class=hideit>
         <td>Nomor Delivery</td>
         <td>
           <input disabled type='text' class='mb2 form-control $update_trigger' id=kode_delivery name=kode_delivery minlength=9 maxlength=9 placeholder='auto' value='$kode_delivery'>
@@ -313,16 +349,34 @@ echo "
       <tr>
         <td>OTP</td>
         <td>
-          <div class=flexy>
+          <div class='flexy mt2 mb4'>
             <div><label><input type='radio' class='$update_trigger' id=id_kategori name=id_kategori value='1' required $radio_kategori_1_checked> Aksesoris</label></div>
             <div><label><input type='radio' class='$update_trigger' id=id_kategori name=id_kategori value='2' required $radio_kategori_2_checked> Fabric</label></div>
           </div>
         </td>
       </tr>
       <tr>
+        <td>QTY Apparel</td>
+        <td>
+          <input required type=number min=0 max=9999 placeholder='QTY Apparel' name=qty_apparel class='form-control mb2'>
+        </td>
+      </tr>
+      <tr>
+        <td>Jenis Permintaan</td>
+        <td>
+          <select name=id_permintaan class='form-control mb2'>
+            <option value=1>LPKP (reguler)</option>
+            <option value=2>Hutangan</option>
+            <option value=3>Tambahan Cutting</option>
+            <option value=4>BAKB (Berita Acara Kehilangan Barang)</option>
+            <option value=5>Kenaikan ...</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
         <td>&nbsp;</td>
         <td>
-          <button class='btn btn-sm btn-primary mt2' name=btn_create_do id=btn_create_do disabled>$btn_caption</button>
+          <button class='btn btn-primary mt2' name=btn_create_do id=btn_create_do disabled>$btn_caption</button>
         </td>
       </tr>
     </table>
@@ -334,9 +388,49 @@ echo "
 # ======================================================
 if($btn_caption=='Update DO') include 'picking_list.php';
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ?>
-
-
 <script>
   $(function(){
     let brands = $('#brands').text().split(',');

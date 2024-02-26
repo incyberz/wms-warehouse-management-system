@@ -36,16 +36,30 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="?master_kumulatif">
+      <a class="nav-link collapsed" href="?rekap_kumulatif">
         <i class="bi bi-arrow-down-square"></i>
-        <span>Master Kumulatif <?=$locked_icon?></span>
+        <span>Rekap Kumulatif <?=$locked_icon?></span>
       </a>
     </li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="?rekap_item">
+        <i class="bi bi-arrow-down-square"></i>
+        <span>Rekap Item <?=$locked_icon?></span>
+      </a>
+    </li>
+
+    <!-- <li class="nav-item">
       <a class="nav-link collapsed" href="?master_penerimaan">
         <i class="bi bi-arrow-down-square"></i>
         <span>Master Penerimaan <?=$locked_icon?></span>
+      </a>
+    </li> -->
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?retur">
+        <i class="bi bi-arrow-down-square"></i>
+        <span>QC & Retur <?=$locked_icon?></span>
       </a>
     </li>
 
@@ -69,7 +83,13 @@
     <li class="nav-item">
       <a class="nav-link collapsed" href="?stok">
         <i class="bi bi-file-earmark-spreadsheet"></i>
-        <span>Stok Opname</span>
+        <span>Stok Old</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?stok_kumulatif">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Stok Kumulatif</span>
       </a>
     </li>
   </ul>
