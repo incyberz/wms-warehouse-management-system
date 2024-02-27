@@ -279,10 +279,12 @@ while($d=mysqli_fetch_assoc($q)){
 
   // qty calculation
   $qty_datang = $qty_transit+$qty_tr_fs+$qty_qc_fs+$qty_qc -$qty_retur+$qty_ganti;
-  $qty_stok = $qty_datang - $qty_allocate+$qty_retur_do;
+  $qty_available = $qty_qc_fs+$qty_qc -$qty_retur+$qty_ganti;
+  $qty_stok = $qty_available - $qty_allocate+$qty_retur_do;
   
   // qty calculation show
   $qty_datang_show = $qty_datang ? floatval($qty_datang) : '-';
+  $qty_available_show = $qty_available ? floatval($qty_available) : '-';
   $qty_stok_show = $qty_stok ? floatval($qty_stok) : '-';
 
 
@@ -317,6 +319,7 @@ while($d=mysqli_fetch_assoc($q)){
       <td>$qty_ganti_show</td>
       <td class='abu f12 center'>$d[satuan]</td>
       <td class=green>$qty_datang_show</td>
+      <td class=green>$qty_available_show</td>
       <td class=darkred>$qty_pick_show</td>
       <td class=darkred>$qty_allocate_show</td>
       <td class=darkred>$qty_retur_do_show</td>
@@ -369,6 +372,7 @@ $form_cari
     <th>GANTI</th>
     <th class='abu f12 center'>UOM</th>
     <th class=green>DATANG</th>
+    <th class=green>AVAILABLE</th>
     <th class=darkred>PICK</th>
     <th class=darkred>ALLOCATE</th>
     <th class=darkred>RETUR-DO</th>
