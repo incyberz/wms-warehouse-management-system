@@ -61,8 +61,8 @@ JOIN tb_sj d ON b.kode_sj=d.kode
 JOIN tb_satuan e ON c.satuan=e.satuan 
 WHERE a.id=$id_kumulatif";
 // echo $s;
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0) die(div_alert('danger','Data subitem tidak ditemukan'));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (mysqli_num_rows($q) == 0) die(div_alert('danger', 'Data subitem tidak ditemukan'));
 
 $d = mysqli_fetch_assoc($q);
 $qty = floatval($d['qty']);
@@ -85,7 +85,7 @@ $qty_adjusted = floatval($d['qty_adjusted']);
 $qty_kumulatif = floatval($d['qty_kumulatif']);
 $qty_kumulatif_fs = floatval($d['qty_kumulatif_fs']);
 
-$qty_sisa = $qty_adjusted-$qty_kumulatif;
+$qty_sisa = $qty_adjusted - $qty_kumulatif;
 $kategori = $arr_kategori[$id_kategori];
 $qty_datang = $qty_kumulatif + $qty_kumulatif_fs;
 
@@ -93,30 +93,29 @@ $qty_datang = $qty_kumulatif + $qty_kumulatif_fs;
 $no_lot_or_last = $no_lot ?? $last_no_lot;
 $kode_lokasi_or_last = $kode_lokasi ?? $last_kode_lokasi;
 
-if($sum_pick || $count_roll){
+if ($sum_pick || $count_roll) {
   $picked_info = "<div class=''>No Lot: $no_lot</div>";
-  $picked_info.= "<div class=''>Lokasi: $kode_lokasi</div>";
-  $picked_info.= "<div class='kecil darkred'>Picked: $sum_pick, Count Roll: $count_roll</div>";
-  $picked_info.= "<div class='kecil darkred miring'>Item tidak bisa diubah karena sudah di pick atau sudah ada roll (hapus data pick dan roll untuk mengubahnya)</div>";
+  $picked_info .= "<div class=''>Lokasi: $kode_lokasi</div>";
+  $picked_info .= "<div class='kecil darkred'>Picked: $sum_pick, Count Roll: $count_roll</div>";
+  $picked_info .= "<div class='kecil darkred miring'>Item tidak bisa diubah karena sudah di pick atau sudah ada roll (hapus data pick dan roll untuk mengubahnya)</div>";
   $div_rak = '';
   $pilih_kode_lokasi = '';
   $elemen_form_kumulatif_item = '';
+} else {
 
-}else{
 
-  
   // get lokasi dari DB
   $s = "SELECT a.* FROM tb_lokasi a 
-  JOIN tb_blok_lokasi b ON a.blok=b.blok 
+  JOIN tb_blok b ON a.blok=b.blok 
   WHERE b.id_kategori='$id_kategori' ORDER BY id_gudang, blok";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $rows = mysqli_num_rows($q);
 
   $last_id_gudang = '';
   $last_blok = '';
   $div_rak = '';
-  $i=0;
-  while($d=mysqli_fetch_assoc($q)){
+  $i = 0;
+  while ($d = mysqli_fetch_assoc($q)) {
     $i++;
     $kode = $d['kode'];
     $blok = $d['blok'];
@@ -125,22 +124,22 @@ if($sum_pick || $count_roll){
     $persen_full = $d['persen_full'] ?? 0;
     $id_gudang = $d['id_gudang'];
 
-    $end_div = $i>1 ? '</div>' : '';
-    if($last_blok!=$blok ){
-      $zblok = str_replace('.','_',$blok);
-      $div_rak.= "
+    $end_div = $i > 1 ? '</div>' : '';
+    if ($last_blok != $blok) {
+      $zblok = str_replace('.', '_', $blok);
+      $div_rak .= "
         $end_div
         <span class='btn btn-secondary btn-sm mt1 mb1 blok' id='blok__$zblok'>Blok: $blok</span>
         <div class='wadah flexy bg-white blok_rak ' id='blok_rak__$zblok' style='gap: 8px;display:none'>
       ";
-    } 
+    }
 
-    $persen_full = rand(1,100);
+    $persen_full = rand(1, 100);
 
-    $green = 255-$persen_full*2;
-    $red = 255-(100-$persen_full*2);
+    $green = 255 - $persen_full * 2;
+    $red = 255 - (100 - $persen_full * 2);
 
-    $div_rak.= "
+    $div_rak .= "
       <div class='bordered br5 p1 item_rak' style='background: rgb($red,$green,100)'>
         $kode
         <div class='f10'>$persen_full%</div>
@@ -149,15 +148,15 @@ if($sum_pick || $count_roll){
 
     $last_id_gudang = $id_gudang;
     $last_blok = $blok;
-    if($i==$rows) $div_rak .= '</div>';
+    if ($i == $rows) $div_rak .= '</div>';
   }
 
-  if($kode_lokasi){
+  if ($kode_lokasi) {
     $btn_simpan = "<button class='btn btn-primary' name=btn_simpan >Update</button>";
-  }else{
-    if($last_kode_lokasi){
+  } else {
+    if ($last_kode_lokasi) {
       $btn_simpan = "<button class='btn btn-primary' name=btn_simpan >Simpan</button>";
-    }else{
+    } else {
       $btn_simpan = "<button class='btn btn-primary' name=btn_simpan id=btn_simpan disabled>Simpan</button>";
     }
   }
@@ -180,10 +179,10 @@ echo "
   </h2>
   <div class=sub_form>Sub Form Manage Roll</div>
 ";
-$tgl = date('d-m-Y',strtotime($tanggal_terima));
+$tgl = date('d-m-Y', strtotime($tanggal_terima));
 
 
-$bar = "<img width=300px alt='barcode' src='include/barcode.php?codetype=code39&size=50&text=".$kode_barang."&print=false'/>";
+$bar = "<img width=300px alt='barcode' src='include/barcode.php?codetype=code39&size=50&text=" . $kode_barang . "&print=false'/>";
 $no_roll = 'Roll-xxx';
 $no_po_dll = "$kode_po $no_lot ($qty)$satuan $no_roll ($kode_lokasi $this_brand) $tgl";
 $no_lot_show = $no_lot ? $no_lot : '<i class="abu f12 consolas">null</i>';
@@ -201,64 +200,74 @@ $data_roll_info = "
 # =============================================================
 # PROCESSORS: HAPUS ROLL
 # =============================================================
-if(isset($_POST['btn_hapus_roll'])){
+if (isset($_POST['btn_hapus_roll'])) {
   $id_roll = $_POST['btn_hapus_roll'];
 
   $s = "DELETE FROM tb_roll WHERE id=$id_roll";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   jsurl();
   exit;
-
 }
 
 # =============================================================
 # PROCESSORS: TAMBAH ROLL
 # =============================================================
-if(isset($_POST['btn_tambah_roll'])){
+if (isset($_POST['btn_tambah_roll'])) {
   $id_kumulatif = $_POST['btn_tambah_roll'];
   $roll_multiplier = $_POST['roll_multiplier'];
 
   $s = "SELECT COUNT(1) as count_roll FROM tb_roll WHERE id_kumulatif=$id_kumulatif";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $counter = 1;
-  if(mysqli_num_rows($q)){
+  if (mysqli_num_rows($q)) {
     $d = mysqli_fetch_assoc($q);
     $counter = $d['count_roll'];
     $counter++;
-    if($counter<10) {$counter_str = "00$counter";}else
-    if($counter<100){$counter_str = "0$counter";}else{$counter_str = $counter;}
+    if ($counter < 10) {
+      $counter_str = "00$counter";
+    } else
+    if ($counter < 100) {
+      $counter_str = "0$counter";
+    } else {
+      $counter_str = $counter;
+    }
   }
 
   $s = "INSERT INTO tb_roll (id_kumulatif, no_roll) VALUES ($id_kumulatif,'$counter_str')";
-  if($roll_multiplier>1){
-    for ($i=1; $i < $roll_multiplier; $i++) { 
+  if ($roll_multiplier > 1) {
+    for ($i = 1; $i < $roll_multiplier; $i++) {
       $counter++;
-      if($counter<10) {$counter_str = "00$counter";}else
-      if($counter<100){$counter_str = "0$counter";}else{$counter_str = $counter;}
+      if ($counter < 10) {
+        $counter_str = "00$counter";
+      } else
+      if ($counter < 100) {
+        $counter_str = "0$counter";
+      } else {
+        $counter_str = $counter;
+      }
       $s .= ",($id_kumulatif,'$counter_str')";
     }
   }
   // die($s);
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   jsurl();
   exit;
-
 }
 
 # =============================================================
 # PROCESSORS: DELETE ALL ROLL
 # =============================================================
-if(isset($_POST['btn_delete_all_roll'])){
+if (isset($_POST['btn_delete_all_roll'])) {
   $id_kumulatif = $_GET['id_kumulatif'] ?? die(erid('id_kumulatif'));
   $s = "DELETE FROM tb_roll WHERE id_kumulatif=$id_kumulatif";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   jsurl();
 }
 
 # =============================================================
 # PROCESSORS: TAMBAH ROLL
 # =============================================================
-if(isset($_POST['btn_save_roll'])){
+if (isset($_POST['btn_save_roll'])) {
   echo '<pre>';
   var_dump($_POST);
   echo '</pre>';
@@ -268,25 +277,23 @@ if(isset($_POST['btn_save_roll'])){
   $total_qty = 0;
 
   foreach ($_POST as $key => $value) {
-    if(strpos("salt$key",'qty_roll__')){
-      $arr = explode('__',$key);
+    if (strpos("salt$key", 'qty_roll__')) {
+      $arr = explode('__', $key);
       $id = $arr[1];
 
       $keterangan = $_POST["keterangan_roll__$id"];
-      $keterangan = $keterangan ? "'$keterangan'" : 'NULL'; 
+      $keterangan = $keterangan ? "'$keterangan'" : 'NULL';
 
       $s = "UPDATE tb_roll SET qty=$value, keterangan=$keterangan WHERE id=$id";
-      $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
       $total_qty += $value;
-
     }
   }
 
   $s = "UPDATE tb_sj_kumulatif SET tmp_qty=$total_qty WHERE id=$id_kumulatif";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   jsurl();
-
 }
 
 
@@ -294,7 +301,7 @@ if(isset($_POST['btn_save_roll'])){
 # FORM TAMBAH ROLL
 # =============================================================
 $select_roll_multiplier = '';
-for ($i=1; $i <= 20 ; $i++) $select_roll_multiplier .= "<option value=$i>$i roll</option>";
+for ($i = 1; $i <= 20; $i++) $select_roll_multiplier .= "<option value=$i>$i roll</option>";
 $select_roll_multiplier = "<select class='form-control form-control-sm' name=roll_multiplier>$select_roll_multiplier</select>";
 $free_supplier_caption = $is_fs ? 'Free Supplier' : '';
 
@@ -321,30 +328,30 @@ $sisa_qty_roll -= $sum_qty_roll;
 
 $s = "SELECT * FROM tb_roll WHERE id_kumulatif=$id_kumulatif ORDER BY no_roll";
 // echo "<h1>$s</h1>";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0){
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (mysqli_num_rows($q) == 0) {
   echo div_alert('danger mt2', "Belum ada data Roll. $fs_show <hr>  $form_tambah_roll");
   $form_cetak_all = '';
-}else{
+} else {
 
   $tr = '';
-  $i=0;
+  $i = 0;
   $jumlah_roll = mysqli_num_rows($q);
   $sum_qty_roll = 0;
 
   $max_input_qty = $qty_adjusted;
-  
+
   $btn_cetak_all = "<button class='btn btn-success ' name=btn_cetak_semua_label value=$id_kumulatif>Cetak Semua Label</button>";
-  while($d=mysqli_fetch_assoc($q)){
+  while ($d = mysqli_fetch_assoc($q)) {
     $i++;
-    $id_roll=$d['id'];
+    $id_roll = $d['id'];
     $qty = floatval($d['qty']);
     $sum_qty_roll += $qty;
-    if(!$qty) $btn_cetak_all = '<span class="abu miring kecil">Belum bisa cetak semua label karena masih ada QTY Roll/Pack yang kosong.</span>';
+    if (!$qty) $btn_cetak_all = '<span class="abu miring kecil">Belum bisa cetak semua label karena masih ada QTY Roll/Pack yang kosong.</span>';
 
-    $hapus = $i==$jumlah_roll ? "<button name=btn_hapus_roll value=$id_roll style='border:none;background:none' class=darkred onclick='return confirm(\"Yakin untuk hapus?\")'>$img_delete Hapus</button>" : "<span class='abu pointer f12' onclick='alert(\"Silahkan hapus dari row terbawah.\")'>$img_delete_disabled Hapus</span>";
-    $cetak = $qty ? "<a target=_blank href='cetak_all_label.php?id_roll=$id_roll'><span class=green>Cetak</span></a>" 
-    : "<span class='pointer abu f12' onclick='alert(\"Silahkan isi dahulu QTY!\")'>Cetak</span>";
+    $hapus = $i == $jumlah_roll ? "<button name=btn_hapus_roll value=$id_roll style='border:none;background:none' class=darkred onclick='return confirm(\"Yakin untuk hapus?\")'>$img_delete Hapus</button>" : "<span class='abu pointer f12' onclick='alert(\"Silahkan hapus dari row terbawah.\")'>$img_delete_disabled Hapus</span>";
+    $cetak = $qty ? "<a target=_blank href='cetak_all_label.php?id_roll=$id_roll'><span class=green>Cetak</span></a>"
+      : "<span class='pointer abu f12' onclick='alert(\"Silahkan isi dahulu QTY!\")'>Cetak</span>";
 
     $tr .= "
       <tr>
@@ -432,7 +439,7 @@ if(mysqli_num_rows($q)==0){
     </form>
   ";
 
-  
+
   $form_cetak_all = "
     <form action=cetak_all_label.php method=post target=_blank class=wadah>
       $btn_cetak_all
@@ -451,34 +458,34 @@ echo "
 
 ?>
 <script>
-  $(function(){
+  $(function() {
 
-    function hitung_jumlah_qty_roll(){
+    function hitung_jumlah_qty_roll() {
       let z = document.getElementsByClassName('qty_roll');
       let jumlah = 0;
       for (let i = 0; i < z.length; i++) {
-        jumlah += parseFloat($('#'+z[i].id).val());
+        jumlah += parseFloat($('#' + z[i].id).val());
       }
       $('#jumlah_qty_roll').text(jumlah);
 
       let qty_sisa = parseFloat($('#qty_sisa').text());
-      let selisih = qty_sisa-jumlah;
+      let selisih = qty_sisa - jumlah;
       let selisih_show = '';
-      $('#btn_save_roll').prop('disabled',0);
-      if(selisih<0){
-        $('#btn_save_roll').prop('disabled',1);
+      $('#btn_save_roll').prop('disabled', 0);
+      if (selisih < 0) {
+        $('#btn_save_roll').prop('disabled', 1);
         selisih_show = `<span class=red>${selisih} <i class='f12 consolas'>jumlah roll tidak boleh melebihi QTY Adjusted</i></span>`;
-      }else if(selisih==0){
+      } else if (selisih == 0) {
         selisih_show = `${selisih} <div class='mt1 f12 consolas'>QTY Adjusted habis</div>`;
-      }else{
+      } else {
         selisih_show = `${selisih} <div class='mt1 f12 consolas'>Sisa QTY Adjusted dapat dialokasikan ke kumulatif item lain atau penerimaan parsial</div>`;
       }
       $('#selisih').html(selisih_show);
     }
 
-    $('.qty_roll').change(function(){
+    $('.qty_roll').change(function() {
       let qty_roll_identik = $('#qty_roll_identik').prop('checked');
-      if(qty_roll_identik==true){
+      if (qty_roll_identik == true) {
         let val = $(this).val();
         let z = document.getElementsByClassName('qty_roll');
         for (let i = 0; i < z.length; i++) {
@@ -488,9 +495,9 @@ echo "
       hitung_jumlah_qty_roll();
     })
 
-    $('.keterangan_roll').keyup(function(){
+    $('.keterangan_roll').keyup(function() {
       let keterangan_roll_identik = $('#keterangan_roll_identik').prop('checked');
-      if(keterangan_roll_identik==true){
+      if (keterangan_roll_identik == true) {
         let val = $(this).val();
         let z = document.getElementsByClassName('keterangan_roll');
         for (let i = 0; i < z.length; i++) {
@@ -499,7 +506,7 @@ echo "
       }
     })
 
-    $('#qty_roll_identik').click(function(){
+    $('#qty_roll_identik').click(function() {
       let qty_roll_identik = $('#qty_roll_identik').prop('checked');
       let sisa_qty_roll = $('#sisa_qty_roll').text();
       let z = document.getElementsByClassName('qty_roll');

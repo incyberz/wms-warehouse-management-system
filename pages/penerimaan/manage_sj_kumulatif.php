@@ -9,17 +9,17 @@ $form_tambah_kumulatif = '';
 # ============================================
 # DELETE KUMULATIF PROCESSOR
 # ============================================
-if(isset($_POST['btn_delete_item_kumulatif'])){
+if (isset($_POST['btn_delete_item_kumulatif'])) {
   $s = "DELETE FROM tb_sj_kumulatif WHERE id=$_POST[btn_delete_item_kumulatif]";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo div_alert('info','Delete item kumulatif sukses.');
-  jsurl('',1000);
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  echo div_alert('info', 'Delete item kumulatif sukses.');
+  jsurl('', 1000);
 }
 
 # ============================================
 # UPDATE KUMULATIF PROCESSOR
 # ============================================
-if(isset($_POST['btn_simpan'])){
+if (isset($_POST['btn_simpan'])) {
   $id_kumulatif = $_POST['id_kumulatif'];
 
   $s = "SELECT 
@@ -30,26 +30,26 @@ if(isset($_POST['btn_simpan'])){
   JOIN tb_sj_item b ON a.id_sj_item=b.id 
   JOIN tb_sj c ON b.kode_sj=c.kode 
   WHERE a.id=$id_kumulatif";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
-  if(mysqli_num_rows($q)==0) die('Data tidak ditemukan.');
-  if(mysqli_num_rows($q)>1) die(erid('(id::not_uniq)'));
+  if (mysqli_num_rows($q) == 0) die('Data tidak ditemukan.');
+  if (mysqli_num_rows($q) > 1) die(erid('(id::not_uniq)'));
   $d = mysqli_fetch_assoc($q);
 
   $kode_po = $d['kode_po'] ?? die('kode_po::null');
   $kode_barang = $d['kode_barang'] ?? die('kode_barang::null');
-  $is_fs = $d['is_fs'];// ?? die('is_fs::null');
+  $is_fs = $d['is_fs']; // ?? die('is_fs::null');
 
   $kode_lokasi = $_POST['kode_lokasi'] ?? die('kode_lokasi::null');
   $no_lot = $_POST['no_lot'] ?? die('no_lot::null');
 
   // ID - PO - LOT - LOKASI - FS
   $kode_kumulatif = "$kode_barang~$kode_po~$no_lot~$kode_lokasi~$is_fs";
-  $kode_kumulatif = strtoupper(str_replace(' ','',$kode_kumulatif));
+  $kode_kumulatif = strtoupper(str_replace(' ', '', $kode_kumulatif));
 
   $s = "SELECT 1 FROM tb_sj_kumulatif WHERE kode_kumulatif='$kode_kumulatif'";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)){
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  if (mysqli_num_rows($q)) {
     echo div_alert('danger', "Untuk Lot $no_lot dan lokasi $kode_lokasi sudah ada. Silahkan pakai kode lot/lokasi lainnya!<hr><a href='javascript:history.go(-1)'>Kembali</a>");
     exit;
   }
@@ -62,21 +62,21 @@ if(isset($_POST['btn_simpan'])){
   $pairs = '__';
   foreach ($_POST as $key => $value) {
     $value = clean_sql($value);
-    $value = $value=='' ? 'NULL' : "'$value'";
+    $value = $value == '' ? 'NULL' : "'$value'";
     $pairs .= ",$key = $value";
   }
   $pairs .= ",kode_kumulatif = '$kode_kumulatif'";
-  $pairs = str_replace('__,','',$pairs);
+  $pairs = str_replace('__,', '', $pairs);
 
   $s = "UPDATE tb_sj_kumulatif SET $pairs WHERE id=$id_kumulatif";
   echo $s;
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
   jsurl();
   exit;
 }
 
-if(isset($_POST['btn_tambah_item_kumulatif']) || isset($_POST['btn_tambah_item_kumulatif_fs'])){
+if (isset($_POST['btn_tambah_item_kumulatif']) || isset($_POST['btn_tambah_item_kumulatif_fs'])) {
 
   $pesan = '';
   $id_sj_item = $_POST['id_sj_item'] ?? die(erid('id_sj_item'));
@@ -89,17 +89,17 @@ if(isset($_POST['btn_tambah_item_kumulatif']) || isset($_POST['btn_tambah_item_k
 
   // ID - PO - LOT - LOKASI - FS
   $kode_kumulatif = "$kode_barang~$kode_po~$no_lot~$kode_lokasi~$is_fs";
-  $kode_kumulatif = strtoupper(str_replace(' ','',$kode_kumulatif));
+  $kode_kumulatif = strtoupper(str_replace(' ', '', $kode_kumulatif));
 
   // check duplikasi
-  $pesan.= '<br>checking duplikasi kumulatif... ';
+  $pesan .= '<br>checking duplikasi kumulatif... ';
   $s = "SELECT 1 FROM tb_sj_kumulatif WHERE kode_kumulatif='$kode_kumulatif'";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)){
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  if (mysqli_num_rows($q)) {
     echo div_alert('danger', "Untuk Lot $no_lot dan lokasi $kode_lokasi sudah ada. Silahkan pakai kode lot/lokasi lainnya!");
-    jsurl('',3000);
+    jsurl('', 3000);
   }
-  $pesan.= 'no-duplikat.';
+  $pesan .= 'no-duplikat.';
 
 
   $s = "INSERT INTO tb_sj_kumulatif 
@@ -108,23 +108,22 @@ if(isset($_POST['btn_tambah_item_kumulatif']) || isset($_POST['btn_tambah_item_k
   ) VALUES (
     $id_sj_item,'$kode_lokasi','$kode_kumulatif','$no_lot',$nomor,$is_fs
   )";
-  $pesan.= '<br>inserting new kumulatif... ';
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  $pesan.= 'success.';
+  $pesan .= '<br>inserting new kumulatif... ';
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $pesan .= 'success.';
 
-  $pesan .= div_alert('success','Tambah Kumulatif Item sukses.');
-  
+  $pesan .= div_alert('success', 'Tambah Kumulatif Item sukses.');
+
   echo $pesan;
-  jsurl('',2000);
+  jsurl('', 2000);
   exit;
-  
 }
 
 $id_sj_item = $_GET['id_sj_item'] ?? die(erid('id_sj_item'));
-if(!$id_sj_item){
-  echo div_alert('danger','id_sj_item is null');
+if (!$id_sj_item) {
+  echo div_alert('danger', 'id_sj_item is null');
   exit;
-} 
+}
 $s = "SELECT a.*,
 a.id as id_sj_item,
 a.kode_sj,
@@ -164,8 +163,8 @@ JOIN tb_kategori e ON d.id_kategori=e.id
 JOIN tb_satuan f ON d.satuan=f.satuan 
 WHERE a.id=$id_sj_item 
 ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(!mysqli_num_rows($q)) die(div_alert('danger','Data Item Kumulatif tidak ditemukan'));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (!mysqli_num_rows($q)) die(div_alert('danger', 'Data Item Kumulatif tidak ditemukan'));
 $d = mysqli_fetch_assoc($q);
 
 $id_kategori = $d['id_kategori'];
@@ -196,28 +195,27 @@ $qty_kurang = $qty_adjusted - $qty_parsial;
 
 $nama_kategori = ucwords(strtolower($nama_kategori));
 
-$is_lebih = $qty_adjusted<$qty_datang ? 1 : 0;
+$is_lebih = $qty_adjusted < $qty_datang ? 1 : 0;
 $qty_tr_fs = 0;
-if($is_lebih){
-  $qty_tr_fs = $qty_datang-$qty_adjusted; // zzz uncheck
+if ($is_lebih) {
+  $qty_tr_fs = $qty_datang - $qty_adjusted; // zzz uncheck
   $tr_free_supplier = "
     <tr class=blue>
       <td>QTY Lebih (Free Supplier)</td>
       <td>$qty_tr_fs $satuan</td>
     </tr>
   ";
-
-}else{
+} else {
   $tr_free_supplier = '';
 }
 ?>
 <div class="pagetitle">
-  <h1><?=$judul?></h1>
+  <h1><?= $judul ?></h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
-      <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?=$kode_sj?>">Manage SJ</a></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?= $kode_sj ?>">Manage SJ</a></li>
       <li class="breadcrumb-item active">Item Kumulatif</li>
     </ol>
   </nav>
@@ -227,30 +225,30 @@ if($is_lebih){
 <p>Page ini digunakan untuk pencatatan Item Kumulatif dan Pencetakan Label.</p>
 
 
-<h2>Item: <?=$kode_barang?> | <?=$nama_kategori?></h2>
+<h2>Item: <?= $kode_barang ?> | <?= $nama_kategori ?></h2>
 <table class="table table-hover">
   <tr>
     <td>Surat Jalan</td>
-    <td><?=$kode_sj?></td>
+    <td><?= $kode_sj ?></td>
   </tr>
   <tr>
     <td>Nama Barang</td>
-    <td><?=$nama_barang?></td>
+    <td><?= $nama_barang ?></td>
   </tr>
   <tr>
     <td>QTY Kurang</td>
     <td>
-      <span id="qty_adjusted"><?=$qty_kurang?></span> 
-      <span id="satuan"><?=$satuan?></span> 
+      <span id="qty_adjusted"><?= $qty_kurang ?></span>
+      <span id="satuan"><?= $satuan ?></span>
     </td>
   </tr>
   <tr>
     <td>QTY Datang</td>
     <td>
-      <span id="qty_datang"><?=$qty_datang?></span> <?=$satuan?> 
+      <span id="qty_datang"><?= $qty_datang ?></span> <?= $satuan ?>
     </td>
   </tr>
-  <?=$tr_free_supplier?>
+  <?= $tr_free_supplier ?>
 </table>
 
 <?php
@@ -282,54 +280,54 @@ JOIN tb_barang c ON b.kode_barang=c.kode
 JOIN tb_sj d ON b.kode_sj=d.kode
 WHERE a.id_sj_item=$id_sj_item
 ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $count_kumulatif = mysqli_num_rows($q);
 $tr_kumulatif = '';
 $div_kumulatif_item = '';
-$i=0;
-$ada_kosong=0;
+$i = 0;
+$ada_kosong = 0;
 $last_no_lot = '';
 $last_no_roll = '';
 $last_keterangan_barang = '';
 $last_kode_lokasi = '';
-while($d=mysqli_fetch_assoc($q)){
+while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $id_kumulatif=$d['id_kumulatif'];
-  $qty=$d['qty'];
-  $satuan=$d['satuan'];
-  $no_lot=$d['no_lot'];
-  $kode_barang=$d['kode_barang'];
-  $nama_barang=$d['nama_barang'];
-  $keterangan_barang=$d['keterangan_barang'];
-  $kode_po=$d['kode_po'];
-  $tanggal_masuk=$d['tanggal_masuk'];
-  $is_fs=$d['is_fs'];
-  
-  $pic_cd= '?'; //zzz skipped
+  $id_kumulatif = $d['id_kumulatif'];
+  $qty = $d['qty'];
+  $satuan = $d['satuan'];
+  $no_lot = $d['no_lot'];
+  $kode_barang = $d['kode_barang'];
+  $nama_barang = $d['nama_barang'];
+  $keterangan_barang = $d['keterangan_barang'];
+  $kode_po = $d['kode_po'];
+  $tanggal_masuk = $d['tanggal_masuk'];
+  $is_fs = $d['is_fs'];
+
+  $pic_cd = '?'; //zzz skipped
   $aging = '?'; //zzz skipped
-  if($qty){
+  if ($qty) {
     $last_no_lot = $d['no_lot'];
     $last_keterangan_barang = $d['keterangan_barang'];
     $last_kode_lokasi = $d['kode_lokasi'];
 
     $qty = floatval($qty);
-  }else{
+  } else {
     $pesan_qty_kum_nol = "<div class=''>Silahkan <b class=darkblue>Manage Roll</b> untuk Summary QTY Kumulatif, klik pada tombol $img_sum</div>";
-    $ada_kosong=1;
+    $ada_kosong = 1;
   }
 
 
-  if($d['sum_pick']){
-    $picked_info = "<span class='kecil darkred'>Picked: ".floatval($d['sum_pick']).'</span>';
-  }else{
+  if ($d['sum_pick']) {
+    $picked_info = "<span class='kecil darkred'>Picked: " . floatval($d['sum_pick']) . '</span>';
+  } else {
     $picked_info = 'unpick';
   }
-  
+
   $count_roll = $d['count_roll'];
-  
-  if($d['sum_pick'] || $d['count_roll'] ){
+
+  if ($d['sum_pick'] || $d['count_roll']) {
     $btn_delete = '';
-  }else{
+  } else {
     $btn_delete = "    
       <form method=post style='display:inline'>
         <button class=transparan name=btn_delete_item_kumulatif value=$id_kumulatif>$img_delete</button>
@@ -340,10 +338,10 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_show = $qty ? $qty : '<b class=red>0</b>';
   $no_lot_show = $d['no_lot'] ? $d['no_lot'] : '<i class="f12 consolas">null</i>';
   $is_fs_show = $is_fs ? $fs_icon : '-';
-  $jam_masuk = '<div class="f12 abu">'.date('H:i',strtotime($tanggal_masuk)).'</div>';
-  $tanggal_masuk_show = date('d-m-y',strtotime($tanggal_masuk)).$jam_masuk;
+  $jam_masuk = '<div class="f12 abu">' . date('H:i', strtotime($tanggal_masuk)) . '</div>';
+  $tanggal_masuk_show = date('d-m-y', strtotime($tanggal_masuk)) . $jam_masuk;
 
-  $tr_kumulatif.= "
+  $tr_kumulatif .= "
     <tr>
       <td>$i</td>
       <td class=kecil>
@@ -367,7 +365,6 @@ while($d=mysqli_fetch_assoc($q)){
       <td>$tanggal_masuk_show</td>
     </tr>
   ";
-
 }
 
 $debug .= "
@@ -378,17 +375,17 @@ $debug .= "
 ";
 
 
-if($qty_datang<$qty_adjusted){
+if ($qty_datang < $qty_adjusted) {
   // barang kurang
   // $qty_sisa = $qty_datang-$qty_kumulatif;
   // $debug.= "qty_sisa:$qty_sisa = qty_datang:$qty_datang-qty_kumulatif:$qty_kumulatif;";
   $sisa_fs = 0;
-}else{
-  $sisa_fs = $qty_tr_fs-$qty_kumulatif_fs;
+} else {
+  $sisa_fs = $qty_tr_fs - $qty_kumulatif_fs;
 }
 
 $qty_sisa = $qty_kurang - $qty_datang;
-$debug.= "<br>qty_sisa:$qty_sisa = qty_adjusted:$qty_adjusted-qty_kumulatif:$qty_kumulatif";
+$debug .= "<br>qty_sisa:$qty_sisa = qty_adjusted:$qty_adjusted-qty_kumulatif:$qty_kumulatif";
 
 
 
@@ -422,36 +419,36 @@ $debug.= "<br>qty_sisa:$qty_sisa = qty_adjusted:$qty_adjusted-qty_kumulatif:$qty
 
 
 
-if(!$ada_kosong){
+if (!$ada_kosong) {
 
   # ======================================================
   # FORM TAMBAH SUB-ITEM || FREE ITEM
   # ======================================================
-  $new_count_kumulatif = $count_kumulatif+1;
-  
+  $new_count_kumulatif = $count_kumulatif + 1;
+
   # ==========================================
   # BLOK LOKASI
   # ==========================================
   $opt = '';
-  $s = "SELECT blok FROM tb_blok_lokasi WHERE id_kategori=$id_kategori";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  while($d=mysqli_fetch_assoc($q)){
-    $opt.= "<option>$d[blok]</option>";
+  $s = "SELECT blok FROM tb_blok WHERE id_kategori=$id_kategori";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  while ($d = mysqli_fetch_assoc($q)) {
+    $opt .= "<option>$d[blok]</option>";
   }
   $select_blok_lokasi = "<select class='form-control mb2' name=blok_lokasi id=blok_lokasi><option value=0 selected>-- Blok Lokasi --</option>$opt</select>";
-  
+
   # ==========================================
   # SELECT LOKASI
   # ==========================================
   $opt = '';
   $s = "SELECT a.* FROM tb_lokasi a 
-  JOIN tb_blok_lokasi b ON a.blok=b.blok 
+  JOIN tb_blok b ON a.blok=b.blok 
   WHERE b.id_kategori=$id_kategori";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  while($d=mysqli_fetch_assoc($q)){
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  while ($d = mysqli_fetch_assoc($q)) {
     $brand_show = $d['brand'] ?? '<i class="consolas f12">no brand</i>';
-    $blok_underscore = str_replace('.','_',$d['blok']);
-    $opt.= "<option value='$d[kode]' class='opt_kode_lokasi opt_kode_lokasi__$blok_underscore'>$d[kode] ~ $brand_show</option>";
+    $blok_underscore = str_replace('.', '_', $d['blok']);
+    $opt .= "<option value='$d[kode]' class='opt_kode_lokasi opt_kode_lokasi__$blok_underscore'>$d[kode] ~ $brand_show</option>";
   }
   $select_lokasi = "
     <select class='form-control mb2' name=kode_lokasi id=kode_lokasi disabled>
@@ -459,13 +456,13 @@ if(!$ada_kosong){
       $opt
     </select>
   ";
-  
-  if($qty_sisa<=0){
+
+  if ($qty_sisa <= 0) {
     $btn = "<button class='btn btn-success ' name=btn_tambah_item_kumulatif_fs id=btn_tambah_item_kumulatif disabled>Tambah Kumulatif (Free Supplier)</button>";
-  }else{
+  } else {
     $btn = "<button class='btn btn-primary ' name=btn_tambah_item_kumulatif id=btn_tambah_item_kumulatif disabled>Tambah Item Kumulatif</button>";
   }
-  
+
   # ==========================================
   # FORM TAMBAH KUMULATIF
   # ==========================================
@@ -512,7 +509,7 @@ if(!$ada_kosong){
 # ==========================================
 # FINAL ECHO
 # ==========================================
-if(!$tr_kumulatif) $tr_kumulatif = "<tr><td colspan=100%><div class='alert alert-danger'>Belum ada item kumulatif.</div></td></tr>";
+if (!$tr_kumulatif) $tr_kumulatif = "<tr><td colspan=100%><div class='alert alert-danger'>Belum ada item kumulatif.</div></td></tr>";
 
 echo "
   <table class=table>
@@ -585,21 +582,21 @@ echo "
 
 ?>
 <script>
-  $(function(){
-    $('#blok_lokasi').change(function(){
+  $(function() {
+    $('#blok_lokasi').change(function() {
       let blok = $(this).val();
       let blok_underscore = blok.replace('.', '_');
       console.log(blok);
-      let disabled = blok==0 ? 1 : 0;
+      let disabled = blok == 0 ? 1 : 0;
       $('.opt_kode_lokasi').hide();
-      $('.opt_kode_lokasi__'+blok_underscore).show();
+      $('.opt_kode_lokasi__' + blok_underscore).show();
       $('#kode_lokasi').val(0);
       $('#kode_lokasi').prop('disabled', disabled);
       $('#btn_tambah_item_kumulatif').prop('disabled', 1);
     });
-    $('#kode_lokasi').change(function(){
+    $('#kode_lokasi').change(function() {
       let kode_lokasi = $(this).val();
-      let disabled = kode_lokasi==0 ? 1 : 0;
+      let disabled = kode_lokasi == 0 ? 1 : 0;
       $('#btn_tambah_item_kumulatif').prop('disabled', disabled);
     })
   })
