@@ -7,6 +7,12 @@ $arr_routing = [
   'home' => 'pages/dashboard/dashboard',
   'master' => 'pages/master/master',
   'import_data' => 'pages/importer/importer',
+  'import_data_barang' => 'pages/importer/import_data_barang',
+  'cek_duplikat_kumulatif' => 'pages/importer/cek_duplikat_kumulatif',
+  'import_data_item' => 'pages/importer/import_data_item',
+  'import_data_po' => 'pages/importer/import_data_po',
+  'import_data_sj' => 'pages/importer/import_data_sj',
+  'import_data_kumulatif' => 'pages/importer/import_data_kumulatif',
   'add_lokasi' => 'pages/importer/add_lokasi',
   'manage_blok' => 'pages/importer/manage_blok',
 ];

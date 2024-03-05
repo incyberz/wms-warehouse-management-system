@@ -1,5 +1,13 @@
 <?php
 // v.1.2 revision with function baca_csv
+// v.1.3 revision with echolog
+function echolog($pesan, $break = true)
+{
+  $br = ($break and $pesan != 'sukses') ? '<br>' : '';
+  $dots = ($break and $pesan != 'sukses') ? '... ' : '';
+  echo "$br<span class='log'>$pesan$dots</span>";
+}
+
 function baca_csv($file, $separator = ',')
 {
 

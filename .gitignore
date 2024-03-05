@@ -12,3 +12,6 @@ docs/
 *.zip
 *.rar
 *.sql
+
+*old.php
+*test.php
