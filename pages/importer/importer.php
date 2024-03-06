@@ -1,10 +1,45 @@
 <?php
+# ===========================================
+# SYARAT VARIABEL
+# ===========================================
+$id_kategori = $_GET['id_kategori'] ?? die("
+  <div class='mb2'>Jenis Bahan: </div>
+  <a href='?import_data&id_kategori=1' class='btn btn-success mb2'>Import Data Aksesoris</a>
+  <a href='?import_data&id_kategori=2' class='btn btn-success mb2'>Import Data Fabric</a>
+");
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 # ===========================================
-# PROCESSORS
+# FILES PROCESSORS
+# ===========================================
+if (isset($_FILES['input_file_csv'])) {
+  if (move_uploaded_file($_FILES['input_file_csv']['tmp_name'], "csv/tmp.csv")) {
+    // upload berhasil
+    echo div_alert('success', 'Upload CSV berhasil.');
+    jsurl('', 2000);
+  } else {
+    // upload gagal
+    die(div_alert('danger', 'Tidak bisa move upload file CSV.'));
+  }
+}
+
+# ===========================================
+# POST PROCESSORS
 # ===========================================
 if (isset($_POST['btn_delete_row'])) { // delete row
   echolog('deleting row');
@@ -57,13 +92,10 @@ if (isset($_POST['btn_update_dg_id_lama'])) {
 
 
 
-
 # ===========================================
-# SYARAT VARIABEL
+# DESAIN JUDUL
 # ===========================================
-$id_kategori = 1; // AKS ZZZ DEBUG
 $ada_error = 0;
-
 $judul = 'Import Data Penerimaan ' . $arr_kategori[$id_kategori];
 set_title($judul);
 ?>
@@ -118,31 +150,113 @@ while ($d = mysqli_fetch_assoc($q)) {
 
 
 # ===========================================
-# GET ARRAY LOKASI
+# CSV HANDLER
 # ===========================================
-$arr_csv = baca_csv('csv/tmp.csv', ';');
-
-// loop untuk mendapatkan jumlah kolom yang valid
-$arr_header = array();
-$arr_header_kolom_importer = '';
-$arr_header_isi_importer = '';
-foreach ($arr_csv as $key => $d) {
-  foreach ($d as $key2 => $isi) {
-    $isi = strtoupper(trim($isi));
-    if (!$isi) { // jika cell kosong maka stop
-      break;
-    } else {
-      $isi = str_replace(' ', '_', $isi);
-      array_push($arr_header, $isi);
-      $arr_header_kolom_importer .= ",$isi";
-      $arr_header_isi_importer .= ",'$isi'";
-    }
-  }
-  break; // hanya loop pertama saja
+$file_tmp_csv = 'csv/tmp.csv';
+if (file_exists($file_tmp_csv)) {
+  $ada_file_csv = 1;
+} else { // FILE CSV BELUM ADA
+  // UPLOAD CSV AVAILABLE
+  $ada_file_csv = 0;
 }
 
-$arr_header_kolom_importer = substr($arr_header_kolom_importer, 1);
-$arr_header_isi_importer = substr($arr_header_isi_importer, 1);
+# ===========================================
+# IMPORT CSV KE TABEL IMPORTER
+# ===========================================
+if (isset($_POST['btn_import_csv'])) {
+
+  // recheck
+  $s = "SELECT * FROM tb_importer LIMIT 1";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  if (mysqli_num_rows($q)) {
+    die('Sudah ada data di tabel importer. Proses harus diulang dari awal.');
+  }
+
+  $arr_csv = baca_csv($file_tmp_csv, ';');
+
+  // loop untuk mendapatkan jumlah kolom yang valid
+  $arr_header = array();
+  $arr_header_kolom_importer = '';
+  $arr_header_isi_importer = '';
+  foreach ($arr_csv as $key => $d) {
+    foreach ($d as $key2 => $isi) {
+      $isi = strtoupper(trim($isi));
+      if (!$isi) { // jika cell kosong maka stop
+        break;
+      } else {
+        $isi = str_replace(' ', '_', $isi);
+        array_push($arr_header, $isi);
+        $arr_header_kolom_importer .= ",$isi";
+        $arr_header_isi_importer .= ",'$isi'";
+      }
+    }
+    break; // hanya loop pertama saja
+  }
+
+  $arr_header_kolom_importer = substr($arr_header_kolom_importer, 1);
+  $arr_header_isi_importer = substr($arr_header_isi_importer, 1);
+  echolog('process CSV to array... sukses');
+
+
+
+  # ===========================================
+  # INSERT CSV INTO TB_IMPORTER
+  # ===========================================
+  echolog('<b class="darkblue f20">inserting csv data... mohon tunggu! waktu selesai tergantung banyaknya data</b>');
+  foreach ($arr_csv as $key => $d) {
+    $values = '';
+
+    if ($key == 0) continue; // skip header
+
+    // looping column data
+    if ($d) { // selama masih ada row di csv 
+      foreach ($d as $key2 => $isi) {
+        if ($key2 > 15) continue; // abaikan data jika lebih dari count header
+        // echolog("column #$key2 = $isi");
+        $isi = str_replace('\'', '`', $isi);
+        $isi = strtoupper(trim($isi));
+        $isi = $isi ? "'$isi'" : 'NULL';
+        $values .= ",$isi";
+      }
+      $values = substr($values, 1); // remove first comma
+      echolog("inserting data #$key");
+      $s = "INSERT INTO tb_importer ($arr_header_kolom_importer) VALUES ($values)";
+
+      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+      echolog('sukses');
+      // if ($key > 10) die();
+    }
+  }
+
+  echo '<hr><b class="bold green f20">SUKSES INSERT DATA CSV KE TABEL IMPORTER. Silahkan refresh!</b>';
+  jsurl('', 5000);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ===========================================
 # CHECK IF TB_IMPORTER EXISTS
@@ -167,34 +281,6 @@ if (mysqli_num_rows($q) == 0) {
   )";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   echolog('sukses');
-
-  # ===========================================
-  # INSERT CSV INTO TB_IMPORTER
-  # ===========================================
-  echolog('<b class="darkblue f20">inserting csv data... mohon tunggu! waktu selesai tergantung banyaknya data</b>');
-  foreach ($arr_csv as $key => $d) {
-    $values = '';
-
-    if ($key == 0) continue; // skip header
-
-    // looping column data
-    if ($d) { // selama masih ada row di csv 
-      foreach ($d as $key2 => $isi) {
-        $isi = str_replace('\'', '`', $isi);
-        $isi = strtoupper(trim($isi));
-        $isi = $isi ? "'$isi'" : 'NULL';
-        $values .= ",$isi";
-      }
-      $values = substr($values, 1); // remove first comma
-      echolog("inserting data #$key");
-      $s = "INSERT INTO tb_importer ($arr_header_kolom_importer) VALUES ($values)";
-      $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-      echolog('sukses');
-      // if ($key > 10) die();
-    }
-  }
-
-  die('<hr><b class="bold green f20">SUKSES INSERT DATA CSV KE TABEL IMPORTER. Silahkan refresh!</b>');
 }
 
 
@@ -226,17 +312,50 @@ if (mysqli_num_rows($q) == 0) {
 
 
 
+# ===========================================
+# MAIN SELECT
+# ===========================================
 // loop untuk mendapatkan semua baris
 $tr = '';
 $i = 0;
-$s = "SELECT * FROM tb_importer LIMIT 20000";
+$s = "SELECT * FROM tb_importer";
 echolog('loop data from tabel importer');
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
+if (!$jumlah_row) {
+  if ($ada_file_csv) {
+    echo div_alert('info', "File CSV sudah ada.");
+    echo "
+      <form method=post>
+          <button class='btn btn-primary' name=btn_import_csv>Import semua data CSV ke Tabel Importer</button>
+      </form>
+    ";
+  } else {
+    echo div_alert('info', "File CSV belum ada.");
+    echo "
+      <form method=post enctype='multipart/form-data'>
+        <div class='alert alert-info'>
+          Belum ada data pada tabel importer.
+        </div>
+        <div class='wadah gradasi-hijau'>
+          <div class='mb1 abu'>File CSV Stok Penerimaan</div>
+          <input required type=file class='form-control' name=input_file_csv accept=.csv />
+          <div class='mb2 mt1 abu miring f12'>Jika file Anda masih format Excel, silahkan Save As dalam format CSV. Untuk baris pertama berupa nama-nama kolom yang harus sesuai dengan <a href='csv/template-stok-penerimaan.xlsx' target=_blank>Contoh Template Stok Penerimaan XLSX</a></div>
+          <button class='btn btn-primary'>Upload Stok Format CSV</button>
+        </div>
+      </form>
+    ";
+  }
+  exit;
+} else {
+  echo div_alert('info', "Terdapat $jumlah_row data pada tabel importer.");
+}
+
 while ($d = mysqli_fetch_assoc($q)) {
 
   // loop setiap baris
-  $tds = $key ? "<td class='f12 abu miring'>$i</td>" : '';
+  // $tds = $key ? "<td class='f12 abu miring'>$i</td>" : '';
+  $tds =  '';
   $i++;
   foreach ($d as $kolom => $isi) {
 
@@ -284,14 +403,14 @@ while ($d = mysqli_fetch_assoc($q)) {
 
 
         if (
-          strpos($isi, ' ') || strlen($isi) < 9 || strlen($isi) > 12
+          strpos($isi, ' ') || strlen($isi) < 9 || strlen($isi) > 15
         ) {
           // ga boleh ada spasi
           // minimal 9 karakter
-          // maksimal 12 karakter
+          // maksimal 15 karakter
           $sty = 'red';
           $gradasi = 'merah';
-          $info = "ID jangan ada spasi, minimal 9 karakter, maksimal 12 karakter$form_update$set_null$delete_row";
+          $info = "ID jangan ada spasi, minimal 9 karakter, maksimal 15 karakter$form_update$set_null$delete_row";
           $ada_error = $kolom;
         } else {
           $sty = $kolom == 'ID' ? 'abu f12' : 'green';
@@ -394,7 +513,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     ) {
       $sty = 'abu f12 miring';
       $gradasi = 'kuning';
-    } elseif ($kolom == 'last_update') {
+    } elseif ($kolom == 'last_update' || $kolom == 'id_sj_item' || $kolom == 'nomor') {
       $sty = 'hideit';
     } else {
       // unknown kolom
@@ -438,13 +557,15 @@ if ($ada_error) {
 }
 
 $th = '';
-foreach ($arr_header as $kolom) {
-  $th .= "<th>$kolom</th>";
+$s = "DESCRIBE tb_importer";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+while ($d = mysqli_fetch_assoc($q)) {
+  $th .= "<th>$d[Field]</th>";
 }
 
 echo "
   <table class='table table-bordered'>
-    <thead class=f12><th>No</th>$th</thead>
+    <thead class=f12>$th</thead>
     $tr
   </table>
   <div>$next</div>

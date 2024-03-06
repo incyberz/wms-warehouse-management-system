@@ -38,7 +38,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" href="?rekap_kumulatif">
         <i class="bi bi-arrow-down-square"></i>
-        <span>Rekap Kumulatif <?= $locked_icon ?></span>
+        <span>Rekap Penerimaan <?= $locked_icon ?></span>
       </a>
     </li>
 
@@ -87,7 +87,7 @@
 
     <li class="nav-heading">Laporan</li>
 
-    <li class="nav-item">
+    <li class="nav-item hideit">
       <a class="nav-link collapsed" href="?stok">
         <i class="bi bi-file-earmark-spreadsheet"></i>
         <span>Stok Old</span>
@@ -96,7 +96,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" href="?stok_kumulatif">
         <i class="bi bi-file-earmark-spreadsheet"></i>
-        <span>Stok Kumulatif</span>
+        <span>Stok Opname</span>
       </a>
     </li>
   </ul>

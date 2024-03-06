@@ -9,7 +9,7 @@ if (isset($_POST['btn_insert_item'])) {
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   while ($d = mysqli_fetch_assoc($q)) {
     $kode_po = $d['kode_po'];
-    $kode_sj = "$kode_po-001";
+    $kode_sj = "$kode_po-999";
     $kode = $kode_sj;
     $kode_supplier = 'OWNSUPPLY';
 
@@ -50,7 +50,7 @@ if (isset($_POST['btn_insert_item'])) {
     }
   }
   echo div_alert('success', 'Semua Item Surat Jalan berhasil dibuat.');
-  echo "<hr><a class='btn btn-success' href='?cek_duplikat_kumulatif&id_kategori=$id_kategori'>Next Cek Duplikat Kumulatif</a>";
+  echo "<hr><a class='btn btn-success' href='?insert_item_kumulatif&id_kategori=$id_kategori'>Next Insert Item Kumulatif</a>";
   exit;
 }
 
@@ -68,7 +68,7 @@ $jumlah_item = mysqli_num_rows($q);
       <li class="breadcrumb-item"><a href="?import_data">Import</a></li>
       <li class="breadcrumb-item"><a href="?import_data_barang">Import Barang</a></li>
       <li class="breadcrumb-item"><a href="?import_data_po">Import PO</a></li>
-      <li class="breadcrumb-item"><a href="?import_data_po">Import SJ</a></li>
+      <li class="breadcrumb-item"><a href="?import_data_sj">Import SJ</a></li>
       <li class="breadcrumb-item active"><?= $judul ?></li>
     </ol>
   </nav>
@@ -76,7 +76,7 @@ $jumlah_item = mysqli_num_rows($q);
 
 <div class="wadah">
   <div class=" miring f14 mb1">Kode Surat Jalan System</div>
-  <input type="text" class="form-control" disabled value="NOMOR_PO-001">
+  <input type="text" class="form-control" disabled value="NOMOR_PO-999">
   <div class="abu miring f12 mt1 mb3">Format Kode Surat Jalan System adalah KODE_PO + COUNTER</div>
 
   <div class=" miring f14 mb1">List Kode Barang (Item)</div>

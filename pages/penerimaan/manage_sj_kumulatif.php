@@ -86,9 +86,10 @@ if (isset($_POST['btn_tambah_item_kumulatif']) || isset($_POST['btn_tambah_item_
   $kode_barang = $_POST['kode_barang'] ?? die(erid('kode_barang'));
   $kode_po = $_POST['kode_po'] ?? die(erid('kode_po'));
   $is_fs = isset($_POST['btn_tambah_item_kumulatif_fs']) ? 1 : 'NULL';
+  $is_fs_empty_space = $is_fs == 1 ? 1 : '';
 
   // ID - PO - LOT - LOKASI - FS
-  $kode_kumulatif = "$kode_barang~$kode_po~$no_lot~$kode_lokasi~$is_fs";
+  $kode_kumulatif = "$kode_barang~$kode_po~$no_lot~$kode_lokasi~$is_fs_empty_space";
   $kode_kumulatif = strtoupper(str_replace(' ', '', $kode_kumulatif));
 
   // check duplikasi

@@ -1,25 +1,31 @@
 <?php
-// v.1.2 revision with function baca_csv
-// v.1.3 revision with echolog
+// v.1.3.2 baca_csv update
+// v.1.3.1 echolog update
+// v.1.3.0 revision with echolog
+// v.1.2.0 revision with function baca_csv
 function echolog($pesan, $break = true)
 {
   $br = ($break and $pesan != 'sukses') ? '<br>' : '';
   $dots = ($break and $pesan != 'sukses') ? '... ' : '';
-  echo "$br<span class='log'>$pesan$dots</span>";
+  echo "$br<span class='log'>system-log: $pesan$dots</span>";
 }
 
 function baca_csv($file, $separator = ',')
 {
 
-  $file = fopen($file, 'r');
-  $data = array();
+  if (file_exists($file)) {
+    $file = fopen($file, 'r');
+    $data = array();
 
-  while (!feof($file)) {
-    $data[] = fgetcsv($file, null, $separator);
+    while (!feof($file)) {
+      $data[] = fgetcsv($file, null, $separator);
+    }
+
+    fclose($file);
+    return $data;
+  } else {
+    die("File <b class='consolas'>$file</b> tidak ditemukan.");
   }
-
-  fclose($file);
-  return $data;
 }
 
 function th($rank)

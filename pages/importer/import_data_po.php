@@ -33,7 +33,7 @@ while ($d = mysqli_fetch_assoc($q)) {
 
   // $kode_kumulatif = "$kode_barang~$kode_po~$no_lot~$kode_lokasi~$is_fs";
 
-  // $kode_sj = "$kode_po-001";
+  // $kode_sj = "$kode_po-999";
 
   $s2 = "SELECT 1 FROM tb_importer_po WHERE kode_po='$kode_po'";
   $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));

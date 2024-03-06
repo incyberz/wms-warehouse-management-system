@@ -1,4 +1,4 @@
-<?php 
+<?php
 include '../../conn.php';
 $unset = '<span class="f12 miring red consolas">unset</span>';
 $null = '<span class="f12 miring abu consolas">null</span>';
@@ -7,11 +7,11 @@ $img_detail = '<img class="zoom pointer" src="assets/img/icons/detail.png" alt="
 $keyword = $_GET['keyword'] ?? '';
 $id_kategori = $_GET['id_kategori'] ?? die(erid('id_kategori'));
 $id_do = $_GET['id_do'] ?? die(erid('id_do'));
-if(!$id_kategori) die(erid('id_kategori::empty'));
-$jenis_barang = $id_kategori==1 ? 'Aksesoris' : 'Fabric';
+if (!$id_kategori) die(erid('id_kategori::empty'));
+$jenis_barang = $id_kategori == 1 ? 'Aksesoris' : 'Fabric';
 
 
-$sql_keyword = $keyword=='' ? '1' : "
+$sql_keyword = $keyword == '' ? '1' : "
 (
   e.kode LIKE '%$keyword%' 
   OR e.nama LIKE '%$keyword%' 
@@ -36,7 +36,7 @@ $sql_from = "
 
 
 $s = "SELECT 1 $sql_from ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
 
 $s = "SELECT 
@@ -45,6 +45,8 @@ a.tanggal_qc,
 a.is_fs,
 a.no_lot,
 a.kode_lokasi,
+a.tmp_qty,
+c.kode as kode_sj,
 c.kode_po,
 e.kode as kode_barang,
 e.nama as nama_barang, 
@@ -100,34 +102,35 @@ ORDER BY qty_qc DESC, qty_qc_fs DESC
 LIMIT 10 
 
 ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_tampil = mysqli_num_rows($q);
-if(mysqli_num_rows($q)==0){
-  $tr = '<tr><td colspan=100%><div class="alert alert-danger">Data subitem '.$jenis_barang.' tidak ditemukan.</div></td></tr>';
-}else{
+if (mysqli_num_rows($q) == 0) {
+  $tr = '<tr><td colspan=100%><div class="alert alert-danger">Data subitem ' . $jenis_barang . ' tidak ditemukan.</div></td></tr>';
+} else {
   $tr = '';
   $i = 0;
-  while($d=mysqli_fetch_assoc($q)){
+  while ($d = mysqli_fetch_assoc($q)) {
     $i++;
-    $id_kumulatif=$d['id_kumulatif'];
-    $is_fs=$d['is_fs'];
-    $satuan=$d['satuan'];
-    $no_lot=$d['no_lot'];
-    $kode_lokasi=$d['kode_lokasi'];
+    $id_kumulatif = $d['id_kumulatif'];
+    $is_fs = $d['is_fs'];
+    $satuan = $d['satuan'];
+    $no_lot = $d['no_lot'];
+    $kode_lokasi = $d['kode_lokasi'];
 
     // qty pemasukan
-    $qty_transit=$d['qty_transit'];
-    $qty_tr_fs=$d['qty_tr_fs'];
-    $qty_qc=$d['qty_qc'];
-    $qty_qc_fs=$d['qty_qc_fs'];
+    $qty_transit = $d['qty_transit'];
+    $qty_tr_fs = $d['qty_tr_fs'];
+    $qty_qc = $d['qty_qc'];
+    $qty_qc_fs = $d['qty_qc_fs'];
 
     // qty pengeluaran
-    $qty_pick_by_other=$d['qty_pick_by_other'];
-    $qty_retur=$d['qty_retur'];
-    $qty_ganti=$d['qty_ganti'];
+    $qty_pick_by_other = $d['qty_pick_by_other'];
+    $qty_retur = $d['qty_retur'];
+    $qty_ganti = $d['qty_ganti'];
 
     //stok akhir
-    $stok_available = $qty_qc + $qty_qc_fs -$qty_retur+$qty_ganti - $qty_pick_by_other;
+    $stok_available = $qty_qc + $qty_qc_fs - $qty_retur + $qty_ganti - $qty_pick_by_other;
+    if (strpos($d['kode_sj'], '-999')) $stok_available = floatval($d['tmp_qty']);
 
     // qty show
     $nol = '<span class="abu miring kecil">0</span>';
@@ -184,10 +187,9 @@ if(mysqli_num_rows($q)==0){
       </tr>
     ";
   }
-
 }
 
-$info_dibatasi = $jumlah_records>10 ? "<div class='alert alert-info mt2'>Hanya ditampilkan $jumlah_tampil dari $jumlah_records total records. Silahkan masukan keyword dengan lebih spesifik.</div>" : '';
+$info_dibatasi = $jumlah_records > 10 ? "<div class='alert alert-info mt2'>Hanya ditampilkan $jumlah_tampil dari $jumlah_records total records. Silahkan masukan keyword dengan lebih spesifik.</div>" : '';
 
 echo "
   <div class='sub_form mt2'>Hasil Pencarian: Picking List Add Fetcher</div>
@@ -203,5 +205,3 @@ echo "
     $tr
   </table>$info_dibatasi~~~$jumlah_tampil~~~$jumlah_records
 ";
-
-?>

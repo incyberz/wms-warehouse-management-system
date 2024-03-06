@@ -54,5 +54,15 @@ if ($jumlah_importer == $jumlah_kumulatif_importer) {
   echo div_alert('success', 'Tidak ada duplikat kode kumulatif.');
   echo "<hr><a class='btn btn-success' href='?import_data_po&id_kategori=$id_kategori'>Next Import Data PO</a>";
 } else {
-  echo div_alert('danger', "Terdapat duplikat kumulatif.");
+  echo div_alert('danger', "Terdapat duplikat kumulatif. jumlah_importer:$jumlah_importer == jumlah_kumulatif_importer:$jumlah_kumulatif_importer");
+  $s = "SELECT * FROM tb_importer";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  while ($d = mysqli_fetch_assoc($q)) {
+    // $id=$d['id'];
+    $s2 = "SELECT * FROM tb_importer_kumulatif WHERE id_importer='$d[id_auto]'";;
+    $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+    if (!mysqli_num_rows($q2)) {
+      echo "<hr> |id_auto: $d[id_auto] | PO: $d[PO] | ID_BARU: $d[ID_BARU] | LOC: $d[LOC] | LOT: $d[LOT]";
+    }
+  }
 }

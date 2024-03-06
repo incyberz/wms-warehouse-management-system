@@ -1,12 +1,12 @@
 
-<?php 
-$judul = 'Rekap Kumulatif';
+<?php
+$judul = 'Rekap Penerimaan';
 set_title($judul);
 // to do : fix decimal
 include 'include/date_managements.php';
 $p = 'penerimaan'; // untuk navigasi
-$cat= $_GET['cat'] ?? 'aks'; //default AKS
-$jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
+$cat = $_GET['cat'] ?? 'aks'; //default AKS
+$jenis_barang = $cat == 'aks' ? 'Aksesoris' : 'Fabric';
 
 $arr_waktu = [
   'hari_ini' => 'Hari ini',
@@ -20,47 +20,59 @@ $arr_waktu = [
 $filter_waktu = $_GET['waktu'] ?? 'all_time';
 $opt_waktu = '';
 foreach ($arr_waktu as $waktu => $nama_waktu) {
-  $selected = $filter_waktu==$waktu ? 'selected' : '';
-  $opt_waktu.= "<option value=$waktu $selected>$nama_waktu</option>";
+  $selected = $filter_waktu == $waktu ? 'selected' : '';
+  $opt_waktu .= "<option value=$waktu $selected>$nama_waktu</option>";
 }
 
 $filter_po = $_GET['po'] ?? '';
 $filter_id = $_GET['id'] ?? '';
 $filter_proyeksi = $_GET['proyeksi'] ?? '';
 $filter_ppic = $_GET['ppic'] ?? '';
-if(isset($_POST['btn_cari'])){
+if (isset($_POST['btn_cari'])) {
   jsurl("?$parameter&cat=$cat&po=$_POST[filter_po]&id=$_POST[filter_id]&waktu=$_POST[filter_waktu]&proyeksi=$_POST[filter_proyeksi]&ppic=$_POST[filter_ppic]");
 }
 
 $clear_filter = 'Filter:';
-if(
-  $filter_waktu!='all_time'||
-  $filter_po!=''||
-  $filter_id!=''||
-  $filter_proyeksi!=''||
-  $filter_ppic!='' 
-)$clear_filter = "<a href='?$parameter&cat=$cat'>Clear</a>";
+if (
+  $filter_waktu != 'all_time' ||
+  $filter_po != '' ||
+  $filter_id != '' ||
+  $filter_proyeksi != '' ||
+  $filter_ppic != ''
+) $clear_filter = "<a href='?$parameter&cat=$cat'>Clear</a>";
 
-$bg_waktu = $filter_waktu=='all_time' ? '' : 'bg-hijau';
-$bg_po = $filter_po=='' ? '' : 'bg-hijau';
-$bg_id = $filter_id=='' ? '' : 'bg-hijau';
-$bg_proyeksi = $filter_proyeksi=='' ? '' : 'bg-hijau';
-$bg_ppic = $filter_ppic=='' ? '' : 'bg-hijau';
+$bg_waktu = $filter_waktu == 'all_time' ? '' : 'bg-hijau';
+$bg_po = $filter_po == '' ? '' : 'bg-hijau';
+$bg_id = $filter_id == '' ? '' : 'bg-hijau';
+$bg_proyeksi = $filter_proyeksi == '' ? '' : 'bg-hijau';
+$bg_ppic = $filter_ppic == '' ? '' : 'bg-hijau';
 
-$id_kategori = $cat=='aks' ? 1 : 2;
+$id_kategori = $cat == 'aks' ? 1 : 2;
 
-if($filter_waktu=='all_time'){$where_date = '1';}else 
-if($filter_waktu=='hari_ini'){$where_date = "a.tanggal_masuk >= '$today' ";}else 
-if($filter_waktu=='kemarin'){$where_date = "a.tanggal_masuk >= '$kemarin' AND a.tanggal_masuk < '$today' ";}else 
-if($filter_waktu=='minggu_ini'){$where_date = "a.tanggal_masuk >= '$ahad_skg' AND a.tanggal_masuk < '$ahad_depan' ";}else 
-if($filter_waktu=='bulan_ini'){$where_date = "a.tanggal_masuk >= '$awal_bulan' ";}else
-if($filter_waktu=='tahun_ini'){$where_date = "a.tanggal_masuk >= '$awal_tahun' ";} 
+if ($filter_waktu == 'all_time') {
+  $where_date = '1';
+} else 
+if ($filter_waktu == 'hari_ini') {
+  $where_date = "a.tanggal_masuk >= '$today' ";
+} else 
+if ($filter_waktu == 'kemarin') {
+  $where_date = "a.tanggal_masuk >= '$kemarin' AND a.tanggal_masuk < '$today' ";
+} else 
+if ($filter_waktu == 'minggu_ini') {
+  $where_date = "a.tanggal_masuk >= '$ahad_skg' AND a.tanggal_masuk < '$ahad_depan' ";
+} else 
+if ($filter_waktu == 'bulan_ini') {
+  $where_date = "a.tanggal_masuk >= '$awal_bulan' ";
+} else
+if ($filter_waktu == 'tahun_ini') {
+  $where_date = "a.tanggal_masuk >= '$awal_tahun' ";
+}
 
 
-$where_po = $filter_po=='' ? '1' : "c.kode_po LIKE '%$filter_po%' ";
-$where_id = $filter_id=='' ? '1' : "(d.kode LIKE '%$filter_id%' OR d.nama LIKE '%$filter_id%' OR d.keterangan LIKE '%$filter_id%' )";
-$where_proyeksi = $filter_proyeksi=='' ? '1' : "a.proyeksi LIKE '%$filter_proyeksi%' ";
-$where_ppic = $filter_ppic=='' ? '1' : "a.kode_ppic LIKE '%$filter_ppic%' ";
+$where_po = $filter_po == '' ? '1' : "c.kode_po LIKE '%$filter_po%' ";
+$where_id = $filter_id == '' ? '1' : "(d.kode LIKE '%$filter_id%' OR d.nama LIKE '%$filter_id%' OR d.keterangan LIKE '%$filter_id%' )";
+$where_proyeksi = $filter_proyeksi == '' ? '1' : "a.proyeksi LIKE '%$filter_proyeksi%' ";
+$where_ppic = $filter_ppic == '' ? '1' : "a.kode_ppic LIKE '%$filter_ppic%' ";
 
 
 $sql_from = "FROM tb_penerimaan a 
@@ -95,7 +107,7 @@ $form_cari = "
         <button class='btn btn-success btn-sm' name=btn_cari>Cari</button>
       </div>
       <div>
-        <a href='?stok_kumulatif' class='btn btn-info btn-sm' onclick='return confirm(\"Menuju Stok Kumulatif untuk Get CSV?\")'>Get CSV</a>
+        <a href='?stok_kumulatif' class='btn btn-info btn-sm' onclick='return confirm(\"Menuju Stok Opname untuk Get CSV?\")'>Get CSV</a>
       </div>
     </div>
   </form>
@@ -103,8 +115,8 @@ $form_cari = "
 ";
 
 $bread = "<li class='breadcrumb-item'><a href='?rekap_kumulatif&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
-if($cat=='fab')
-$bread = "<li class='breadcrumb-item'><a href='?rekap_kumulatif&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
+if ($cat == 'fab')
+  $bread = "<li class='breadcrumb-item'><a href='?rekap_kumulatif&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
 
 
 
@@ -204,36 +216,40 @@ AND $where_po
 AND $where_id 
 
 ORDER BY a.tanggal_masuk DESC 
+
+LIMIT 100 
+-- zzz here
 ";
 
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
 $total_row = mysqli_num_rows($q);
 $jumlah_row_limited = mysqli_num_rows($q);
 
 
 $tr_kumulatif = '';
-$i=0;
-while($d=mysqli_fetch_assoc($q)){
+$i = 0;
+while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $id_kumulatif=$d['id_kumulatif'];
+  $id_kumulatif = $d['id_kumulatif'];
 
   $qty_transit_show = $d['qty_transit'] ? floatval($d['qty_transit']) : '-';
   $qty_retur_show = $d['qty_retur'] ? floatval($d['qty_retur']) : '-';
   $qty_ganti_show = $d['qty_ganti'] ? floatval($d['qty_ganti']) : '-';
-  $qty_tr_fs_show = $d['qty_tr_fs'] ? floatval($d['qty_tr_fs'])." $img_fs" : '-';
+  $qty_tr_fs_show = $d['qty_tr_fs'] ? floatval($d['qty_tr_fs']) . " $img_fs" : '-';
 
   // belum QC
-  if(!$d['tanggal_qc']) $qty_retur_show = '<span class="red tebal f14">Belum QC</span>';
-  
+  if (!$d['tanggal_qc']) $qty_retur_show = '<span class="red tebal f14">Belum QC</span>';
+
   $qty_qc_show = $d['qty_qc'] ? floatval($d['qty_qc']) : '-';
   $qty_qc_fs_show = $d['qty_qc_fs'] ? floatval($d['qty_qc_fs']) : '-';
 
-  $tanggal_masuk_show = date('d-M-y',strtotime($d['tanggal_masuk']));
-  $jam_masuk_show = date('H:i',strtotime($d['tanggal_masuk']));
+  $tanggal_masuk_show = date('d-M-y', strtotime($d['tanggal_masuk']));
+  $jam_masuk_show = date('H:i', strtotime($d['tanggal_masuk']));
   $tanggal_masuk_show = "$tanggal_masuk_show<div class='f14 abu'>$jam_masuk_show</div>";
 
-  $parsial_icon = strpos($d['kode_sj'],'-001') ? '' : '<span class="f12 abu consolas bg-yellow">PARSIAL</span>';
+  $parsial_icon = strpos($d['kode_sj'], '-001') ? '' : '<span class="f12 abu consolas bg-yellow">PARSIAL</span>';
+  $parsial_icon = strpos($d['kode_sj'], '-999') ? '<span class="f12 abu consolas bg-yellow">STOK AWAL</span>' : $parsial_icon;
 
   $tr_kumulatif .= "
     <tr id=tr__$id_kumulatif>

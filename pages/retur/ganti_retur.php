@@ -1,9 +1,9 @@
 <?php
 $judul = 'Ganti Retur';
 
-if(!in_array($id_role,[1,2,3,9])){
+if (!in_array($id_role, [1, 2, 3, 9])) {
   // jika bukan petugas wh
-  $pesan = div_alert('info',"<p>$img_locked Maaf, <u>hak akses Anda tidak sesuai</u> dengan fitur ini. Silahkan hubungi Pihak Warehouse jika ada kesalahan. terimakasih</p>");
+  $pesan = div_alert('info', "<p>$img_locked Maaf, <u>hak akses Anda tidak sesuai</u> dengan fitur ini. Silahkan hubungi Pihak Warehouse jika ada kesalahan. terimakasih</p>");
   echo "
     <div class='pagetitle'>
       <h1>$judul</h1>
@@ -26,7 +26,7 @@ $now = date('Y-m-d H:i:s');
 $now_eng = date('M d, Y, H:i:s');
 
 $id_retur = $_GET['id_retur'] ?? '';
-if(!$id_retur) die(erid('id_retur'));
+if (!$id_retur) die(erid('id_retur'));
 
 
 
@@ -51,21 +51,21 @@ if(!$id_retur) die(erid('id_retur'));
 # ========================================================
 # PROCESOR SET TANGGAL QC
 # ========================================================
-if(isset($_POST['btn_set_tanggal_qc'])){
+if (isset($_POST['btn_set_tanggal_qc'])) {
   $s = "UPDATE tb_sj_kumulatif SET kode_lokasi='$_POST[kode_lokasi]', tanggal_qc = '$_POST[tgl_qc] $_POST[jam_qc]' WHERE id=$_POST[btn_set_tanggal_qc]";
   echo '<pre>';
   var_dump($s);
   echo '</pre>';
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
-  echo div_alert('info','updating Tanggal QC...');
-  jsurl('',10000);
+  echo div_alert('info', 'updating Tanggal QC...');
+  jsurl('', 10000);
 }
 
 # ========================================================
 # PROCESOR btn_tambah_ganti
 # ========================================================
-if(isset($_POST['btn_tambah_ganti'])){
+if (isset($_POST['btn_tambah_ganti'])) {
   echo 'Processing ganti...<hr>';
 
   $s = "INSERT INTO tb_ganti 
@@ -74,17 +74,17 @@ if(isset($_POST['btn_tambah_ganti'])){
   (
     $_POST[btn_tambah_ganti],$_POST[qty])
   ";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl('',1000);
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  jsurl('', 1000);
 }
 # ========================================================
 # PROCESOR btn_delete_ganti
 # ========================================================
-if(isset($_POST['btn_delete_ganti'])){
+if (isset($_POST['btn_delete_ganti'])) {
   echo 'deleting ganti...<hr>';
   $s = "DELETE FROM tb_ganti WHERE id=$_POST[btn_delete_ganti]";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  jsurl('',1000);
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  jsurl('', 1000);
 }
 
 
@@ -136,8 +136,8 @@ JOIN tb_barang e ON c.kode_barang=e.kode
 JOIN tb_satuan f ON e.satuan=f.satuan 
 WHERE a.id = $id_retur 
 ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0) die('Data retur tidak ditemukan');
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+if (mysqli_num_rows($q) == 0) die('Data retur tidak ditemukan');
 $d = mysqli_fetch_assoc($q);
 $kode_sj = $d['kode_sj'];
 $id_sj_item = $d['id_sj_item'];
@@ -150,15 +150,15 @@ $kode_barang = $d['kode_barang'];
 set_title($judul);
 ?>
 <div class="pagetitle">
-  <h1><?=$judul?></h1>
+  <h1><?= $judul ?></h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
-      <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?=$kode_sj?>">Manage SJ</a></li>
-      <li class="breadcrumb-item"><a href="?rekap_kumulatif&id=<?=$kode_barang?>&waktu=all_time">Rekap Kumulatif</a></li>
-      <li class="breadcrumb-item"><a href="?retur&id_kumulatif=<?=$id_kumulatif?>">Retur</a></li>
-      <li class="breadcrumb-item active"><?=$judul?></li>
+      <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?= $kode_sj ?>">Manage SJ</a></li>
+      <li class="breadcrumb-item"><a href="?rekap_kumulatif&id=<?= $kode_barang ?>&waktu=all_time">Rekap Penerimaan</a></li>
+      <li class="breadcrumb-item"><a href="?retur&id_kumulatif=<?= $id_kumulatif ?>">Retur</a></li>
+      <li class="breadcrumb-item active"><?= $judul ?></li>
     </ol>
   </nav>
 </div>
@@ -171,29 +171,29 @@ set_title($judul);
 # =======================================================================
 $tr = '';
 foreach ($d as $key => $value) {
-  $kolom = strtoupper(str_replace('_', ' ',$key));
-  if(
-    $key=='id'
-    || $key=='id_kumulatif'
-    || $key=='id_sj_item'
-    || $key=='step'
-  ){
+  $kolom = strtoupper(str_replace('_', ' ', $key));
+  if (
+    $key == 'id'
+    || $key == 'id_kumulatif'
+    || $key == 'id_sj_item'
+    || $key == 'step'
+  ) {
     continue;
-  }elseif($key=='is_fs'){
-    $isi = $value ? 'FREE SUPPLIER '.$img_fs : '<i class="abu f14">BUKAN FS</i>';
-  }elseif($key=='tanggal_ganti'){
-    if($value){
-      $isi = date('d-M-Y H:i',strtotime($value));
-    }else{
+  } elseif ($key == 'is_fs') {
+    $isi = $value ? 'FREE SUPPLIER ' . $img_fs : '<i class="abu f14">BUKAN FS</i>';
+  } elseif ($key == 'tanggal_ganti') {
+    if ($value) {
+      $isi = date('d-M-Y H:i', strtotime($value));
+    } else {
       continue;
     }
-  }elseif($key=='qty'){
+  } elseif ($key == 'qty') {
     $isi = floatval($value);
-  }else{
+  } else {
     $isi = $value ? $value : $null;
   }
 
-  $tr.= "
+  $tr .= "
     <tr>
       <td>$kolom</td> 
       <td>$isi</td> 
@@ -254,19 +254,19 @@ echo "<h2>Retur Properties</h2><table class=table>$tr</table>";
 # =======================================================================
 # TABEL GANTI 
 # =======================================================================
-if($d['qty']){
+if ($d['qty']) {
   $tr = '';
   $s2 = "SELECT a.*, a.id as id_ganti  
   FROM tb_ganti a 
   WHERE a.id_retur=$id_retur";
-  $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+  $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
   $count_ganti = mysqli_num_rows($q2);
-  $i=0;
-  while($d2=mysqli_fetch_assoc($q2)){
+  $i = 0;
+  while ($d2 = mysqli_fetch_assoc($q2)) {
     $i++;
     $id_ganti = $d2['id_ganti'];
     $qty = floatval($d2['qty']);
-    $tr.="
+    $tr .= "
       <tr>
         <td>$i</td>
         <td>$qty</td>

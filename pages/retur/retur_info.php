@@ -12,8 +12,7 @@ echo "
 
 <p>QC dan Retur dapat dilakukan dg cara:</p>
 <ul>
-  <li>Dilakukan dari <a href="?rekap_kumulatif">Rekap Kumulatif</a></li>
+  <li>Dilakukan dari <a href="?rekap_kumulatif">Rekap Penerimaan</a></li>
   <li>Lakukan Pencarian by PO atau ID (opsional)</li>
-  <li>Kemudian klik tombol Next <?=$img_next?> pada kolom Retur</li>
+  <li>Kemudian klik tombol Next <?= $img_next ?> pada kolom Retur</li>
 </ul>
-

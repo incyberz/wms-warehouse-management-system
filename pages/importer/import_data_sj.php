@@ -9,7 +9,7 @@ if (isset($_POST['btn_buat_sj'])) {
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   while ($d = mysqli_fetch_assoc($q)) {
     $kode_po = $d['kode_po'];
-    $kode_sj = "$kode_po-001";
+    $kode_sj = "$kode_po-999";
     $kode = $kode_sj;
     $kode_supplier = 'OWNSUPPLY';
 
@@ -64,7 +64,7 @@ $jumlah_po = mysqli_num_rows($q);
   <div class="abu miring f12 mt1 mb3">Default adalah hari ini. Tanggal PO, tanggal terima, dan tanggal masuk barang pada system di set ke hari ini.</div>
 
   <div class=" miring f14 mb1">Kode Surat Jalan</div>
-  <input type="text" class="form-control" disabled value="NOMOR_PO-001">
+  <input type="text" class="form-control" disabled value="NOMOR_PO-999">
   <div class="abu miring f12 mt1 mb3">Format Kode Surat Jalan System adalah KODE_PO + COUNTER</div>
 
   <form method="post">

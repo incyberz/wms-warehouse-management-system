@@ -1,6 +1,7 @@
 <style>
   /* ================================================ */
   /* Revisions: 
+      v.1.0.7 - update debug class 
       v.1.0.6 - log class 
       v.1.0.5 - add sub_form class
       v.1.0.4 - remove unnecessary classes
@@ -40,6 +41,7 @@
   }
 
   .debug {
+    margin-top: 200px !important;
     color: darkred;
     background: yellow;
     font-family: consolas;

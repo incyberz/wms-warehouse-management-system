@@ -146,7 +146,7 @@ WHERE a.id = $id_kumulatif
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 if (mysqli_num_rows($q) > 1) die('Terdeteksi data duplikat.');
 if (mysqli_num_rows($q) == 0) die(div_alert('danger', "Data item dg id_sj_item: $id_sj_item tidak ditemukan. | 
-<a href='?rekap_kumulatif&id=&waktu=all_time'>Akses dari Rekap Kumulatif</a>"));
+<a href='?rekap_kumulatif&id=&waktu=all_time'>Akses dari Rekap Penerimaan</a>"));
 $d = mysqli_fetch_assoc($q);
 
 $nama_barang = $d['nama_barang'];
@@ -176,7 +176,7 @@ set_title('Retur Barang');
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=data_sj">Data SJ</a></li>
       <li class="breadcrumb-item"><a href="?penerimaan&p=manage_sj&kode_sj=<?= $kode_sj ?>">Manage SJ</a></li>
-      <li class="breadcrumb-item"><a href="?rekap_kumulatif&&id=<?= $kode_barang ?>&waktu=all_time">Rekap Kumulatif</a></li>
+      <li class="breadcrumb-item"><a href="?rekap_kumulatif&&id=<?= $kode_barang ?>&waktu=all_time">Rekap Penerimaan</a></li>
       <li class="breadcrumb-item active">Retur</li>
     </ol>
   </nav>

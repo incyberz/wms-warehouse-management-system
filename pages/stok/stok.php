@@ -1,5 +1,5 @@
 <?php
-if(isset($_POST['btn_filter']) || isset($_POST['btn_get_csv'])){
+if (isset($_POST['btn_filter']) || isset($_POST['btn_get_csv'])) {
   $keyword = clean_sql($_POST['keyword']);
   $get_csv = $_POST['btn_get_csv'] ?? '';
   jsurl("?stok&cat=$_POST[cat]&keyword=$keyword&tipe_stok=$_POST[tipe_stok]&get_csv=$get_csv");
@@ -9,14 +9,14 @@ $keyword = $_GET['keyword'] ?? '';
 $tipe_stok = $_GET['tipe_stok'] ?? 'all';
 $get_csv = $_GET['get_csv'] ?? '';
 $cat = $_GET['cat'] ?? 'aks';
-$id_kategori = $cat=='aks' ? 1 : 2;
-$cat_lainnya = $cat=='aks' ? 'fab' : 'aks';
-$jenis_barang_lainnya = $cat=='aks' ? 'Fabric' : 'Aksesoris';
-$jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
+$id_kategori = $cat == 'aks' ? 1 : 2;
+$cat_lainnya = $cat == 'aks' ? 'fab' : 'aks';
+$jenis_barang_lainnya = $cat == 'aks' ? 'Fabric' : 'Aksesoris';
+$jenis_barang = $cat == 'aks' ? 'Aksesoris' : 'Fabric';
 $bg_keyword = $keyword ? 'style="background:#0f0"' : '';
-$hide_clear = ($keyword || $tipe_stok!='all') ? '' : 'hideit';
+$hide_clear = ($keyword || $tipe_stok != 'all') ? '' : 'hideit';
 
-$judul = "Stok Kumulatif $jenis_barang";
+$judul = "Stok Opname $jenis_barang";
 set_title($judul);
 echo "
 <div class='pagetitle'>
@@ -24,7 +24,7 @@ echo "
   <nav>
     <ol class='breadcrumb'>
       <li class='breadcrumb-item'><a href='?'>Dashboard</a></li>
-      <li class='breadcrumb-item'><a href='?stok&cat=$cat_lainnya'>Stok Kumulatif $jenis_barang_lainnya</a></li>
+      <li class='breadcrumb-item'><a href='?stok&cat=$cat_lainnya'>Stok Opname $jenis_barang_lainnya</a></li>
       <li class='breadcrumb-item active'>$judul</li>
     </ol>
   </nav>
@@ -45,49 +45,49 @@ $join_tb_retur_e = '';
 $left_join_tb_retur_e = '';
 $sql_tipe_stok = '1';
 $left_join_where = '1';
-if($tipe_stok=='qc' || $tipe_stok=='qcfs'){
+if ($tipe_stok == 'qc' || $tipe_stok == 'qcfs') {
   $join_tb_retur_e = "JOIN tb_retur e ON a.id=e.id";
-  if($tipe_stok=='qc'){
+  if ($tipe_stok == 'qc') {
     $sql_tipe_stok = "a.is_fs is null ";
-  }else{
+  } else {
     $sql_tipe_stok = "a.is_fs is not null ";
   }
-}elseif($tipe_stok=='tr' || $tipe_stok=='trfs'){
+} elseif ($tipe_stok == 'tr' || $tipe_stok == 'trfs') {
   $left_join_tb_retur_e = "LEFT JOIN tb_retur e ON a.id=e.id";
   $left_join_where = "e.id is null";
-  if($tipe_stok=='tr'){
+  if ($tipe_stok == 'tr') {
     $sql_tipe_stok = "a.is_fs is null ";
-  }else{
+  } else {
     $sql_tipe_stok = "a.is_fs is not null ";
   }
 }
 
 
 $arr_tipe_stok = [
-  'all'=>'All Stock',
-  'tr'=>'Transit PO',
-  'trfs'=>'Transit FS',
-  'qc'=>'After QC PO',
-  'qcfs'=>'After QC FS',
+  'all' => 'All Stock',
+  'tr' => 'Transit PO',
+  'trfs' => 'Transit FS',
+  'qc' => 'After QC PO',
+  'qcfs' => 'After QC FS',
 ];
 
 $data_csv = '';
-if($get_csv){
-  $data_csv.= "EXPORT STOCK OPNAME\n\n";
-  $data_csv.= "Tanggal,".date('Y-m-d H:i:s')."\n";
-  $data_csv.= "Filter by keyword:,$keyword\n";
-  $data_csv.= "Stock Type:,$arr_tipe_stok[$tipe_stok]\n";
-  $data_csv.= "Operator:,$nama_user / $jabatan\n\n";
+if ($get_csv) {
+  $data_csv .= "EXPORT STOCK OPNAME\n\n";
+  $data_csv .= "Tanggal," . date('Y-m-d H:i:s') . "\n";
+  $data_csv .= "Filter by keyword:,$keyword\n";
+  $data_csv .= "Stock Type:,$arr_tipe_stok[$tipe_stok]\n";
+  $data_csv .= "Operator:,$nama_user / $jabatan\n\n";
 }
 
 
 
 $select = '';
 foreach ($arr_tipe_stok as $key => $value) {
-  $selected = $tipe_stok==$key ? 'selected' : '';
-  $select.= "<option value='$key' $selected>$value</option>";
+  $selected = $tipe_stok == $key ? 'selected' : '';
+  $select .= "<option value='$key' $selected>$value</option>";
 }
-$bg_select = $tipe_stok=='all' ? '' : 'style="background:#0f0"';
+$bg_select = $tipe_stok == 'all' ? '' : 'style="background:#0f0"';
 $select = "<select class='form-control form-control-sm' name=tipe_stok $bg_select>$select</select>";
 
 $s = "SELECT 
@@ -137,31 +137,31 @@ AND $left_join_where
 AND c.id_kategori = $id_kategori 
 ORDER BY a.tanggal_masuk DESC, c.kode 
 ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
 
-if($get_csv){
+if ($get_csv) {
   $jumlah_tampil = $jumlah_records;
-}else{
+} else {
   $s .= "LIMIT 100";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $jumlah_tampil = mysqli_num_rows($q);
 }
 
 $tr = '';
 $tr_csv = '';
 $i = 0;
-while($d=mysqli_fetch_assoc($q)){
+while ($d = mysqli_fetch_assoc($q)) {
   $i++;
   $id = $d['id_kumulatif'];
   $id_kumulatif = $d['id_kumulatif'];
   $kode_po = $d['kode_po'];
   $tanggal_masuk = $d['tanggal_masuk'];
 
-  $tanggal_masuk = date('d-m-y',strtotime($tanggal_masuk));
+  $tanggal_masuk = date('d-m-y', strtotime($tanggal_masuk));
 
   $satuan = $d['satuan'];
-  $idz = "<span class='abu f12'>id-</span>$id" ;
+  $idz = "<span class='abu f12'>id-</span>$id";
   $lot = $d['no_lot'] ? "<span class='abu f12'>Lot-</span>$d[no_lot]" : '';
 
   $is_fs = $d['is_fs'];
@@ -177,16 +177,16 @@ while($d=mysqli_fetch_assoc($q)){
   $qty_transit_fs = 0;
   $qty_qc = 0;
   $qty_qc_fs = 0;
-  if($d['tanggal_retur']==''){ //belum QC
-    if($is_fs){
+  if ($d['tanggal_retur'] == '') { //belum QC
+    if ($is_fs) {
       $qty_transit_fs = $qty_retur_balik;
-    }else{
+    } else {
       $qty_transit = $qty_retur_balik;
     }
-  }else{ //sudah QC
-    if($is_fs){
+  } else { //sudah QC
+    if ($is_fs) {
       $qty_qc_fs = $qty_retur_balik;
-    }else{
+    } else {
       $qty_qc = $qty_retur_balik;
     }
   }
@@ -194,12 +194,12 @@ while($d=mysqli_fetch_assoc($q)){
   //stok akhir
   $stok_akhir = $qty_qc + $qty_qc_fs - $qty_pick;
 
-  if($get_csv){
+  if ($get_csv) {
     $fs_text = $is_fs ? "FREE SUPPLIER" : "NO-FS";
     $info_text = "$d[nama_barang] / $d[keterangan_barang]";
-    $info_text = str_replace(',',';',$info_text);
-    $tr_csv.= "$i,$d[kode_po],$d[kode_barang],$info_text,$d[no_lot],$d[no_roll],$fs_text,$qty_retur_balik,$qty_retur,$qty_ganti,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$d[kode_lokasi],$d[brand]\n";
-  }else{
+    $info_text = str_replace(',', ';', $info_text);
+    $tr_csv .= "$i,$d[kode_po],$d[kode_barang],$info_text,$d[no_lot],$d[no_roll],$fs_text,$qty_retur_balik,$qty_retur,$qty_ganti,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$d[kode_lokasi],$d[brand]\n";
+  } else {
     $nol = '<span class="abu miring kecil">0</span>';
     $qty_transit_show = $qty_transit ? "<span class='tebal red'>$qty_transit</span>" : $nol;
     $qty_transit_fs_show = $qty_transit_fs ? "<span class='tebal purple'>$qty_transit_fs</span>" : $nol;
@@ -247,20 +247,20 @@ while($d=mysqli_fetch_assoc($q)){
         <td>$qty_retur_do_show</td>
         <td>$stok_akhir_show</td>
       </tr>
-    ";    
+    ";
   }
 }
 
-if(!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
+if (!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
 
-if($get_csv){
+if ($get_csv) {
   // $tr_csv.= "$i,$d[kode_barang],$info_text,$qty_transit,$qty_transit_fs,$qty_qc,$qty_qc_fs,$qty_pick,$stok_akhir,$satuan,$stok_akhir,$d[kode_lokasi],$d[brand]\n";
-  $data_csv.= "No,KODE BARANG,INFO,NO.LOT,NO.ROLL,FS,QTY SUBITEM,RETUR,BALIK,TRANSIT PO,TRANSIT FS,QC PO,QC FS,PICK,STOK AKHIR,SATUAN,LOKASI,BRAND\n$tr_csv";
+  $data_csv .= "No,KODE BARANG,INFO,NO.LOT,NO.ROLL,FS,QTY SUBITEM,RETUR,BALIK,TRANSIT PO,TRANSIT FS,QC PO,QC FS,PICK,STOK AKHIR,SATUAN,LOKASI,BRAND\n$tr_csv";
 
   $ymd = date('ymd');
   $tipe_stok_ = $tipe_stok ? "_$tipe_stok" : '';
   $filtered_ = $keyword ? "_filtered" : '';
-  $cat_ = $cat.'_';
+  $cat_ = $cat . '_';
   $path_csv = "csv/stok_opname_$cat_$ymd$tipe_stok_$filtered_.csv";
   $fcsv = fopen("$path_csv", "w+") or die("$path_csv cannot accesible.");
   fwrite($fcsv, $data_csv);
@@ -270,17 +270,16 @@ if($get_csv){
 
   $li = '';
   foreach ($files as $key => $file) {
-    if(strpos("salt$file",'.csv')){
-      if("csv/$file"!=$path_csv){
+    if (strpos("salt$file", '.csv')) {
+      if ("csv/$file" != $path_csv) {
         //auto-delete
-        if(strpos("salt$file",'_filtered.csv')){
+        if (strpos("salt$file", '_filtered.csv')) {
           unlink("csv/$file");
-        }else{
-          $li .= "<li class='mb1 mt1' id=li_csv_$key><a href='csv/$file'>$file</a> <span class=btn_aksi id='li_csv_$key"."__delete_file__$file"."__csv'>$img_delete</span></></li>";
+        } else {
+          $li .= "<li class='mb1 mt1' id=li_csv_$key><a href='csv/$file'>$file</a> <span class=btn_aksi id='li_csv_$key" . "__delete_file__$file" . "__csv'>$img_delete</span></></li>";
         }
       }
     }
-
   }
 
 
@@ -292,8 +291,7 @@ if($get_csv){
       $li
     </ul>
   ";
-
-}else{
+} else {
   $tb_stok = "
     <div style='overflow:scroll'>
       <table class='table table-striped' style='widsth:2000px'>
@@ -321,7 +319,7 @@ if($get_csv){
   ";
 }
 
-echo 
+echo
 "
   <div class='flexy flex-between mb2'>
     <div class=flexy>

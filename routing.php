@@ -13,6 +13,7 @@ $arr_routing = [
   'import_data_po' => 'pages/importer/import_data_po',
   'import_data_sj' => 'pages/importer/import_data_sj',
   'import_data_kumulatif' => 'pages/importer/import_data_kumulatif',
+  'insert_item_kumulatif' => 'pages/importer/insert_item_kumulatif',
   'add_lokasi' => 'pages/importer/add_lokasi',
   'manage_blok' => 'pages/importer/manage_blok',
 ];
