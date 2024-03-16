@@ -8,7 +8,7 @@ set_title($judul);
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
-      <li class="breadcrumb-item"><a href="?import_data">Import</a></li>
+      <li class="breadcrumb-item"><a href="?importer">Import</a></li>
       <li class="breadcrumb-item"><a href="?import_data_barang">Import Barang</a></li>
       <li class="breadcrumb-item"><a href="?import_data_po">Import PO</a></li>
       <li class="breadcrumb-item"><a href="?import_data_sj">Import SJ</a></li>
@@ -301,7 +301,8 @@ if ($jumlah_unready_id_sj_item) {
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       echolog('sukses');
 
-      echo div_alert('success', 'Proses Import semuanya telah seselai.');
+      echo div_alert('success', 'Proses Import Kumulatif seselai.');
+      echo "<hr><a href='?insert_data_roll&id_kategori=$id_kategori' class='btn btn-success'>Next: Insert Data Roll</a>";
     }
   }
 }

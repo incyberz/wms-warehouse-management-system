@@ -1,9 +1,16 @@
 <?php
+# ===================================================
+# FETCHER FOR DO
+# ===================================================
 include '../../conn.php';
+$null_gray = '<span class="f12 miring abu consolas">null</span>';
 $unset = '<span class="f12 miring red consolas">unset</span>';
-$null = '<span class="f12 miring abu consolas">null</span>';
 $img_detail = '<img class="zoom pointer" src="assets/img/icons/detail.png" alt="detail" height=20px>';
+$btn_add_disabled = '<button class="btn btn-secondary btn-sm mb1 w-100" disabled>Add</button>';
 
+# ===================================================
+# GET DATA
+# ===================================================
 $keyword = $_GET['keyword'] ?? '';
 $id_kategori = $_GET['id_kategori'] ?? die(erid('id_kategori'));
 $id_do = $_GET['id_do'] ?? die(erid('id_do'));
@@ -11,12 +18,28 @@ if (!$id_kategori) die(erid('id_kategori::empty'));
 $jenis_barang = $id_kategori == 1 ? 'Aksesoris' : 'Fabric';
 
 
+# ===================================================
+# PRE-SQL :: GET ARRAY DO ITEM
+# ===================================================
+$s = "SELECT id as id_pick, id_kumulatif FROM tb_pick WHERE id_do=$id_do";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+$arr_id_kumulatif = [];
+while ($d = mysqli_fetch_assoc($q)) {
+  $id_pick = $d['id_pick'];
+  $id_kumulatif = $d['id_kumulatif'];
+  array_push($arr_id_kumulatif, $id_kumulatif);
+}
+
+# ===================================================
+# SQL HANDLER
+# ===================================================
 $sql_keyword = $keyword == '' ? '1' : "
 (
-  e.kode LIKE '%$keyword%' 
-  OR e.nama LIKE '%$keyword%' 
-  OR e.keterangan LIKE '%$keyword%' 
-  OR c.kode_po LIKE '%$keyword%' 
+  e.kode LIKE '%$keyword%' -- kode barang
+  OR e.nama LIKE '%$keyword%' -- nama barang
+  OR e.keterangan LIKE '%$keyword%' -- keterangan barang
+  OR e.kode_lama LIKE '%$keyword%' -- kode barang lama
+  OR c.kode_po LIKE '%$keyword%' -- kode_po
 )
 ";
 
@@ -27,14 +50,18 @@ $sql_from = "
   JOIN tb_barang e ON b.kode_barang=e.kode 
   JOIN tb_satuan f ON e.satuan=f.satuan 
   JOIN tb_lokasi g ON a.kode_lokasi=g.kode 
-  LEFT JOIN tb_pick h ON a.id=h.id_kumulatif AND h.id_do='$id_do'
-  WHERE h.id is null 
+  -- LEFT JOIN tb_pick h ON a.id=h.id_kumulatif AND h.id_do='$id_do'
+  -- boleh pick duplikat item
+  WHERE 1 -- h.id is null 
   AND e.id_kategori = $id_kategori 
   AND $sql_keyword  
 ";
 
 
 
+# ===================================================
+# MAIN SELECT
+# ===================================================
 $s = "SELECT 1 $sql_from ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
@@ -51,6 +78,7 @@ c.kode_po,
 e.kode as kode_barang,
 e.nama as nama_barang, 
 e.keterangan as keterangan_barang,
+e.kode_lama,
 f.satuan, 
 f.step, 
 g.brand, 
@@ -130,7 +158,6 @@ if (mysqli_num_rows($q) == 0) {
 
     //stok akhir
     $stok_available = $qty_qc + $qty_qc_fs - $qty_retur + $qty_ganti - $qty_pick_by_other;
-    if (strpos($d['kode_sj'], '-999')) $stok_available = floatval($d['tmp_qty']);
 
     // qty show
     $nol = '<span class="abu miring kecil">0</span>';
@@ -144,15 +171,28 @@ if (mysqli_num_rows($q) == 0) {
     $qty_ganti_show = $qty_ganti ? "<span class='abu'>$qty_ganti</span>" : $nol;
 
 
-    $no_lot_show = $no_lot ? $no_lot : $null;
+    $no_lot_show = $no_lot ? $no_lot : $null_gray;
 
     $kode_lokasi_brand = "$d[kode_lokasi] <span class='abu f12'>$d[brand]</span>";
     $lokasi_show = ($qty_pick_by_other || $stok_available) ? "<span class='darkblue f16'>$kode_lokasi_brand</span>" : "<span class=abu>$kode_lokasi_brand</span>";
 
-    $btn_add = $stok_available ? "<div id=div_btn_add__$id_kumulatif><button class='btn btn-success btn-sm btn_add mb1 w-100' id=btn_add__$id_kumulatif>Add</button></div>" : '<button class="btn btn-secondary btn-sm mb1 w-100" disabled>Add</button>';
+    if (in_array($id_kumulatif, $arr_id_kumulatif)) {
+      $btn = 'warning';
+      $Add = 'Add Again';
+    } else {
+      $btn = 'success';
+      $Add = 'Add';
+    }
+
+    $btn_add = "<button class='btn btn-$btn btn-sm btn_add mb1 w-100' id=btn_add__$id_kumulatif>$Add</button>";
+    $btn_add = $stok_available ? "<div id=div_btn_add__$id_kumulatif>$btn_add</div>" : $btn_add_disabled;
+
     $fs_show = $is_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
     $btn_hutangan = !$stok_available ? "<div id=div_btn_hutangan__$id_kumulatif><button class='btn btn-danger btn-sm btn_add w-100' id=btn_hutangan__$id_kumulatif>Hutangan</button></div>" : '';
 
+    # ===================================================
+    # FINAL TR
+    # ===================================================
     $tr .= "
       <tr>
         <td>$i</td>
@@ -164,6 +204,7 @@ if (mysqli_num_rows($q) == 0) {
         <td>
           <div>$d[kode_barang]</div>
           <div class='f12 abu'>
+            <div>Kode lama: $d[kode_lama]</div>
             <div>$d[nama_barang]</div>
             <div>$d[keterangan_barang]</div>
           </div>
@@ -183,14 +224,17 @@ if (mysqli_num_rows($q) == 0) {
             </ul>
           </div>
         </td>
+        <td>$satuan</td>
         <td style='background:#efe'>$btn_add $btn_hutangan</td>
       </tr>
     ";
   }
 }
 
+# ===================================================
+# FINAL ECHO
+# ===================================================
 $info_dibatasi = $jumlah_records > 10 ? "<div class='alert alert-info mt2'>Hanya ditampilkan $jumlah_tampil dari $jumlah_records total records. Silahkan masukan keyword dengan lebih spesifik.</div>" : '';
-
 echo "
   <div class='sub_form mt2'>Hasil Pencarian: Picking List Add Fetcher</div>
   <table class=table>
@@ -199,6 +243,7 @@ echo "
       <th>PO</th>
       <th>ID</th>
       <th>Stok Available</th>
+      <th>UOM</th>
       <th style='background:#cfc' class=tengah>Aksi</th>
     </thead>
 

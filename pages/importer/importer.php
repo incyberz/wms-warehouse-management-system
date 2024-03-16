@@ -2,11 +2,42 @@
 # ===========================================
 # SYARAT VARIABEL
 # ===========================================
-$id_kategori = $_GET['id_kategori'] ?? die("
-  <div class='mb2'>Jenis Bahan: </div>
-  <a href='?import_data&id_kategori=1' class='btn btn-success mb2'>Import Data Aksesoris</a>
-  <a href='?import_data&id_kategori=2' class='btn btn-success mb2'>Import Data Fabric</a>
-");
+$id_kategori = $_GET['id_kategori'] ?? '';
+
+if (isset($_POST['btn_ulang_dari_awal'])) {
+  $s = "DELETE FROM tb_importer";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  echo div_alert('success', 'Reset tabel importer sukses.');
+
+  $s = "DELETE FROM tb_importer_po";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  echo div_alert('success', 'Reset tabel importer_po sukses.');
+
+  $s = "DELETE FROM tb_importer_kumulatif";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  echo div_alert('success', 'Reset tabel importer_kumulatif sukses.');
+
+  jsurl();
+}
+
+if (!$id_kategori) {
+
+  $s = "SELECT * FROM tb_importer LIMIT 1";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  if (mysqli_num_rows($q)) {
+    echo div_alert('info', 'Pada tabel importer sudah ada data temporer. Klik Tombol Import Data atau Anda dapat Ulang dari Awal
+    <hr>
+    <form method=post><button class="btn btn-danger btn-sm" name=btn_ulang_dari_awal>Ulang dari Awal</button></form>
+    ');
+  }
+
+  echo "
+    <div class='mb2'>Jenis Bahan: </div>
+    <a href='?importer&id_kategori=1' class='btn btn-success mb2'>Import Data Aksesoris</a>
+    <a href='?importer&id_kategori=2' class='btn btn-success mb2'>Import Data Fabric</a>
+  ";
+  exit;
+}
 
 
 
@@ -23,6 +54,20 @@ $id_kategori = $_GET['id_kategori'] ?? die("
 
 
 
+
+# ===========================================
+# REUPLOAD CSV PROCESSORS
+# ===========================================
+if (isset($_POST['btn_reupload_csv'])) {
+  if (unlink("csv/tmp.csv")) {
+    // upload berhasil
+    echo div_alert('success', 'Hapus CSV berhasil.');
+    jsurl('', 2000);
+  } else {
+    // upload gagal
+    die(div_alert('danger', 'Tidak bisa hapus file CSV temporer.'));
+  }
+}
 
 # ===========================================
 # FILES PROCESSORS
@@ -324,7 +369,12 @@ $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
 if (!$jumlah_row) {
   if ($ada_file_csv) {
-    echo div_alert('info', "File CSV sudah ada.");
+    $hapus_dan_reupload = "
+      <form method=post style='display:inline' class=m0>
+        <button class='btn btn-danger btn-sm' onclick='return confirm(\"Yakin untuk reupload CSV?\")' name=btn_reupload_csv>Reupload CSV</button>
+      </form>
+    ";
+    echo div_alert('info', "File CSV sudah ada. <hr> $hapus_dan_reupload");
     echo "
       <form method=post>
           <button class='btn btn-primary' name=btn_import_csv>Import semua data CSV ke Tabel Importer</button>
@@ -475,7 +525,7 @@ while ($d = mysqli_fetch_assoc($q)) {
         $sty = 'red';
         $gradasi = 'merah';
         if ($isi) {
-          $info = "Lokasi $isi tidak ditemukan pada database <a class='btn btn-primary btn-sm' href='?add_lokasi&kode=$isi&id_kategori=$id_kategori&from=import_data'>Add</a>";
+          $info = "Lokasi $isi tidak ditemukan pada database <a class='btn btn-primary btn-sm' href='?add_lokasi&kode=$isi&id_kategori=$id_kategori&from=importer'>Add</a>";
         } else {
           $info = "Lokasi tidak boleh kosong";
         }

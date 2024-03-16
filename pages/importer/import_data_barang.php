@@ -15,7 +15,7 @@ set_title($judul);
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
-      <li class="breadcrumb-item"><a href="?import_data">Import Data</a></li>
+      <li class="breadcrumb-item"><a href="?importer">Import Data</a></li>
       <li class="breadcrumb-item active"><?= $judul ?></li>
     </ol>
   </nav>

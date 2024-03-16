@@ -50,12 +50,16 @@ if (isset($_POST['btn_simpan_qty_pick'])) {
 }
 
 if (isset($_POST['btn_simpan_allocate'])) {
+  echo '<pre>';
+  var_dump($_POST);
+  echo '</pre>';
   unset($_POST['btn_simpan_allocate']);
   echo 'Processing Update Allocate ...<hr>';
-  foreach ($_POST as $key => $qty_pick) {
+  foreach ($_POST as $key => $qty_allocate) {
+    $qty_allocate = $qty_allocate ? $qty_allocate : 'NULL';
     $arr = explode('__', $key);
     $s = "UPDATE tb_pick SET 
-    qty_allocate=$qty_pick,
+    qty_allocate=$qty_allocate,
     tanggal_allocate=CURRENT_TIMESTAMP,
     allocate_by=$id_user 
     WHERE id=$arr[1]";
@@ -104,6 +108,8 @@ if ($jumlah_item) {
   a.qty_allocate,
   a.tanggal_pick,
   a.tanggal_allocate,
+  a.is_repeat,
+  a.boleh_allocate,
   b.no_lot,
   b.kode_lokasi,
   b.is_fs,
@@ -167,8 +173,14 @@ if ($jumlah_item) {
     -- =========================================
   (
     SELECT SUM(p.qty) FROM tb_pick p 
-    WHERE p.id != a.id 
+    WHERE p.id != a.id -- bukan pick yang ini
+    AND p.is_hutangan is null -- tidak termasuk hutangan
     AND p.id_kumulatif = a.id_kumulatif) qty_pick_by_other,
+  (
+    SELECT SUM(p.qty_allocate) FROM tb_pick p 
+    WHERE p.id != a.id -- bukan allocate yang ini
+    AND p.is_hutangan is null -- tidak termasuk hutangan
+    AND p.id_kumulatif = a.id_kumulatif) qty_allocate_by_other,
   (
     SELECT count(1) FROM tb_roll 
     WHERE id_kumulatif = b.id) count_roll,
@@ -199,9 +211,6 @@ if ($jumlah_item) {
 
   ORDER BY a.is_hutangan, a.tanggal_pick  
   ";
-  echo '<pre>';
-  var_dump($s);
-  echo '</pre>';
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $count_pick = mysqli_num_rows($q);
 
@@ -236,25 +245,73 @@ if ($jumlah_item) {
     $qty_retur = floatval($d['qty_retur']);
     $qty_ganti = floatval($d['qty_ganti']);
 
-    if (strpos($d['kode_sj'], '-999')) $qty_qc = $d['tmp_qty'];
-
-
     //pengeluaran
     $qty_pick = floatval($d['qty_pick']);
     $qty_allocate = floatval($d['qty_allocate']);
     $qty_pick_by_other = floatval($d['qty_pick_by_other']);
+    $qty_allocate_by_other = floatval($d['qty_allocate_by_other']);
 
-    // qty calculation
+
+
+
+
+
+
+
+
+
+
+    # =======================================================
+    # QTY CALCULATION
+    # =======================================================
+    // exception for hutangan
+    if ($is_hutangan) {
+      $qty_hutangan = $qty_pick;
+      $qty_pick = 0;
+    }
+
     $qty_datang = $qty_transit + $qty_tr_fs + $qty_qc + $qty_qc_fs - $qty_retur + $qty_ganti;
-    $stok_real = $qty_qc + $qty_qc_fs - $qty_pick_by_other - $qty_retur + $qty_ganti;
+    $stok_available = $qty_qc + $qty_qc_fs - $qty_pick_by_other - $qty_pick - $qty_retur + $qty_ganti;
 
-    $qty_pick_or_allocate = $id_role == 7 ? $qty_pick : $qty_allocate;
-    $stok_akhir = $is_hutangan ? $stok_real :  $stok_real - $qty_pick_or_allocate;
+    // qty stok akhir
+    if ($sebagai = 'WH') { // id_role=3
+      $qty_pick_or_allocate = $qty_allocate;
+      $stok_akhir = $qty_datang - $qty_allocate - $qty_allocate_by_other;
+    } else { // id_role=7 PPIC
+      $qty_pick_or_allocate = $qty_pick;
+      $stok_akhir = $qty_datang - $qty_pick_or_allocate - $qty_pick_by_other;
+    }
+
+    // set max
+    $qty_set_max_pick = $stok_available + $qty_pick;
+    $max_pick = $is_hutangan ? '' : $qty_set_max_pick;
+    $qty_set_max_allocate = $qty_pick;
+    $max_allocate = $is_hutangan ? '' : $qty_set_max_allocate;
+
+    # =======================================================
+    # END QTY CALCULATION
+    # =======================================================
+
+
+
+
+
+
 
 
 
     // qty_show
     $qty_allocate_show = $qty_allocate ? $qty_allocate : $belum;
+
+    // lock / unlock allocate
+    if ($d['boleh_allocate']) {
+      $cap = 'Lock';
+      $btn = 'success';
+    } else {
+      $cap = 'Unlock';
+      $btn = 'danger';
+    }
+    $toggle_allocate_show = "<div><span id=toggle_allocate__$id_pick class='toggle_allocate btn btn-$btn btn-sm mb1'>$cap</span></div>";
 
     // tanggal_show
     $tanggal_pick_show = date('d-M H:i', strtotime($tanggal_pick));
@@ -264,16 +321,21 @@ if ($jumlah_item) {
     $no_lot_show = $no_lot ? $no_lot : $null;
     $brand_show = $brand ? $brand : '';
 
+    // repeat_show
+    $repeat_show = $d['is_repeat'] ? '<span class="tebal consolas miring abu bg-yellow">repeat item</span>' : '';
+
 
     if ($qty_pick) $jumlah_item_valid++;
 
     // qty for input
-    $qty_pick_for_input = $qty_pick ? $qty_pick : '';
-    $qty_allocate_for_input = $qty_allocate ? $qty_allocate : '';
+    $qty_input_pick = $qty_pick ? $qty_pick : '';
+    $qty_input_allocate = $qty_allocate ? $qty_allocate : '';
+
+    // qty for input exception hutangan
+    $qty_input_pick = $is_hutangan ? $qty_hutangan : $qty_input_pick;
 
     $gradasi = $qty_pick ? '' : 'merah';
     $hutangan_show = $is_hutangan ? "<span class='badge bg-red mb1 bold'>HUTANGAN</span>" : '';
-    $max = $is_hutangan ? '' : $stok_real;
     $fs_icon_show = $is_fs ? $fs_icon : '';
 
 
@@ -306,7 +368,7 @@ if ($jumlah_item) {
         $ket = '';
       }
 
-      if ($stok_real and $qty_pick) {
+      if ($stok_available and $qty_pick) {
         $input_allocate = "
           <input 
             class='form-control qty_allocate' 
@@ -314,8 +376,8 @@ if ($jumlah_item) {
             name=qty_allocate__$id_pick 
             type=number 
             step=$step 
-            max='$max' 
-            value='$qty_allocate_for_input'
+            max='$max_allocate' 
+            value='$qty_input_allocate'
           />
           <div class='f12 darkabu mt1'>
             <span class='set_max_allocate pointer' id=set_max_allocate__$id_pick>
@@ -336,7 +398,11 @@ if ($jumlah_item) {
         <div class='abu f10'>$tanggal_pick_show</div>
       ";
 
-      if ($qty_allocate) {
+      if ($is_hutangan) {
+        // exception for hutangan view PPIC
+        $input_allocate = '-';
+        $set_max = '';
+      } elseif ($qty_allocate) {
         $input_allocate = "
           $qty_allocate_show
           <div class='f12 abu'>by: $allocator</div>
@@ -344,11 +410,11 @@ if ($jumlah_item) {
         ";
         $set_max = '';
       } else {
-        $input_allocate = $qty_allocate_show;
+        $input_allocate = "$toggle_allocate_show $qty_allocate_show";
         $set_max = "
           <div class='f12 darkabu mt1'>
-            <span class='set_max pointer' id=set_max__$id_pick>
-              Set Max : <span id=stok_real__$id_pick>$stok_real</span>
+            <span class='set_max pointer' id=set_max_pick__$id_pick>
+              Set Max : <span id=qty_set_max_pick__$id_pick>$qty_set_max_pick</span>
             </span>
           </div>
         ";
@@ -362,8 +428,8 @@ if ($jumlah_item) {
           name=qty_pick__$id_pick 
           type=number 
           step=$step 
-          max='$max' 
-          value='$qty_pick_for_input' 
+          max='$max_pick' 
+          value='$qty_input_pick' 
           $disabled_input_qty_pick
         />
         $set_max
@@ -404,7 +470,7 @@ if ($jumlah_item) {
           <div class='f12 abu'>Roll: $count_roll</div>
         </td>
         <td>
-          <div>$d[kode_barang] $hutangan_show</div>
+          <div>$d[kode_barang] $repeat_show $hutangan_show</div>
           <div class='f12 abu'>
             <div>$d[nama_barang]</div>
             <div>$d[keterangan_barang]</div>
@@ -413,10 +479,10 @@ if ($jumlah_item) {
         <td class='pic_only' width=50px>
           $btn_delete
         </td>
-        <td>
-          <span id=stok_real__$id_pick>$stok_real</span> 
-          <span class=btn_aksi id=stok_real_info$id_pick" . "__toggle>$img_detail</span> $fs_icon_show
-          <div id=stok_real_info$id_pick class='hideit wadah f12 mt1'>
+        <td class='pic_only'>
+          <span id=stok_available__$id_pick>$stok_available</span> 
+          <span class=btn_aksi id=stok_available_info$id_pick" . "__toggle>$img_detail</span> $fs_icon_show
+          <div id=stok_available_info$id_pick class='hideit wadah f12 mt1'>
             <div class=darkred>Transit: $qty_transit</div>
             <div class=darkred>Tr-FS: $qty_tr_fs</div>
             <div class=abu>Retur: $qty_retur</div>
@@ -425,9 +491,13 @@ if ($jumlah_item) {
             <div class=green>QTY QC-FS: $qty_qc_fs</div>
           </div> 
         </td>
-        <td class=darkred>$qty_pick_by_other</td>
+        <td class='pic_only darkred' id=qty_pick_by_other__$id_pick>$qty_pick_by_other</td>
         <td width=100px>
           $input_pick
+        </td>
+        <td class=wh_only>
+          <div class=darkblue id=qty_datang__$id_pick>$qty_datang</div>
+          <div class='darkred f12' id=qty_allocate_by_other__$id_pick>-$qty_allocate_by_other</div>
         </td>
         <td width=100px>
           $input_allocate
@@ -502,10 +572,14 @@ if ($jumlah_item) {
       <th>PO</th>
       <th>ITEM</th>
       <th class='pic_only'>&nbsp;</th>
-      <th>Stok Available</th>
-      <th class=darkred>Picked <div class='f10 abu'>by other DO</div>
+      <th class='pic_only'>Stok Available</th>
+      <th class='darkred pic_only'>Picked <div class='f10 abu'>by other DO</div>
       </th>
       <th>QTY Pick</th>
+      <th class='wh_only darkblue'>
+        QTY Datang
+        <div class="darkred f11">Allocate di Line lain</div>
+      </th>
       <th>Allocate</th>
       <th>Stok Akhir</th>
       <th>UOM</th>
@@ -581,20 +655,22 @@ if ($jumlah_item) {
         alert('Invalid id at hitung_sa at picking list JS');
         return;
       }
+      let qty_datang = $('#qty_datang__' + id).text();
+      let qty_pick_by_other = $('#qty_pick_by_other__' + id).text();
+      let stok_akhir = 0;
       if (id_role == 3) {
         // for WH user ambil dari allocate
-        let stok_real = $('#stok_real__' + id).text();
         let qty_allocate = $('#qty_allocate__' + id).val();
-        $('#stok_akhir__' + id).text(stok_real - qty_allocate);
-        console.log(stok_real, qty_allocate);
+        stok_akhir = qty_datang - qty_allocate - qty_pick_by_other;
+        console.log(stok_available, qty_allocate);
       } else if (id_role == 7) {
         // for PIC user
-        let stok_real = $('#stok_real__' + id).text();
         let qty_pick = $('#qty_pick__' + id).val();
-        $('#stok_akhir__' + id).text(stok_real - qty_pick);
+        stok_akhir = qty_datang - qty_pick - qty_pick_by_other;
       } else {
         alert('Invalid id_role at picking_list JS');
       }
+      $('#stok_akhir__' + id).text(stok_akhir);
     }
 
     $('.set_max').click(function() {
@@ -602,10 +678,10 @@ if ($jumlah_item) {
       let rid = tid.split('__');
       let aksi = rid[0];
       let id = rid[1];
-      let stok_real = $('#stok_real__' + id).text();
+      let qty_set_max = $('#qty_set_max_pick__' + id).text();
+      console.log(aksi, id, qty_set_max);
 
-      $('#qty_pick__' + id).val(stok_real);
-      console.log(tid, id, stok_real);
+      $('#qty_pick__' + id).val(qty_set_max);
       hitung_sa(id);
     });
 

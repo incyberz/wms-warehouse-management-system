@@ -78,7 +78,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="?import_data">
+      <a class="nav-link collapsed" href="?importer">
         <i class="bi bi-send-check"></i>
         <span>Import Data</span>
       </a>

@@ -8,6 +8,7 @@ $debug = '';
 $unset = '<span class="kecil miring red consolas">unset</span>';
 $unverified = '<span class="kecil miring red consolas" onclick="alert(\'Proses verifikasi harus mengikuti alur pengisisan data.\')">unverified</span>';
 $null = '<span class="kecil miring red consolas">null</span>';
+$null_gray = '<span class="f12 miring abu consolas">null</span>';
 $hideit = 'hideit';
 $view_mode = $_GET['view_mode'] ?? '';
 $arr_kategori[1] = 'Aksesoris';
@@ -33,11 +34,11 @@ $is_login = 0;
 $id_role = 0; // pengunjung
 $sebagai = 'Pengunjung';
 $username = '';
-$nama_user = ''; 
-$email = ''; 
-$no_wa = ''; 
+$nama_user = '';
+$email = '';
+$no_wa = '';
 
-if(isset($_SESSION['wms_username'])){
+if (isset($_SESSION['wms_username'])) {
   $is_login = 1;
   $username = $_SESSION['wms_username'];
 }
@@ -79,7 +80,7 @@ foreach ($_GET as $key => $value) {
 # ================================================
 # LOGOUT
 # ================================================
-if($parameter=='logout'){
+if ($parameter == 'logout') {
   include 'pages/login/logout.php';
   exit;
 }
@@ -124,54 +125,65 @@ if($parameter=='logout'){
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
 
-  <?php if(file_exists('../insho_styles.php')){
-    include '../insho_styles.php'; 
-  }else{
-    include 'insho_styles.php'; 
-  } 
+  <?php if (file_exists('../insho_styles.php')) {
+    include '../insho_styles.php';
+  } else {
+    include 'insho_styles.php';
+  }
   ?>
   <style>
-    section{min-height: 100vh}
-    h1{
-      font-size: 12px; 
+    section {
+      min-height: 100vh
+    }
+
+    h1 {
+      font-size: 12px;
       font-weight: bold;
       color: #66a;
     }
-    h2{
-      font-size: 16px; 
-      background: linear-gradient(#efe,#cfc);
+
+    h2 {
+      font-size: 16px;
+      background: linear-gradient(#efe, #cfc);
       font-weight: bold;
       color: #66a;
       padding: 7px;
       border-radius: 5px;
       box-shadow: 1px 1px 3px gray;
     }
-    .formulir input,.formulir textarea {text-transform: uppercase}
-    .bg-hijau{background:#0f0}
+
+    .formulir input,
+    .formulir textarea {
+      text-transform: uppercase
+    }
+
+    .bg-hijau {
+      background: #0f0
+    }
   </style>
 
 </head>
 
 <body>
-  <?php 
-  if(!$is_login){
+  <?php
+  if (!$is_login) {
     include 'pages/login/login.php';
-  }else{
-    if($view_mode!='cetak'){
-      include 'pages/header.php'; 
+  } else {
+    if ($view_mode != 'cetak') {
+      include 'pages/header.php';
       include 'pages/sidebar.php';
-    } 
-    ?>
-    
-    
+    }
+  ?>
+
+
     <main id="main" class="main">
-      <?php 
-        include 'routing.php';
-        include 'debug.php';
+      <?php
+      include 'routing.php';
+      include 'debug.php';
       ?>
     </main>
-    
-    <?php if($view_mode!='cetak') include 'pages/footer.php'; ?>
+
+    <?php if ($view_mode != 'cetak') include 'pages/footer.php'; ?>
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
@@ -189,7 +201,7 @@ if($parameter=='logout'){
     <script src="assets/js/main2.js"></script>
     <?php include 'include/js_btn_aksi.php'; ?>
 
-  <?php 
+  <?php
   }
 
   # =======================================================

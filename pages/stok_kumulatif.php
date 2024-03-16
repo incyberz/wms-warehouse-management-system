@@ -239,6 +239,7 @@ ORDER BY a.tanggal_masuk DESC
 LIMIT 100
 ";
 
+
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
 $total_row = mysqli_num_rows($q);
@@ -275,7 +276,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   $qty_datang = $qty_transit + $qty_tr_fs + $qty_qc_fs + $qty_qc - $qty_retur + $qty_ganti;
 
   if (!$qty_datang and strpos($d['kode_sj'], '-999')) {
-    $qty_datang = $d['tmp_qty'];
+    // $qty_datang = $d['tmp_qty'];
     $qty_qc = $qty_datang;
   }
 
@@ -294,9 +295,12 @@ while ($d = mysqli_fetch_assoc($q)) {
   if (!$tanggal_qc) $qty_retur_show = '<span class="red tebal f14">Belum QC</span>';
 
   // qty show pengeluaran
-  $qty_pick_show = $qty_pick ? floatval($qty_pick) : '-';
+  $link_pick_by = "<a href='?picked_by_do&id_kumulatif=$id_kumulatif'>$img_next</a>";
+  $qty_pick_show = $qty_pick ? floatval($qty_pick) . " $link_pick_by" : '-';
   $qty_allocate_show = $qty_allocate ? floatval($qty_allocate) : '-';
+  $link_retur_do = $qty_pick ? "<a href='?retur_do&id_kumulatif=$id_kumulatif'>$img_next</a>" : '';
   $qty_retur_do_show = $qty_retur_do ? floatval($qty_retur_do) : '-';
+  $qty_retur_do_show .= " $link_retur_do";
 
   // tanggal jam show
   $tanggal_masuk_show = date('d-M-y', strtotime($tanggal_masuk));
@@ -313,6 +317,32 @@ while ($d = mysqli_fetch_assoc($q)) {
   $parsial_icon = strpos($kode_sj, '-001') ? '' : '<span class="f12 abu consolas bg-yellow">PARSIAL</span>';
   $parsial_icon = strpos($d['kode_sj'], '-999') ? '<span class="f12 abu consolas bg-yellow">STOK AWAL</span>' : $parsial_icon;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # =====================================================
+  # FINAL TR KUMULATIF
+  # =====================================================
   $tr_kumulatif .= "
     <tr id=tr__$id_kumulatif>
       <td>
@@ -353,6 +383,46 @@ while ($d = mysqli_fetch_assoc($q)) {
 }
 
 $download_csv = $get_csv ? "<a class='btn btn-success btn-sm' href='#'>Download CSV</a>" : '';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # =====================================================
 # FINAL ECHO

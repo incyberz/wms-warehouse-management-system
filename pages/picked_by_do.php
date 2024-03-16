@@ -1,5 +1,5 @@
 <?php
-$judul = 'Retur DO';
+$judul = 'Picked By DO';
 set_title($judul);
 echo "
 <div class='pagetitle'>
@@ -7,18 +7,13 @@ echo "
   <nav>
     <ol class='breadcrumb'>
       <li class='breadcrumb-item'><a href='?stok_kumulatif'>Back to Stok Opname</a></li>
-      <li class='breadcrumb-item active'>$judul</li>
     </ol>
   </nav>
 </div>
-
-<img src='assets/img/icons/retur_do.png' alt='retur_do' width='100px' class='mt-2 mb-2'>
-
-<p>Retur DO adalah barang yang dikembalikan dari Buyer karena kondisi tertentu.</p>
 ";
 
 # =====================================================
-# GET ID PICK FIRST
+# MAIN SELECT
 # =====================================================
 $get_id_kumulatif = $_GET['id_kumulatif'] ?? die(erid('id_kumulatif'));
 
@@ -56,7 +51,6 @@ foreach ($d as $key => $value) {
 
 $s = "SELECT 
 b.qty as qty_pick,
-b.id as id_pick,
 c.kode_do,
 c.date_created as tanggal_do,
 c.id_kategori,
@@ -76,7 +70,6 @@ $tr_do = '';
 $i = 0;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $id_pick = $d['id_pick'];
   $cat = $d['id_kategori'] == 1 ? 'aks' : 'fab';
   $qty_pick = floatval($d['qty_pick']);
   $tanggal_do_show = date('d-M-y, H:i', strtotime($d['tanggal_do']));
@@ -88,10 +81,27 @@ while ($d = mysqli_fetch_assoc($q)) {
       <td>$d[kategori]</td>
       <td>$qty_pick</td>
       <td>$d[satuan]</td>
-      <td><a href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat&retur_do=1' class='btn btn-sm btn-success'>Retur DO</a></td>
     </tr>
   ";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 echo "
 <div class='wadah gradasi-abu'>
@@ -108,7 +118,6 @@ echo "
       <th>Material</th>
       <th>QTY Pick</th>
       <th>UOM</th>
-      <th>Retur DO</th>
     </thead>
     $tr_do
   </table>

@@ -11,7 +11,7 @@
 
 <?php
 set_title('Data DO');
-if(isset($_POST['keyword'])){
+if (isset($_POST['keyword'])) {
   $keyword = clean_sql($_POST['keyword']);
   jsurl("?pengeluaran&p=data_do&keyword=$keyword");
   exit;
@@ -30,38 +30,40 @@ $sql_filter = $keyword ? "
 
 $s = "SELECT 
 a.*,
+b.*,
 a.id as id_do,
 (SELECT SUM(qty) FROM tb_pick WHERE id_do=a.id AND is_hutangan is null) sum_pick, 
 (SELECT SUM(qty_allocate) FROM tb_pick WHERE id_do=a.id AND is_hutangan is null) sum_allocate, 
 (SELECT COUNT(1) FROM tb_pick WHERE id_do=a.id) jumlah_pick, 
 (SELECT COUNT(1) FROM tb_pick WHERE id_do=a.id AND qty_allocate is not null) jumlah_allocate 
 FROM tb_do a 
+JOIN tb_permintaan_do b ON a.id_permintaan=b.id 
 WHERE $sql_filter  
 ORDER BY tanggal_delivery DESC
 ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_records = mysqli_num_rows($q);
 
 $s .= "LIMIT 10";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_tampil = mysqli_num_rows($q);
 
 $tr = '';
 $i = 0;
-while($d=mysqli_fetch_assoc($q)){
+while ($d = mysqli_fetch_assoc($q)) {
   $i++;
   $id_do = $d['id_do'];
   $abu_items = $d['jumlah_pick'] ? 'abu' : 'tebal merah';
   $aksi_hapus = $d['jumlah_pick'] ? '' : "<span class='btn_aksi' id=do__delete__$id_do>$img_delete</span>";
-  $untuk = $d['id_kategori']==1 ? 'Aksesoris' : 'Fabric';
-  $cat = $d['id_kategori']==1 ? 'aks' : 'fab';
+  $untuk = $d['id_kategori'] == 1 ? 'Aksesoris' : 'Fabric';
+  $cat = $d['id_kategori'] == 1 ? 'aks' : 'fab';
   $add_ro = $d['is_repeat'] ? '' : "<a target=_blank onclick='return confirm(\"Ingin menambah Repeat Order dari DO ini?\")' href='?pengeluaran&p=repeat_order&kode_do_awal=$d[kode_do]&id_kategori=$d[id_kategori]'>$img_add</a>";
 
   $jumlah_pick = floatval($d['jumlah_pick']);
   $sum_pick = floatval($d['sum_pick']);
   $sum_allocate = floatval($d['sum_allocate']);
-  $persen = ($sum_pick and $sum_allocate) ? number_format($sum_allocate/$sum_pick*100,2) : 0;
-  $allocate_show = ($sum_allocate!=$sum_pick) ? "
+  $persen = ($sum_pick and $sum_allocate) ? number_format($sum_allocate / $sum_pick * 100, 2) : 0;
+  $allocate_show = ($sum_allocate != $sum_pick) ? "
     <div>$sum_allocate of $sum_pick ($persen%)</div>
     <a class='btn btn-primary btn-sm mt1' href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat'>Allocate</a>
   " : "$persen%";
@@ -79,6 +81,7 @@ while($d=mysqli_fetch_assoc($q)){
       <td>$d[kode_artikel]</td>
       <td>$untuk</td>
       <td>$allocate_show</td>
+      <td>$d[permintaan]</td>
       <td class=pic_only>
         $aksi_hapus 
         $add_ro
@@ -87,10 +90,10 @@ while($d=mysqli_fetch_assoc($q)){
   ";
 }
 
-$tambah_do_baru = $id_role!=7 ? '' : "<a class='btn btn-sm btn-success' href='?pengeluaran&p=buat_do'>Buat DO Baru</a>";
-if(!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
+$tambah_do_baru = $id_role != 7 ? '' : "<a class='btn btn-sm btn-success' href='?pengeluaran&p=buat_do'>Buat DO Baru</a>";
+if (!$tr) $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan</div></td></tr>";
 
-echo 
+echo
 "
   <div class='flexy flex-between mb2'>
     <div class=flexy>
@@ -113,6 +116,7 @@ echo
       <th>ARTIKEL</th>
       <th>OTP</th>
       <th>QTY Allocate</th>
+      <th>Permintaan</th>
       <th class=pic_only>Delete / Add-RO</th>
     </thead>
     $tr

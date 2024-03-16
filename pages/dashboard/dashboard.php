@@ -15,7 +15,7 @@
     <div class="col-lg-12">
       <div class="row">
 
-        <?php 
+        <?php
         include 'dashboard-progress.php';
         // include 'dashboard-proses-bisnis.php';
         // include 'dashboard-penerimaan.php';
@@ -24,7 +24,7 @@
         // include 'dashboard-retur-do.php';
         // include 'dashboard-stok-menipis.php'; 
         ?>
-        
+
         <!-- <div class="col-12">
           <div class="card top-selling overflow-auto">
             
@@ -99,14 +99,15 @@
         </div> -->
       </div>
 
-      <?php // include 'dashboard-stok-gudang.php'; ?>
+      <?php // include 'dashboard-stok-gudang.php'; 
+      ?>
 
     </div>
 
     <div class="col-lg-4">
-      <?php //include 'pages/recent_activity.php'; ?>
+      <?php //include 'pages/recent_activity.php'; 
+      ?>
     </div>
 
   </div>
 </section>
-

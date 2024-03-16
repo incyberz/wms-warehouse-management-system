@@ -65,7 +65,7 @@ $jumlah_item = mysqli_num_rows($q);
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
-      <li class="breadcrumb-item"><a href="?import_data">Import</a></li>
+      <li class="breadcrumb-item"><a href="?importer">Import</a></li>
       <li class="breadcrumb-item"><a href="?import_data_barang">Import Barang</a></li>
       <li class="breadcrumb-item"><a href="?import_data_po">Import PO</a></li>
       <li class="breadcrumb-item"><a href="?import_data_sj">Import SJ</a></li>
