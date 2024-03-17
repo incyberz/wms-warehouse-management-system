@@ -3,6 +3,7 @@ $belum_red = '<span class="red f12 miring">belum</span>';
 $belum_abu = '<span class="abu f12 miring">belum</span>';
 // allocate sangat penting untuk WH
 $belum = $id_role == 3 ? $belum_red : $belum_abu;
+$jumlah_item_valid = 0;
 
 # =============================================================
 # HAK AKSES PIC ONLY
@@ -99,116 +100,10 @@ if (isset($_POST['btn_delete_item_picking'])) {
 $debug .= "<br>jumlah_item:$jumlah_item";
 
 $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Belum ada item</div></td></tr>";
-$jumlah_item_valid = 0;
 if ($jumlah_item) {
-  $s = "SELECT 
-  a.id as id_pick,
-  a.qty as qty_pick,
-  a.is_hutangan,
-  a.qty_allocate,
-  a.tanggal_pick,
-  a.tanggal_allocate,
-  a.is_repeat,
-  a.boleh_allocate,
-  b.no_lot,
-  b.kode_lokasi,
-  b.is_fs,
-  b.tmp_qty,
-  c.kode_sj,
-  -- b.qty as qty_kumulatif_item,
-  d.kode_po,
-  f.kode as kode_barang,
-  f.nama as nama_barang, 
-  f.keterangan as keterangan_barang,
-  g.satuan, 
-  g.step, 
-  h.brand, 
-    -- =========================================
-    -- PEMASUKAN
-    -- =========================================
-  (
-    SELECT sum(p.qty) FROM tb_roll p 
-    JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
-    WHERE q.id=a.id_kumulatif 
-    AND q.is_fs is null
-    AND q.tanggal_qc is null) qty_transit,
-  (
-    SELECT sum(p.qty) FROM tb_roll p 
-    JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
-    WHERE q.id=a.id_kumulatif 
-    AND q.is_fs is not null
-    AND q.tanggal_qc is null) qty_tr_fs,
-
-  (
-    SELECT sum(p.qty) FROM tb_roll p 
-    JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
-    WHERE q.id=a.id_kumulatif 
-    AND q.is_fs is null
-    AND q.tanggal_qc is not null) qty_qc,
-  (
-    SELECT sum(p.qty) FROM tb_roll p 
-    JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
-    WHERE q.id=a.id_kumulatif 
-    AND q.is_fs is not null
-    AND q.tanggal_qc is not null) qty_qc_fs,
-  (
-    SELECT SUM(p.qty) FROM tb_retur p 
-    JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
-    WHERE q.id=a.id_kumulatif 
-    ) qty_retur, 
-    -- ALL RETUR = RETUR REG + RETUR FS  
-
-  (
-    SELECT SUM(p.qty) FROM tb_ganti p
-    JOIN tb_retur q ON p.id_retur=q.id  
-    JOIN tb_sj_kumulatif r ON q.id_kumulatif=r.id 
-    WHERE r.id=a.id_kumulatif 
-    ) qty_ganti, 
-    -- ALL GANTI
-
-
-
-    -- =========================================
-    -- PENGELUARAN
-    -- =========================================
-  (
-    SELECT SUM(p.qty) FROM tb_pick p 
-    WHERE p.id != a.id -- bukan pick yang ini
-    AND p.is_hutangan is null -- tidak termasuk hutangan
-    AND p.id_kumulatif = a.id_kumulatif) qty_pick_by_other,
-  (
-    SELECT SUM(p.qty_allocate) FROM tb_pick p 
-    WHERE p.id != a.id -- bukan allocate yang ini
-    AND p.is_hutangan is null -- tidak termasuk hutangan
-    AND p.id_kumulatif = a.id_kumulatif) qty_allocate_by_other,
-  (
-    SELECT count(1) FROM tb_roll 
-    WHERE id_kumulatif = b.id) count_roll,
-
-
-    -- =========================================
-    -- PICKER | ALLOCATOR
-    -- =========================================
-  (
-    SELECT nama FROM tb_user 
-    WHERE id = a.pick_by) picker,
-  (
-    SELECT nama FROM tb_user 
-    WHERE id = a.allocate_by) allocator
-
-    
-
-  FROM tb_pick a 
-  JOIN tb_sj_kumulatif b ON a.id_kumulatif=b.id 
-  JOIN tb_sj_item c ON b.id_sj_item=c.id 
-  JOIN tb_sj d ON c.kode_sj=d.kode 
-  JOIN tb_barang f ON c.kode_barang=f.kode 
-  JOIN tb_satuan g ON f.satuan=g.satuan 
-  JOIN tb_lokasi h ON b.kode_lokasi=h.kode 
-  JOIN tb_do i ON a.id_do=i.id 
-  WHERE i.kode_do='$kode_do' 
-  AND i.id_kategori=$id_kategori 
-
+  include 'sql_pick.php';
+  $s = "$sql_pick
+  AND i.kode_do='$kode_do' 
   ORDER BY a.is_hutangan, a.tanggal_pick  
   ";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -305,13 +200,18 @@ if ($jumlah_item) {
 
     // lock / unlock allocate
     if ($d['boleh_allocate']) {
-      $cap = 'Lock';
-      $btn = 'success';
+      $hide_unlock = 'hideit';
+      $hide_lock = '';
     } else {
-      $cap = 'Unlock';
-      $btn = 'danger';
+      $hide_unlock = '';
+      $hide_lock = 'hideit';
     }
-    $toggle_allocate_show = "<div><span id=toggle_allocate__$id_pick class='toggle_allocate btn btn-$btn btn-sm mb1'>$cap</span></div>";
+
+    $toggle_allocate_show = "
+    <div class=mb1>
+      <span id=unlock__$id_pick class='toggle_allocate $hide_unlock btn btn-danger btn-sm'>Unlock</span>
+      <span id=lock__$id_pick class='toggle_allocate $hide_lock btn btn-success btn-sm'>Lock</span>
+    </div>";
 
     // tanggal_show
     $tanggal_pick_show = date('d-M H:i', strtotime($tanggal_pick));
@@ -351,6 +251,7 @@ if ($jumlah_item) {
     }
 
     if ($id_role == 3) {
+      echolog('wh only', false);
       // wh only
       $input_pick = "
         <div id=qty_pick__$id_pick>$qty_pick</div>
@@ -368,25 +269,35 @@ if ($jumlah_item) {
         $ket = '';
       }
 
-      if ($stok_available and $qty_pick) {
-        $input_allocate = "
-          <input 
-            class='form-control qty_allocate' 
-            id=qty_allocate__$id_pick 
-            name=qty_allocate__$id_pick 
-            type=number 
-            step=$step 
-            max='$max_allocate' 
-            value='$qty_input_allocate'
-          />
-          <div class='f12 darkabu mt1'>
-            <span class='set_max_allocate pointer' id=set_max_allocate__$id_pick>
-              Set Max : <span id=qty_pick__$id_pick>$qty_pick</span>
-            </span>
-          </div>
-        ";
+      echolog(" qty_pick:$qty_pick");
+
+      if ($qty_pick) {
+        if ($d['boleh_allocate']) {
+          $input_allocate = "
+            <input 
+              class='form-control qty_allocate' 
+              id=qty_allocate__$id_pick 
+              name=qty_allocate__$id_pick 
+              type=number 
+              step=$step 
+              max='$max_allocate' 
+              value='$qty_input_allocate'
+            />
+            <div class='f12 darkabu mt1'>
+              <span class='set_max_allocate pointer' id=set_max_allocate__$id_pick>
+                Set Max : <span id=qty_pick__$id_pick>$qty_pick</span>
+              </span>
+            </div>
+          ";
+        } else {
+          $input_allocate = "<span class='consolasa f10 red miring'>Line Locked<br>by $picker</span>";
+        }
       } else {
-        $input_allocate = '-';
+        if ($is_hutangan) {
+          $input_allocate = "<span class='consolasa f10 abu miring'>-</span>";
+        } else {
+          $input_allocate = "<span class='consolasa f10 red miring'>Belum Pick</span>";
+        }
       }
     }
 
@@ -472,6 +383,7 @@ if ($jumlah_item) {
         <td>
           <div>$d[kode_barang] $repeat_show $hutangan_show</div>
           <div class='f12 abu'>
+            <div>Kode lama: $d[kode_lama]</div>
             <div>$d[nama_barang]</div>
             <div>$d[keterangan_barang]</div>
           </div>
@@ -712,6 +624,31 @@ if ($jumlah_item) {
       let id = rid[1];
       console.log('qty_allocate keyup', id);
       hitung_sa(id);
+    });
+
+    $('.toggle_allocate').click(function() {
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let aksi = rid[0];
+      let id_pick = rid[1];
+      console.log(aksi, id_pick);
+      let link_ajax = `ajax/toggle_lock_line_do.php?aksi=${aksi}&id_pick=${id_pick}`
+      $.ajax({
+        url: link_ajax,
+        success: function(a) {
+          if (a.trim() == 'sukses') {
+            $('#' + tid).hide();
+            if (aksi == 'unlock') {
+              $('#lock__' + id_pick).fadeIn();
+            } else {
+              $('#unlock__' + id_pick).fadeIn();
+            }
+          } else {
+            alert(a);
+          }
+        }
+      });
+
     });
   })
 </script>

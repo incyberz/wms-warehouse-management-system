@@ -56,4 +56,4 @@ while ($d = mysqli_fetch_assoc($q)) {
   }
 }
 
-echo div_alert('success', 'Proses insert data roll selesai.<hr><a href="?stok_kumulatif" class="btn btn-primary">Lihat Stok Opname</a>');
+echo div_alert('success', 'Proses insert data roll selesai.<hr><a href="?stok_opname" class="btn btn-primary">Lihat Stok Opname</a>');

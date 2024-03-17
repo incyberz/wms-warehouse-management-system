@@ -6,7 +6,7 @@ echo "
   <h1>$judul</h1>
   <nav>
     <ol class='breadcrumb'>
-      <li class='breadcrumb-item'><a href='?stok_kumulatif'>Back to Stok Opname</a></li>
+      <li class='breadcrumb-item'><a href='?stok_opname'>Back to Stok Opname</a></li>
       <li class='breadcrumb-item active'>$judul</li>
     </ol>
   </nav>

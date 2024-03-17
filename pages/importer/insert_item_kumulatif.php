@@ -63,6 +63,7 @@ if (isset($_POST['btn_insert_item_kumulatif'])) {
       $kode_lokasi = $d['LOC'];
       $kode_kumulatif = $d['kode_kumulatif'];
       $tmp_qty = $d['SISA_STOCK'];
+      $tanggal_masuk = $d['TGL_MASUK'];
       $no_lot = $d['LOT'];
       $no_lot_or_null = $no_lot ? "'$no_lot'" : 'NULL';
 
@@ -98,7 +99,7 @@ if (isset($_POST['btn_insert_item_kumulatif'])) {
           $tmp_qty,
           $no_lot_or_null,
           $nomor,
-          CURRENT_TIMESTAMP,
+          '$tanggal_masuk',
           CURRENT_TIMESTAMP
         )";
         $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));

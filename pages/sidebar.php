@@ -87,16 +87,16 @@
 
     <li class="nav-heading">Laporan</li>
 
-    <li class="nav-item hideit">
-      <a class="nav-link collapsed" href="?stok">
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?stok_opname">
         <i class="bi bi-file-earmark-spreadsheet"></i>
-        <span>Stok Old</span>
+        <span>Stok Opname</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link collapsed" href="?stok_kumulatif">
+      <a class="nav-link collapsed" href="?report">
         <i class="bi bi-file-earmark-spreadsheet"></i>
-        <span>Stok Opname</span>
+        <span>Report</span>
       </a>
     </li>
   </ul>

@@ -1,5 +1,4 @@
-
-<?php 
+<?php
 set_title('Master Pengeluaran');
 // to do : fix decimal
 include 'include/date_managements.php';
@@ -9,8 +8,13 @@ include 'include/arr_gender.php';
 include 'include/arr_pic.php';
 include 'include/arr_assign_pic.php';
 $p = 'pengeluaran'; // untuk navigasi
-$cat= $_GET['cat'] ?? 'aks'; //default AKS
-$jenis_barang = $cat=='aks' ? 'Aksesoris' : 'Fabric';
+$cat = $_GET['cat'] ?? 'aks'; //default AKS
+$jenis_barang = $cat == 'aks' ? 'Aksesoris' : 'Fabric';
+$belum_red = '<span class="red f12 miring">belum</span>';
+$belum_abu = '<span class="abu f12 miring">belum</span>';
+// allocate sangat penting untuk WH
+$belum = $id_role == 3 ? $belum_red : $belum_abu;
+$jumlah_item_valid = 0;
 
 $arr_waktu = [
   'hari_ini' => 'Hari ini',
@@ -18,368 +22,402 @@ $arr_waktu = [
   'minggu_ini' => 'Minggu ini',
   'bulan_ini' => 'Bulan ini',
   'tahun_ini' => 'Tahun ini',
-  'all_time' => 'All time',
+  'all_time' => 'All Tanggal Pick',
 ];
 
 $filter_waktu = $_GET['waktu'] ?? 'all_time';
 $opt_waktu = '';
 foreach ($arr_waktu as $waktu => $nama_waktu) {
-  $selected = $filter_waktu==$waktu ? 'selected' : '';
-  $opt_waktu.= "<option value=$waktu $selected>$nama_waktu</option>";
+  $selected = $filter_waktu == $waktu ? 'selected' : '';
+  $opt_waktu .= "<option value=$waktu $selected>$nama_waktu</option>";
 }
 
-$filter_do = $_GET['do'] ?? '';
+$keyword = $_GET['do'] ?? '';
 $filter_id = $_GET['id'] ?? '';
 $filter_ppic = $_GET['ppic'] ?? '';
-if(isset($_POST['btn_cari'])){
-  jsurl("?$parameter&cat=$cat&do=$_POST[filter_do]&id=$_POST[filter_id]&waktu=$_POST[filter_waktu]");
+if (isset($_POST['btn_cari'])) {
+  jsurl("?$parameter&cat=$cat&do=$_POST[keyword]&id=$_POST[filter_id]&waktu=$_POST[filter_waktu]");
 }
 
 $clear_filter = 'Filter:';
-if(
-  $filter_do!=''||
-  $filter_id!=''
-)$clear_filter = "<a href='?$parameter&cat=$cat'>Clear Text Filter</a>";
+if (
+  $keyword != '' ||
+  $filter_id != ''
+) $clear_filter = "<a href='?$parameter&cat=$cat'>Clear Text Filter</a>";
 
-$bg_waktu = $filter_waktu=='all_time' ? '' : 'bg-hijau';
-$bg_do = $filter_do=='' ? '' : 'bg-hijau';
-$bg_id = $filter_id=='' ? '' : 'bg-hijau';
+$bg_waktu = $filter_waktu == 'all_time' ? '' : 'bg-hijau';
+$bg_do = $keyword == '' ? '' : 'bg-hijau';
+$bg_id = $filter_id == '' ? '' : 'bg-hijau';
 
-$id_kategori = $cat=='aks' ? 1 : 2;
+$id_kategori = $cat == 'aks' ? 1 : 2;
 
-if($filter_waktu=='all_time'){$where_date = '1';}else 
-if($filter_waktu=='hari_ini'){$where_date = "i.tanggal_delivery >= '$today' ";}else 
-if($filter_waktu=='kemarin'){$where_date = "i.tanggal_delivery >= '$kemarin' AND i.tanggal_delivery < '$today' ";}else 
-if($filter_waktu=='minggu_ini'){$where_date = "i.tanggal_delivery >= '$ahad_skg' AND i.tanggal_delivery < '$ahad_depan' ";}else 
-if($filter_waktu=='bulan_ini'){$where_date = "i.tanggal_delivery >= '$awal_bulan' ";}else
-if($filter_waktu=='tahun_ini'){$where_date = "i.tanggal_delivery >= '$awal_tahun' ";} 
+if ($filter_waktu == 'all_time') {
+  $where_date = '1';
+} else 
+if ($filter_waktu == 'hari_ini') {
+  $where_date = "a.tanggal_pick >= '$today' ";
+} else 
+if ($filter_waktu == 'kemarin') {
+  $where_date = "a.tanggal_pick >= '$kemarin' AND a.tanggal_pick < '$today' ";
+} else 
+if ($filter_waktu == 'minggu_ini') {
+  $where_date = "a.tanggal_pick >= '$ahad_skg' AND a.tanggal_pick < '$ahad_depan' ";
+} else 
+if ($filter_waktu == 'bulan_ini') {
+  $where_date = "a.tanggal_pick >= '$awal_bulan' ";
+} else
+if ($filter_waktu == 'tahun_ini') {
+  $where_date = "a.tanggal_pick >= '$awal_tahun' ";
+}
 
 
-$where_do = $filter_do=='' ? '1' : "(i.kode_do LIKE '%$filter_do%' OR i.kode_artikel LIKE '%$filter_do%') ";
-$where_id = $filter_id=='' ? '1' : "(f.kode LIKE '%$filter_id%' OR f.nama LIKE '%$filter_id%' OR f.keterangan LIKE '%$filter_id%' )";
+$where_keyword = $keyword == '' ? '1' : "(
+  d.kode_po LIKE '%$keyword%' OR 
+  i.kode_do LIKE '%$keyword%' OR 
+  i.kode_artikel LIKE '%$keyword%' OR 
+  f.kode_lama LIKE '%$keyword%' OR 
+  f.kode LIKE '%$keyword%' OR 
+  f.nama LIKE '%$keyword%' OR 
+  f.keterangan LIKE '%$keyword%' )";
 
 
 
-$sql_from = "FROM tb_pengeluaran a 
-JOIN tb_barang b ON a.kode_barang=b.kode 
-";
+// $sql_from = "FROM tb_pengeluaran a 
+// JOIN tb_barang b ON a.kode_barang=b.kode 
+// ";
 
-$sql_where = "
-WHERE f.id_kategori=$id_kategori 
-AND $where_date 
-AND $where_do 
-AND $where_id 
-";
+// $sql_where = "
+// WHERE f.id_kategori=$id_kategori 
+// AND $where_date 
+// AND $where_keyword 
+// AND $where_id 
+// ";
 
-$s = "SELECT 1 $sql_from $sql_where ";
+// $s = "SELECT 1 $sql_from $sql_where ";
 
 # ==============================================================
 # MAIN SQL PENGELUARAN
 # ==============================================================
-$s = "SELECT 
-a.qty as qty_pick,
-a.id as id_pick,
-a.id_kumulatif,
-a.qty_allocate,
-b.kode_lokasi,
-b.is_fs,
-b.no_lot,
-b.id_sj_item,
-c.kode_sj,
-d.kode_po,
-f.kode as kode_barang,
-f.nama as nama_barang,
-f.keterangan as keterangan_barang,
-f.satuan,
-g.brand,
-h.nama as nama_supplier,
-i.tanggal_delivery,
-i.kode_artikel,
-i.kode_do,
-(
-  SELECT p.tmp_qty FROM tb_sj_kumulatif p 
-  WHERE p.is_fs is not null 
-  AND p.id=a.id_kumulatif) qty_tr_fs,
-(
-  SELECT p.tmp_qty FROM tb_sj_kumulatif p 
-  JOIN tb_retur q ON p.id=q.id 
-  WHERE p.is_fs is null 
-  AND p.id=a.id_kumulatif) qty_diterima_with_qc_no_fs,
-(
-  SELECT p.qty FROM tb_retur p 
-  JOIN tb_sj_kumulatif q ON p.id=q.id 
-  WHERE q.id= a.id_kumulatif
-  ) qty_retur,
-(
-  SELECT p.qty FROM tb_ganti p
-  JOIN tb_retur q ON p.id=q.id 
-  JOIN tb_sj_kumulatif r ON q.id=r.id 
-  WHERE r.id=a.id_kumulatif) qty_balik,
-(
-  SELECT SUM(p.qty) FROM tb_pick p 
-  WHERE p.id != a.id 
-  AND p.id_kumulatif = a.id_kumulatif) qty_pick_by,
-(
-  SELECT COUNT(1) FROM tb_roll  
-  WHERE id_kumulatif = b.id) count_roll
 
-
-FROM tb_pick a 
-JOIN tb_sj_kumulatif b ON a.id_kumulatif=b.id 
-JOIN tb_sj_item c ON b.id_sj_item=c.id 
-JOIN tb_sj d ON c.kode_sj=d.kode 
-JOIN tb_barang f ON c.kode_barang=f.kode 
-JOIN tb_lokasi g ON b.kode_lokasi=g.kode 
-JOIN tb_supplier h ON d.kode_supplier=h.kode  
-JOIN tb_do i ON a.id_do=i.id  
-
-$sql_where 
-
---  ID - PO - LOT - LOKASI - FS
-ORDER BY f.kode, d.kode_po, b.no_lot, g.kode, b.is_fs  
-
-";
-
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-
+include 'sql_pick.php';
+$q = mysqli_query($cn, $sql_pick_one) or die(mysqli_error($cn));
 $total_row = mysqli_num_rows($q);
-$jumlah_row = mysqli_num_rows($q);
 
-
-$tr_hasil = $jumlah_row==0 ? "<tr><td colspan=100%><div class='alert alert-danger'>Data tidak ditemukan..</div></td></tr>" : '';
-while($d=mysqli_fetch_assoc($q)){
-  $id=$d['id_pick'];
-  $satuan=$d['satuan'];
-  $kode_sj=$d['kode_sj'];
-  $kode_lokasi=$d['kode_lokasi'];
-  $kode_do=$d['kode_do'];
-  $is_fs=$d['is_fs'];
-
-  $id_sj_item = $d['id_sj_item'];
-
-  $tgl = date('d-m-y',strtotime($d['tanggal_delivery']));
-  $awal_terima = $d['awal_terima'] ?? '';
-  $akhir_terima = $d['akhir_terima'] ?? '';
-
-  $no_lot = $d['no_lot'] ?? $unset;
-  $qty_tr_fs = $d['qty_tr_fs'];
-  $qty_retur = $d['qty_retur'];
-  $qty_balik = $d['qty_balik'];
-  $qty_pick = $d['qty_pick'];
-  $qty_allocate = $d['qty_allocate'];
-  $qty_pick_by = $d['qty_pick_by'];
-  $qty_diterima_with_qc_no_fs = $d['qty_diterima_with_qc_no_fs'];
-  
-  $qty_tr_fs = $qty_tr_fs ? floatval($qty_tr_fs) : '-';
-  $qty_retur = $qty_retur ? floatval($qty_retur) : 0;
-  $qty_balik = $qty_balik ? floatval($qty_balik) : 0;
-  $qty_pick = $qty_pick ? floatval($qty_pick) : 0;
-  $qty_allocate = $qty_allocate ? floatval($qty_allocate) : 0;
-  $qty_pick_by = $qty_pick_by ? floatval($qty_pick_by) : 0;
-  $qty_diterima_with_qc_no_fs = $qty_diterima_with_qc_no_fs ? floatval($d['qty_diterima_with_qc_no_fs']) : 0;
-
-  $qty_real = $qty_diterima_with_qc_no_fs - $qty_retur + $qty_balik;
-  $qty_real = $qty_real<$qty_tr_fs ? $qty_tr_fs : $qty_real;
-
-  $stok_akhir = $qty_real - $qty_pick - $qty_pick_by;
-  $stok_akhir_show = $stok_akhir ? "<span class='tebal darkblue'>$stok_akhir $satuan</span>" : '<span class=abu>0</span>';
-
-  $fs_show = $is_fs ? ' <b class="f14 ml1 mr1 biru p1 pr2 br5" style="display:inline-block;background:green;color:white">FS</b>' : '';
-
-
-  # =======================================================
-  # DECODE KODE ARTIKEL
-  # =======================================================
-  $kode_artikel=$d['kode_artikel'];
-  $kode_brand = substr($kode_artikel,0,1);
-  $kode_gender = substr($kode_artikel,7,1);
-  $kode_apparel = substr($kode_artikel,8,1);
-  $kode_unik = "$kode_brand$kode_gender$kode_apparel";
-
-  $brand = ucwords(strtolower($arr_brand[$kode_brand]));
-  $gender = ucwords(strtolower($arr_gender[$kode_gender]));
-  $apparel = ucwords(strtolower($arr_apparel[$kode_apparel]));
-  $pic = $arr_assign_pic[$kode_unik] ?? $unset;
-
-  $ul_artikel = "
-  <ul class='f12 abu m0 p0 pl3' >
-    <li>$brand</li>
-    <li>$gender</li>
-    <li>$apparel</li>
-    <li>$kode_unik: $pic</li>
-  </ul>
+$s = "$sql_pick
+  -- AND i.kode_do='$-kode_do' -- All kode_do
+  AND $where_date 
+  AND $where_keyword 
+  ORDER BY i.kode_do  
   ";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+$count_pick = mysqli_num_rows($q);
+
+$tr = '';
+$i = 0;
+while ($d = mysqli_fetch_assoc($q)) {
+  $i++;
+  $id_pick = $d['id_pick'];
+  $no_lot = $d['no_lot'];
+  $kode_lokasi = $d['kode_lokasi'];
+  $brand = $d['brand'];
+  $is_hutangan = $d['is_hutangan'];
+  $count_roll = $d['count_roll'];
+  $is_fs = $d['is_fs'];
+  $satuan = $d['satuan'];
+  $step = $d['step'];
+  $allocator = $d['allocator'];
+  $picker = $d['picker'];
+
+  $allocator = ucwords(strtolower($allocator));
+  $picker = ucwords(strtolower($picker));
+
+  // tanggal
+  $tanggal_pick = $d['tanggal_pick'];
+  $tanggal_allocate = $d['tanggal_pick'];
+
+  // pemasukan
+  $qty_transit = floatval($d['qty_transit']);
+  $qty_tr_fs = floatval($d['qty_tr_fs']);
+  $qty_qc = floatval($d['qty_qc']);
+  $qty_qc_fs = floatval($d['qty_qc_fs']);
+  $qty_retur = floatval($d['qty_retur']);
+  $qty_ganti = floatval($d['qty_ganti']);
+
+  //pengeluaran
+  $qty_pick = floatval($d['qty_pick']);
+  $qty_allocate = floatval($d['qty_allocate']);
+  $qty_pick_by_other = floatval($d['qty_pick_by_other']);
+  $qty_allocate_by_other = floatval($d['qty_allocate_by_other']);
+
+
+
+
+
+
+
+
+
+
+
+  # =======================================================
+  # QTY CALCULATION
+  # =======================================================
+  // exception for hutangan
+  if ($is_hutangan) {
+    $qty_hutangan = $qty_pick;
+    $qty_pick = 0;
+  }
+
+  $qty_datang = $qty_transit + $qty_tr_fs + $qty_qc + $qty_qc_fs - $qty_retur + $qty_ganti;
+  $stok_available = $qty_qc + $qty_qc_fs - $qty_pick_by_other - $qty_pick - $qty_retur + $qty_ganti;
+
+  // qty stok akhir
+  if ($sebagai = 'WH') { // id_role=3
+    $qty_pick_or_allocate = $qty_allocate;
+    $stok_akhir = $qty_datang - $qty_allocate - $qty_allocate_by_other;
+  } else { // id_role=7 PPIC
+    $qty_pick_or_allocate = $qty_pick;
+    $stok_akhir = $qty_datang - $qty_pick_or_allocate - $qty_pick_by_other;
+  }
+
+  // set max
+  $qty_set_max_pick = $stok_available + $qty_pick;
+  $max_pick = $is_hutangan ? '' : $qty_set_max_pick;
+  $qty_set_max_allocate = $qty_pick;
+  $max_allocate = $is_hutangan ? '' : $qty_set_max_allocate;
+  # =======================================================
+  # END QTY CALCULATION
+  # =======================================================
+
+
+
+
+
+  // tanggal_show
+  $tanggal_pick_show = date('d-M H:i', strtotime($tanggal_pick));
+  $tanggal_allocate_show = date('d-M H:i', strtotime($tanggal_allocate));
+
+  // other show
+  $no_lot_show = $no_lot ? $no_lot : $null;
+  $brand_show = $brand ? $brand : '';
+
+  // repeat_show
+  $repeat_show = $d['is_repeat'] ? '<span class="tebal consolas miring abu bg-yellow">repeat item</span>' : '';
+
+
+  if ($qty_pick) $jumlah_item_valid++;
+
+  // qty pick
+  $qty_pick = $qty_pick ? $qty_pick : '';
+  $qty_input_allocate = $qty_allocate ? $qty_allocate : '';
+
+  // qty for input exception hutangan
+  $qty_pick = $is_hutangan ? $qty_hutangan : $qty_pick;
 
   $gradasi = $qty_pick ? '' : 'merah';
+  $gradasi = !$is_hutangan ? $gradasi : 'kuning';
+  $hutangan_show = $is_hutangan ? "<span class='badge bg-red mb1 bold'>HUTANGAN</span>" : '';
+  $fs_icon_show = $is_fs ? $fs_icon : '';
 
-  if($qty_pick){
 
-    if($id_role==3){
-      if($qty_allocate==$qty_pick){
-        $color = 'success';
-        $caption = 'reAllocate';
-      }else if($qty_allocate){
-        $color = 'danger';
-        $caption = 'Fix Allocate';
-      }else{
-        $color = 'primary';
-        $caption = 'Allocate';
-      }
-      $btn = "<button class='btn btn-$color btn-sm'>$caption</button>";
-    }else{
-      $btn='';      
-    }
 
-    $pick_allocate = "
-      <a target=_blank href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat'>
-        $qty_pick / $qty_allocate  $btn
-      </a>
-    ";
-  }else{
-    if($id_role==7){
-      $pick_allocate = "
-        <a target=_blank href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat'>
-          0 / 0  <button class='btn btn-danger btn-sm'>Pick</button>
-        </a>
+
+
+  if ($is_hutangan) {
+    // exception for hutangan view PPIC
+    $qty_allocate_show = '-';
+  } elseif ($qty_allocate) {
+    $qty_allocate_show = "
+        $qty_allocate
+        <div class='f12 abu'>by: $allocator</div>
+        <div class='f10 abu'>$tanggal_allocate_show</div>
       ";
-    }else{
-      $pick_allocate = '0 / 0';
+  } else {
+    if ($id_role == 3) {
+      if ($qty_pick) {
+        //link allocate
+        $qty_allocate_show = "<a href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat' class='btn btn-danger btn-sm'>Belum Allocate</a>";
+      } else {
+        $qty_allocate_show = '-'; // gapapa blm allocate krn pick masih nol
+      }
+    } else { // for PPIC
+      if ($qty_pick) {
+        //link allocate
+        $qty_allocate_show = "<span class='red consolas miring f12'>Belum Allocate</span>";
+      } else {
+        $qty_allocate_show = '-'; // gapapa blm allocate krn pick masih nol
+      }
     }
   }
-  // $pick_allocate = $id_role!=3 ? "$qty_pick / $qty_allocate" : "
-  //   
-  // ";
 
-  $tr_hasil .= "
-    <tr id=tr__$id class='gradasi-$gradasi'>
-      <td>
-        <div>
-          <div class='kecil abu'>Tgl: $tgl</div>
-          <div class='btn_aksi pointer' id=ket_artikel$id"."__toggle>$kode_artikel $img_detail</div>
-          <div class=hideit id=ket_artikel$id>
-            <div class='kecil abu'>DO: $kode_do</div>
-            $ul_artikel
-          </div>
-        </div>
-      </td>
-      <td>
-        <div>
-          <a target=_blank href='?master_penerimaan&cat=$cat&do=$d[kode_po]&id=&waktu=all_time'>
-            $d[kode_po]
-          </a>
-        </div>
-        <div class='kecil abu'>$d[nama_supplier]</div>
-      </td>
-      <td>
-        <div class='abu f12 mb1'>
-          <span class=miring>id.$d[id_kumulatif]</span> ~ 
-          <a target=_blank href='?penerimaan&p=manage_sj_kumulatif&id_sj_item=$d[id_sj_item]&id_kumulatif=$d[id_kumulatif]'>
-            Lot: $no_lot 
-          </a> ~ $d[kode_lokasi]
-        </div>
-        <div>
-          <a target=_blank href='?master&p=barang&keyword=$d[kode_barang]'>
-            $d[kode_barang] 
-          </a>
-          $fs_show 
-          <span class=btn_aksi id=id_ket$id"."__toggle>$img_detail</span>
+  $qty_pick_class = $is_hutangan ? 'qty_hutangan' : 'qty_pick';
+  if ($qty_pick) {
+    $qty_pick_show = "
+      $qty_pick
+      <div class='miring abu f12'>Picked by: </div>
+      <div class='f12'>$picker</div>
+      <div class='abu f10'>$tanggal_pick_show</div>
+    ";
+  } else {
+    if ($id_role == 7) {
+      $qty_pick_show = "<a href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat' class='btn btn-danger btn-sm'>Belum Pick</a>";
+    } else {
+      $qty_pick_show = "<span class='red consolas f12 miring'>Belum Pick</span>";
+    }
+  }
 
-        </div>
-        <div id=id_ket$id class=hideit>
-          <ul class='kecil abu m0 p0 pl3'>
-            <li>$d[nama_barang]</li>
-            <li>$d[keterangan_barang]</li>
-            <li>Lokasi: $d[kode_lokasi]</li>
-            <li>Brand: $d[brand]</li>
-            <li>Roll count: $d[count_roll]</li>
-          </li>
-        </div>
-      </td>
-      <td>
-        <div class=btn_aksi id=detail_qty$id"."__toggle>
-          <a target=_blank href='?retur&id_sj_item=$id_sj_item'>$qty_real</a> $img_detail
-        </div>
-        <div class='hideit wadah br5 kecil mt1' id=detail_qty$id>
-          <div>QC: $qty_diterima_with_qc_no_fs</div>
-          <div>QC-FS: $qty_tr_fs</div>
-          <div>Retur: $qty_retur</div>
-          <div>Balik: $qty_balik</div>
-        </div>
+  $tanggal_do_show = date('d-m-y H:i', strtotime($d['tanggal_do']));
 
+
+
+
+  # =======================================================
+  # FINAL TR LOOP
+  # =======================================================
+  $tr .= "
+    <tr class='gradasi-$gradasi'>
+      <td>$i</td>
+      <td>
+        $d[kode_do]
+        <div class='f12 abu'>Artikel: $d[kode_artikel]</div>
+        <div class='f12 abu'>$tanggal_do_show</div>
       </td>
       <td>
-        <div>$pick_allocate</div>
+        $d[kode_po]
+        <div class='f12 abu'>Lot: $no_lot_show</div>
+        <div class='f12 abu'>Lokasi: $kode_lokasi $brand_show</div>
+        <div class='f12 abu'>Roll: $count_roll</div>
       </td>
       <td>
-        <div class=darkred>$qty_pick_by</div>
+        <div>$d[kode_barang] $repeat_show </div>
+        <div class='f12 abu'>
+          <div>Kode lama: $d[kode_lama]</div>
+          <div>$d[nama_barang]</div>
+          <div>$d[keterangan_barang]</div>
+        </div>
       </td>
-      <td>
-        <div>$stok_akhir_show</div>
+      <td class=''>
+        <span id=stok_available__$id_pick>$stok_available</span> 
+        <span class=btn_aksi id=stok_available_info$id_pick" . "__toggle>$img_detail</span> $fs_icon_show
+        <div id=stok_available_info$id_pick class='hideit wadah f12 mt1'>
+          <div class=darkred>Transit: $qty_transit</div>
+          <div class=darkred>Tr-FS: $qty_tr_fs</div>
+          <div class=abu>Retur: $qty_retur</div>
+          <div class=abu>Ganti: $qty_ganti</div>
+          <div class=green>QTY QC: $qty_qc</div>
+          <div class=green>QTY QC-FS: $qty_qc_fs</div>
+        </div> 
       </td>
+      <td class=' darkred' id=qty_pick_by_other__$id_pick>$qty_pick_by_other</td>
+      <td width=100px>
+        $qty_pick_show $hutangan_show
+      </td>
+      <td class=>
+        <div class=darkblue id=qty_datang__$id_pick>$qty_datang</div>
+        <div class='darkred f12' id=qty_allocate_by_other__$id_pick>-$qty_allocate_by_other</div>
+      </td>
+      <td width=100px>
+        $qty_allocate_show
+      </td>
+      <td><span id=stok_akhir__$id_pick>$stok_akhir</span></td>
+      <td class=f10>$satuan</td>
     </tr>
   ";
-}
-
-
-
-
+} // end while
 
 
 $form_cari = "
   <form method=post>
-    <tr>
-      <td class=kecil>$clear_filter</td>
-      <td><input type='text' class='form-control form-control-sm $bg_do' placeholder='DO / Artikel' name=filter_do value='$filter_do' ></td>
-      <td><input type='text' class='form-control form-control-sm $bg_id' placeholder='PO / ID' name=filter_id value='$filter_id' ></td>
-      <td>
+    <div class=flexy>
+      <div class=kecil>$clear_filter</div>
+      <div><input type='text' class='form-control form-control-sm $bg_do' placeholder='keyword...' name=keyword value='$keyword' ></div>
+      <div>
         <select class='form-control form-control-sm $bg_waktu' name=filter_waktu>$opt_waktu</select>
-      </td>
-      <td>
+      </div>
+      <div>
         <button class='btn btn-success btn-sm' name=btn_cari>Cari</button>
-      </td>
-    </tr>
+      </div>
+    </div>
   </form>
 
 ";
 
-$bread = "<li class='breadcrumb-item'><a href='?master_pengeluaran&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
-if($cat=='fab')
-$bread = "<li class='breadcrumb-item'><a href='?master_pengeluaran&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
-?>
+$tb = "
+  $form_cari
+  <table class='table'>
+    <thead>
+      <th>No</th>
+      <th>DO/Artikel</th>
+      <th>PO</th>
+      <th>ITEM</th>
+      <th class=''>Stok Available</th>
+      <th class='darkred '>Picked <div class='f10 abu'>by other DO</div>
+      </th>
+      <th>QTY Pick</th>
+      <th class=' darkblue'>
+        QTY Datang
+        <div class='darkred f11'>Allocate di Line lain</div>
+      </th>
+      <th>Allocate</th>
+      <th>Stok Akhir</th>
+      <th class=f10>UOM</th>
+    </thead>
+    $tr
+  </table>
+";
 
-<div class="pagetitle">
-  <h1>Master Pengeluaran <?=$jenis_barang?></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$bread = "<li class='breadcrumb-item'><a href='?master_pengeluaran&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
+if ($cat == 'fab')
+  $bread = "<li class='breadcrumb-item'><a href='?master_pengeluaran&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
+
+
+echo "
+<div class='pagetitle'>
+  <h1>Master Pengeluaran $jenis_barang</h1>
   <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?pengeluaran">Pengeluaran</a></li>
-      <?=$bread?>
+    <ol class='breadcrumb'>
+      <li class='breadcrumb-item'><a href='?pengeluaran'>Pengeluaran</a></li>
+      $bread
     </ol>
   </nav>
 </div>
 
-
-<section class='section'>
-  <div id="blok_pengeluaran" class='mt2'>
-
-    <table class='table'>
-      <?=$form_cari?>
-      <tr>
-        <td colspan=100%><span class="darkblue"><?=$jumlah_row?></span> <span class="abu kecil">data dari <b><?=$total_row ?></b> records</span></td>
-      </tr>
-      <tr class='tebal gradasi-hijau '>
-        <td>Artikel</td>
-        <td>PO / Supplier</td>
-        <td>ID / Item / Keterangan</td>
-        <td>QTY Item Kumulatif</td>
-        <td>Pick/Allocate</td>
-        <td class=darkred>Pick by<br><span class=f12>Other DO</span></td>
-        <td>Stok Akhir</td>
-      </tr>
-      <?=$tr_hasil?>
-
-
-
-    </table>
-
-  </div>
-</section>
+$tb
+";

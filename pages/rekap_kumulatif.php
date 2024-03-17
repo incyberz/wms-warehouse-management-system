@@ -107,7 +107,7 @@ $form_cari = "
         <button class='btn btn-success btn-sm' name=btn_cari>Cari</button>
       </div>
       <div>
-        <a href='?stok_kumulatif' class='btn btn-info btn-sm' onclick='return confirm(\"Menuju Stok Opname untuk Get CSV?\")'>Get CSV</a>
+        <a href='?stok_opname' class='btn btn-info btn-sm' onclick='return confirm(\"Menuju Stok Opname untuk Get CSV?\")'>Get CSV</a>
       </div>
     </div>
   </form>
@@ -159,6 +159,22 @@ if ($cat == 'fab')
 # ==================================================
 # MAIN SELECT
 # ==================================================
+$FROM = "FROM tb_sj_kumulatif a 
+JOIN tb_sj_item b ON a.id_sj_item=b.id 
+JOIN tb_sj c ON b.kode_sj=c.kode 
+JOIN tb_barang d ON b.kode_barang=d.kode 
+
+WHERE c.id_kategori = $id_kategori 
+AND $where_date 
+AND $where_po 
+AND $where_id 
+";
+
+$s = "SELECT 1 $FROM";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+$total_row = mysqli_num_rows($q);
+
+
 $s = "SELECT 
 a.id as id_kumulatif,
 a.no_lot,
@@ -205,25 +221,14 @@ d.satuan,
 
 1
 
-FROM tb_sj_kumulatif a 
-JOIN tb_sj_item b ON a.id_sj_item=b.id 
-JOIN tb_sj c ON b.kode_sj=c.kode 
-JOIN tb_barang d ON b.kode_barang=d.kode 
-
-WHERE c.id_kategori = $id_kategori 
-AND $where_date 
-AND $where_po 
-AND $where_id 
-
+$FROM
 ORDER BY a.tanggal_masuk DESC 
 
 LIMIT 100 
--- zzz here
 ";
 
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
-$total_row = mysqli_num_rows($q);
 $jumlah_row_limited = mysqli_num_rows($q);
 
 

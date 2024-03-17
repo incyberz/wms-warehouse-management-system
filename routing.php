@@ -16,8 +16,11 @@ $arr_routing = [
   'import_data_kumulatif' => 'pages/importer/import_data_kumulatif',
   'insert_item_kumulatif' => 'pages/importer/insert_item_kumulatif',
   'insert_data_roll' => 'pages/importer/insert_data_roll',
+  'super_delete_importer' => 'pages/importer/super_delete_importer',
   'add_lokasi' => 'pages/importer/add_lokasi',
   'manage_blok' => 'pages/importer/manage_blok',
+  'stok_opname' => 'pages/stok/stok_opname',
+  'report' => 'pages/stok/report',
 ];
 
 if (array_key_exists($parameter, $arr_routing)) {

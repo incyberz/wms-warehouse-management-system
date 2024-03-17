@@ -6,7 +6,7 @@ echo "
   <h1>$judul</h1>
   <nav>
     <ol class='breadcrumb'>
-      <li class='breadcrumb-item'><a href='?stok_kumulatif'>Back to Stok Opname</a></li>
+      <li class='breadcrumb-item'><a href='?stok_opname'>Back to Stok Opname</a></li>
     </ol>
   </nav>
 </div>
@@ -51,6 +51,8 @@ foreach ($d as $key => $value) {
 
 $s = "SELECT 
 b.qty as qty_pick,
+b.is_hutangan,
+b.is_repeat,
 c.kode_do,
 c.date_created as tanggal_do,
 c.id_kategori,
@@ -73,13 +75,16 @@ while ($d = mysqli_fetch_assoc($q)) {
   $cat = $d['id_kategori'] == 1 ? 'aks' : 'fab';
   $qty_pick = floatval($d['qty_pick']);
   $tanggal_do_show = date('d-M-y, H:i', strtotime($d['tanggal_do']));
+  $hutangan_show = $d['is_hutangan'] ? "<span class='badge bg-red mb1 bold'>HUTANGAN</span>" : '';
+  $repeat_show = $d['is_repeat'] ? '<span class="tebal consolas miring abu bg-yellow">repeat item</span>' : '';
+
   $tr_do .= "
     <tr>
       <td class='f14 abu'>$i</td>
       <td><a href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat'>$d[kode_do]</a></td>
       <td>$tanggal_do_show</td>
       <td>$d[kategori]</td>
-      <td>$qty_pick</td>
+      <td>$qty_pick $hutangan_show $repeat_show</td>
       <td>$d[satuan]</td>
     </tr>
   ";
