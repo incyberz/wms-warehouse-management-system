@@ -17,57 +17,100 @@ $arr_waktu = [
   'minggu_ini' => 'Minggu ini',
   'bulan_ini' => 'Bulan ini',
   'tahun_ini' => 'Tahun ini',
-  'all_time' => 'All time',
+  'all_waktu' => 'All time',
 ];
 
-$filter_waktu = $_GET['waktu'] ?? 'all_time';
+$arr_item = [
+  'all_item' => 'All item',
+  'tr_item' => 'Transit',
+  'tr_fs_item' => 'Transit FS',
+  'qc_item' => 'After QC',
+  'qc_fs_item' => 'After QC FS',
+];
+
+$filter_waktu = $_GET['waktu'] ?? 'all_waktu';
 $opt_waktu = '';
 foreach ($arr_waktu as $waktu => $nama_waktu) {
   $selected = $filter_waktu == $waktu ? 'selected' : '';
   $opt_waktu .= "<option value=$waktu $selected>$nama_waktu</option>";
 }
 
-$keyword = $_GET['po'] ?? '';
-$filter_id = $_GET['id'] ?? '';
-$filter_proyeksi = $_GET['proyeksi'] ?? '';
-$filter_ppic = $_GET['ppic'] ?? '';
-if (isset($_POST['btn_cari'])) {
-  jsurl("?$parameter&cat=$cat&po=$_POST[keyword]&id=$_POST[filter_id]&waktu=$_POST[filter_waktu]&proyeksi=$_POST[filter_proyeksi]&ppic=$_POST[filter_ppic]");
+$filter_item = $_GET['item'] ?? 'all_item';
+$opt_item = '';
+foreach ($arr_item as $item => $nama_item) {
+  $selected = $filter_item == $item ? 'selected' : '';
+  $opt_item .= "<option value=$item $selected>$nama_item</option>";
 }
 
+# ================================================
+# GET / POST NAVIGATION
+# ================================================
+$keyword = $_GET['po'] ?? '';
+$filter_proyeksi = $_GET['proyeksi'] ?? '';
+$filter_ppic = $_GET['ppic'] ?? '';
+$filter_item = $_GET['item'] ?? 'all_item';
+$filter_waktu = $_GET['waktu'] ?? 'all_waktu';
+if (isset($_POST['btn_cari'])) {
+  jsurl("?$parameter&cat=$cat&po=$_POST[keyword]&waktu=$_POST[filter_waktu]&proyeksi=$_POST[filter_proyeksi]&ppic=$_POST[filter_ppic]&item=$_POST[filter_item]");
+}
+
+# ================================================
+# MANAGE FILTER
+# ================================================
 $clear_filter = 'Filter:';
 if (
-  $filter_waktu != 'all_time' ||
+  $filter_item != 'all_item' ||
+  $filter_waktu != 'all_waktu' ||
   $keyword != '' ||
-  $filter_id != '' ||
   $filter_proyeksi != '' ||
   $filter_ppic != ''
 ) $clear_filter = "<a href='?$parameter&cat=$cat'>Clear</a>";
 
-$bg_waktu = $filter_waktu == 'all_time' ? '' : 'bg-hijau';
+$bg_item = $filter_item == 'all_item' ? '' : 'bg-hijau';
+$bg_waktu = $filter_waktu == 'all_waktu' ? '' : 'bg-hijau';
 $bg_po = $keyword == '' ? '' : 'bg-hijau';
-$bg_id = $filter_id == '' ? '' : 'bg-hijau';
 $bg_proyeksi = $filter_proyeksi == '' ? '' : 'bg-hijau';
 $bg_ppic = $filter_ppic == '' ? '' : 'bg-hijau';
 
 
-if ($filter_waktu == 'all_time') {
-  $where_date = '1';
+if ($filter_item == 'all_item') {
+  $where_item = '1';
+} elseif ($filter_item == 'tr_item') {
+  // bukan FS AND belum QC
+  $where_item = "a.is_fs is null AND a.tanggal_qc is null";
+} elseif ($filter_item == 'tr_fs_item') {
+  // Item FS AND belum QC
+  $where_item = "a.is_fs is not null AND a.tanggal_qc is null";
+} elseif ($filter_item == 'qc_item') {
+  // Bukan FS AND sudah QC
+  $where_item = "a.is_fs is null AND a.tanggal_qc is not null";
+} elseif ($filter_item == 'qc_fs_item') {
+  // Item FS AND sudah QC
+  $where_item = "a.is_fs is not null AND a.tanggal_qc is not null";
+} else {
+  die("Invalid value of filter_item: $filter_item");
+}
+
+
+if ($filter_waktu == 'all_waktu') {
+  $where_waktu = '1';
 } else 
 if ($filter_waktu == 'hari_ini') {
-  $where_date = "a.tanggal_masuk >= '$today' ";
+  $where_waktu = "a.tanggal_masuk >= '$today' ";
 } else 
 if ($filter_waktu == 'kemarin') {
-  $where_date = "a.tanggal_masuk >= '$kemarin' AND a.tanggal_masuk < '$today' ";
+  $where_waktu = "a.tanggal_masuk >= '$kemarin' AND a.tanggal_masuk < '$today' ";
 } else 
 if ($filter_waktu == 'minggu_ini') {
-  $where_date = "a.tanggal_masuk >= '$ahad_skg' AND a.tanggal_masuk < '$ahad_depan' ";
+  $where_waktu = "a.tanggal_masuk >= '$ahad_skg' AND a.tanggal_masuk < '$ahad_depan' ";
 } else 
 if ($filter_waktu == 'bulan_ini') {
-  $where_date = "a.tanggal_masuk >= '$awal_bulan' ";
+  $where_waktu = "a.tanggal_masuk >= '$awal_bulan' ";
 } else
 if ($filter_waktu == 'tahun_ini') {
-  $where_date = "a.tanggal_masuk >= '$awal_tahun' ";
+  $where_waktu = "a.tanggal_masuk >= '$awal_tahun' ";
+} else {
+  die("Invalid value of filter_waktu: $filter_waktu");
 }
 
 
@@ -83,17 +126,17 @@ $where_proyeksi = $filter_proyeksi == '' ? '1' : "a.proyeksi LIKE '%$filter_proy
 $where_ppic = $filter_ppic == '' ? '1' : "a.kode_ppic LIKE '%$filter_ppic%' ";
 
 
-$sql_from = "FROM tb_penerimaan a 
-JOIN tb_barang b ON a.kode_barang=b.kode 
-";
+// $sql_from = "FROM tb_penerimaan a 
+// JOIN tb_barang b ON a.kode_barang=b.kode 
+// ";
 
-$sql_where = "
-WHERE e.id_kategori=$id_kategori 
-AND $where_date 
-AND $where_keyword 
-AND $where_proyeksi 
-AND $where_ppic 
-";
+// $sql_where = "
+// WHERE e.id_kategori=$id_kategori 
+// AND $where_waktu 
+// AND $where_keyword 
+// AND $where_proyeksi 
+// AND $where_ppic 
+// ";
 
 # =====================================================
 # CSV URL HANDLER
@@ -111,6 +154,9 @@ $form_cari = "
       <div><input type='text' class='form-control form-control-sm $bg_po' placeholder='keyword...' name=keyword value='$keyword' ></div>
       <div>
         <select class='form-control form-control-sm $bg_waktu' name=filter_waktu>$opt_waktu</select>
+      </div>
+      <div>
+        <select class='form-control form-control-sm $bg_item' name=filter_item>$opt_item</select>
       </div>
       <div class=hideit><input type='text' class='form-control form-control-sm $bg_proyeksi' placeholder='proyeksi' name=filter_proyeksi value='$filter_proyeksi' ></div>
       <div class=hideit><input type='text' class='form-control form-control-sm $bg_ppic' placeholder='ppic' name=filter_ppic value='$filter_ppic' ></div>
@@ -171,12 +217,18 @@ if ($cat == 'fab')
 # MAIN SELECT
 # ==================================================
 include 'sql_opname.php';
+$sql_opname_one = "SELECT 1 $FROM
+  AND $where_waktu 
+  AND $where_keyword 
+  AND $where_item 
+";
 $q = mysqli_query($cn, $sql_opname_one) or die(mysqli_error($cn));
 $total_row = mysqli_num_rows($q);
 
 $s = "$sql_opname
-  AND $where_date 
+  AND $where_waktu 
   AND $where_keyword 
+  AND $where_item 
   ORDER BY a.tanggal_masuk DESC 
   LIMIT $limit  
   ";

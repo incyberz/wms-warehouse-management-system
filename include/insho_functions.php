@@ -1,8 +1,15 @@
 <?php
+// v.1.3.3 tr_col colspan=100%
 // v.1.3.2 baca_csv update
 // v.1.3.1 echolog update
 // v.1.3.0 revision with echolog
 // v.1.2.0 revision with function baca_csv
+function tr_col($pesan, $td_class = '', $tr_class = '', $jumlah_col = 100)
+{
+  $colspan = $jumlah_col < 10 ? $jumlah_col : "$jumlah_col%";
+  return "<tr class='$tr_class'><td class='$td_class' colspan='$colspan'>$pesan</td></tr>";
+}
+
 function echolog($pesan, $break = true)
 {
   $br = ($break and $pesan != 'sukses') ? '<br>' : '';
