@@ -3,6 +3,8 @@
 # SYARAT VARIABEL
 # ===========================================
 $id_kategori = $_GET['id_kategori'] ?? '';
+$get_trx = $_GET['trx'] ?? 'in';
+$trx = $get_trx;
 
 if (isset($_POST['btn_ulang_dari_awal'])) {
   $s = "DELETE FROM tb_importer";
@@ -32,9 +34,15 @@ if (!$id_kategori) {
   }
 
   echo "
-    <div class='mb2'>Jenis Bahan: </div>
-    <a href='?importer&id_kategori=1' class='btn btn-success mb2'>Import Data Aksesoris</a>
-    <a href='?importer&id_kategori=2' class='btn btn-success mb2'>Import Data Fabric</a>
+    <h1>Import Data dari Excel</h1>
+    <hr>
+    <h2 class=mb4>Import Penerimaan</h2>
+    <a href='?importer&id_kategori=1' class='btn btn-success mb2'>Penerimaan Aksesoris</a>
+    <a href='?importer&id_kategori=2' class='btn btn-success mb2'>Penerimaan Fabric</a>
+    <hr>
+    <h2 class=mb4>Import Pengeluaran</h2>
+    <a href='?importer&id_kategori=1&trx=out' class='btn btn-warning mb2'>Pengeluaran Aksesoris</a>
+    <a href='?importer&id_kategori=2&trx=out' class='btn btn-warning mb2'>Pengeluaran Fabric</a>
   ";
   exit;
 }
@@ -389,9 +397,9 @@ if (!$jumlah_row) {
         </div>
         <div class='wadah gradasi-hijau'>
           <div class='mb1 abu'>File CSV Stok Penerimaan</div>
-          <input required type=file class='form-control' name=input_file_csv accept=.csv />
-          <div class='mb2 mt1 abu miring f12'>Jika file Anda masih format Excel, silahkan Save As dalam format CSV. Untuk baris pertama berupa nama-nama kolom yang harus sesuai dengan <a href='csv/template-stok-penerimaan.xlsx' target=_blank>Contoh Template Stok Penerimaan XLSX</a></div>
+          <input required type=file class='form-control mb2' name=input_file_csv accept=.csv />
           <button class='btn btn-primary'>Upload Stok Format CSV</button>
+          <div class='mb2 mt1  miring f12'>Jika file Anda masih format Excel, silahkan Save As dahulu dalam format CSV. Untuk baris pertama berupa nama-nama kolom yang harus sesuai dengan <a class='tebal green bg-yellow p1' href='csv/template-stok-penerimaan.xlsx' target=_blank>Contoh Template Stok Penerimaan XLSX</a></div>
         </div>
       </form>
     ";
