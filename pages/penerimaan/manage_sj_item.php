@@ -1,18 +1,22 @@
-<style>.suspended{display:none}</style>
+<style>
+  .suspended {
+    display: none
+  }
+</style>
 <?php
-if(isset($_POST['btn_save_qty_adjusted'])){
+if (isset($_POST['btn_save_qty_adjusted'])) {
   unset($_POST['btn_save_qty_adjusted']);
 
   $pesan = '';
   foreach ($_POST as $key => $value) {
-    $arr = explode('__',$key);
+    $arr = explode('__', $key);
     $s = "UPDATE tb_sj_item SET qty=$value WHERE id=$arr[1]";
-    $pesan.= "<br>updating sj_item, id:$arr[1]... ";
-    $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-    $pesan.= 'sukses.';
+    $pesan .= "<br>updating sj_item, id:$arr[1]... ";
+    $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+    $pesan .= 'sukses.';
   }
   echo "<div class='wadah gradasi-kuning consolas'>$pesan</div>";
-  jsurl('',2000);
+  jsurl('', 2000);
 }
 
 $debug .= "<br>id_kategori: <span id=id_kategori>$id_kategori</span>";
@@ -38,7 +42,9 @@ c.step,
   SELECT SUM(p.qty) FROM tb_roll p 
   JOIN tb_sj_kumulatif q ON p.id_kumulatif=q.id 
   JOIN tb_sj_item r ON q.id_sj_item=r.id 
+  JOIN tb_sj s ON r.kode_sj=s.kode 
   WHERE q.id_sj_item!=a.id 
+  AND s.kode_po=d.kode_po 
   AND q.is_fs is null 
   AND r.kode_barang=a.kode_barang) qty_parsial,
     -- QTY Parsial adalah qty_datang pada penerimaan lain 
@@ -67,31 +73,39 @@ c.step,
 FROM tb_sj_item a 
 JOIN tb_barang b ON a.kode_barang=b.kode 
 JOIN tb_satuan c ON b.satuan=c.satuan  
+JOIN tb_sj d ON a.kode_sj=d.kode 
 WHERE a.kode_sj='$kode_sj'";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $count_item = mysqli_num_rows($q);
-if($count_item){
+if ($count_item) {
   $tr = '';
   $no = 0;
-  while($d=mysqli_fetch_assoc($q)){
+  while ($d = mysqli_fetch_assoc($q)) {
     $no++;
 
-    $id=$d['id_sj_item'];
-    $id_sj_item=$d['id_sj_item'];
-    $qty_po=floatval($d['qty_po']);
-    $qty=floatval($d['qty']);
-    $qty_parsial=floatval($d['qty_parsial']);
-    $qty_datang=floatval($d['qty_datang']);
-    $qty_diterima_fs=floatval($d['qty_diterima_fs']);
-    $satuan=$d['satuan'];
-    $keterangan=$d['keterangan'];
-    $step=$d['step'];
-    $stok=$d['stok'] ?? 0;
+    $id = $d['id_sj_item'];
+    $id_sj_item = $d['id_sj_item'];
+    $qty_po = floatval($d['qty_po']);
+    $qty = floatval($d['qty']);
+    $qty_parsial = floatval($d['qty_parsial']);
+    $qty_datang = floatval($d['qty_datang']);
+    $qty_diterima_fs = floatval($d['qty_diterima_fs']);
+    // echo "
+    // <br>qty_po:$qty_po
+    // <br>qty:$qty
+    // <br>qty_parsial:$qty_parsial
+    // <br>qty_datang:$qty_datang
+    // <br>qty_diterima_fs:$qty_diterima_fs
+    // ";
+    $satuan = $d['satuan'];
+    $keterangan = $d['keterangan'];
+    $step = $d['step'];
+    $stok = $d['stok'] ?? 0;
 
     $qty_adjusted = $qty;
 
     // update value is_valid_all_qty
-    if(!$qty) $is_valid_all_qty = false;
+    if (!$qty) $is_valid_all_qty = false;
 
     $link = "<a href='?penerimaan&p=manage_sj_kumulatif&id_sj_item=$id_sj_item'>$img_sum</a>";
     $qty_diterima_show = $qty_datang ? "$qty_datang $link" : "<span class='kecil miring red'>(belum ada)</span> $link";
@@ -103,10 +117,10 @@ if($count_item){
     $qty_kurang_show = $qty_kurang;
 
     $qty_selisih = -$qty_kurang;
-    $qty_selisih_show = $qty_selisih<0 ? "<span class=darkred>$qty_selisih</span>" : $qty_selisih;
-    
+    $qty_selisih_show = $qty_selisih < 0 ? "<span class=darkred>$qty_selisih</span>" : $qty_selisih;
+
     // jangan menerima lagi jika qty_kurang = 0
-    if(!$qty_kurang) $qty_diterima_show = '-';
+    // if (!$qty_kurang) $qty_diterima_show = '-';
 
     $tr .= "
       <tr id=source_edit_sj_item__$id>
@@ -128,9 +142,7 @@ if($count_item){
         <td class=kanan>$qty_diterima_fs_show</td>
       </tr>
     ";
-
   }
-
 }
 
 ?>
@@ -159,8 +171,8 @@ if($count_item){
           <th class=kanan>Selisih Kdt</th>
           <th class=kanan>Ket</th>
         </thead>
-      
-        <?=$tr?>
+
+        <?= $tr ?>
         <tfoot class=gradasi-kuning>
           <tr>
             <td colspan=3>TOTAL</td>
@@ -173,17 +185,17 @@ if($count_item){
             </td>
           </tr>
         </tfoot>
-      
+
       </table>
     </div>
   </form>
   <table class='darkabu f12 flexy'>
     <tr>
-      <td valign=top><b>Catatan:</b></td> 
+      <td valign=top><b>Catatan:</b></td>
       <td valign=top>
         <ul>
           <li>QTY Datang adalah Summary dari qty subitem</li>
-          <li>Klik tombol SUM <?=$img_sum?> pada tiap item untuk manage subitem</li>
+          <li>Klik tombol SUM <?= $img_sum ?> pada tiap item untuk manage subitem</li>
           <li>QTY Parsial adalah QTY Datang pada Surat Jalan yang berbeda</li>
           <li>QTY Kurang adalah sisa PO yang belum datang</li>
         </ul>
@@ -194,13 +206,11 @@ if($count_item){
 </div>
 
 <?php
-if($count_item){
-  if($is_valid_all_qty){
+if ($count_item) {
+  if ($is_valid_all_qty) {
     // Next Process
 
-  }else{
-
+  } else {
   }
-}else{
-
-} 
+} else {
+}

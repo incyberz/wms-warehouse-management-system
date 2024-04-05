@@ -70,7 +70,12 @@ if ($filter_waktu == 'tahun_ini') {
 
 
 $where_po = $filter_po == '' ? '1' : "c.kode_po LIKE '%$filter_po%' ";
-$where_id = $filter_id == '' ? '1' : "(d.kode LIKE '%$filter_id%' OR d.nama LIKE '%$filter_id%' OR d.keterangan LIKE '%$filter_id%' )";
+$where_id = $filter_id == '' ? '1' : "(
+  d.kode LIKE '%$filter_id%' OR 
+  d.kode_lama LIKE '%$filter_id%' OR 
+  d.nama LIKE '%$filter_id%' OR 
+  d.keterangan LIKE '%$filter_id%' 
+  )";
 $where_proyeksi = $filter_proyeksi == '' ? '1' : "a.proyeksi LIKE '%$filter_proyeksi%' ";
 $where_ppic = $filter_ppic == '' ? '1' : "a.kode_ppic LIKE '%$filter_ppic%' ";
 
@@ -271,7 +276,7 @@ while ($d = mysqli_fetch_assoc($q)) {
       </td>
       <td>
         $d[kode_po]
-        <div class='f12 abu'>SJ: $d[kode_sj]</div>
+        <div class='f12 abu'>SJ: <a href='?penerimaan&p=manage_sj&kode_sj=$d[kode_sj]'>$d[kode_sj]</a></div>
         $parsial_icon
       </td>
       <td>$d[no_lot]</td>

@@ -178,6 +178,7 @@ if ($parameter == 'logout') {
 
     <main id="main" class="main">
       <?php
+      if ($dm_db) echo "<div class='gradasi-merah consolas red'>Debug Mode Database</div>";
       include 'routing.php';
       include 'debug.php';
       ?>

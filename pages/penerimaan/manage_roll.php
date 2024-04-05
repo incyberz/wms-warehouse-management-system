@@ -17,6 +17,7 @@ a.kode_lokasi,
 b.qty as qty_adjusted,
 b.id as id_sj_item,
 c.kode as kode_barang,
+c.nama as nama_barang,
 c.keterangan as keterangan_barang,
 c.id_kategori,
 c.satuan,
@@ -70,6 +71,7 @@ $is_fs = $d['is_fs'];
 $id_sj_item = $d['id_sj_item'];
 $no_lot = $d['no_lot'];
 $kode_barang = $d['kode_barang'];
+$nama_barang = $d['nama_barang'];
 $keterangan_barang = $d['keterangan_barang'];
 $kode_lokasi = $d['kode_lokasi'];
 $this_brand = $d['brand'];
@@ -193,6 +195,7 @@ $data_roll_info = "
     <span class='f12 abu'>Lot: </span>$no_lot_show,
     <span class='f12 abu'>Rak: </span>$kode_lokasi <span class='f12 abu'>$this_brand</span>
   </span>
+  <div class='f12 abu'>$nama_barang $keterangan_barang</div>
 ";
 
 
@@ -268,9 +271,10 @@ if (isset($_POST['btn_delete_all_roll'])) {
 # PROCESSORS: TAMBAH ROLL
 # =============================================================
 if (isset($_POST['btn_save_roll'])) {
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
+  // echo '<pre>';
+  // var_dump($_POST);
+  // echo '</pre>';
+  echolog('saving data roll');
 
   $id_kumulatif = $_GET['id_kumulatif'] ?? die(erid('id_kumulatif'));
 
@@ -293,6 +297,7 @@ if (isset($_POST['btn_save_roll'])) {
 
   $s = "UPDATE tb_sj_kumulatif SET tmp_qty=$total_qty WHERE id=$id_kumulatif";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  echo div_alert('success', 'Data roll berhasil disimpan');
   jsurl();
 }
 
@@ -357,7 +362,7 @@ if (mysqli_num_rows($q) == 0) {
       <tr>
         <td>$d[no_roll]</td>
         <td>
-          <input class='form-control form-control-sm qty_roll' type=number min=0 max=$qty_adjusted step=$step required name=qty_roll__$id_roll id=qty_roll__$id_roll value=$qty>
+          <input class='form-control form-control-sm qty_roll' type=number min=0 step=$step required name=qty_roll__$id_roll id=qty_roll__$id_roll value=$qty>
         </td>
         <td>
           <input class='form-control form-control-sm keterangan_roll' maxlength=10 name=keterangan_roll__$id_roll id=keterangan_roll__$id_roll value='$d[keterangan]'>

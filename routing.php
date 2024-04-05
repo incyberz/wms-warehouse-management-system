@@ -8,6 +8,7 @@ $arr_routing = [
   'home' => 'pages/dashboard/dashboard',
   'master' => 'pages/master/master',
   'importer' => 'pages/importer/importer',
+  'importer_out' => 'pages/importer/importer_out',
   'import_data_barang' => 'pages/importer/import_data_barang',
   'cek_duplikat_kumulatif' => 'pages/importer/cek_duplikat_kumulatif',
   'import_data_item' => 'pages/importer/import_data_item',

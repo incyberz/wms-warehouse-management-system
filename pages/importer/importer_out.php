@@ -7,24 +7,24 @@ $get_trx = $_GET['trx'] ?? 'in';
 $trx = $get_trx;
 
 if (isset($_POST['btn_ulang_dari_awal'])) {
-  $s = "DELETE FROM tb_importer";
+  $s = "DELETE FROM tb_importer_out";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   echo div_alert('success', 'Reset tabel importer sukses.');
 
-  $s = "DELETE FROM tb_importer_po";
-  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  echo div_alert('success', 'Reset tabel importer_po sukses.');
+  // $s = "DELETE FROM tb_importer_po";
+  // $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  // echo div_alert('success', 'Reset tabel importer_po sukses.');
 
-  $s = "DELETE FROM tb_importer_kumulatif";
-  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  echo div_alert('success', 'Reset tabel importer_kumulatif sukses.');
+  // $s = "DELETE FROM tb_importer_kumulatif";
+  // $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  // echo div_alert('success', 'Reset tabel importer_kumulatif sukses.');
 
   jsurl();
 }
 
 if (!$id_kategori) {
 
-  $s = "SELECT * FROM tb_importer LIMIT 1";
+  $s = "SELECT * FROM tb_importer_out LIMIT 1";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if (mysqli_num_rows($q)) {
     echo div_alert('info', 'Pada tabel importer sudah ada data temporer. Klik Tombol Import Data atau Anda dapat Ulang dari Awal
@@ -41,8 +41,8 @@ if (!$id_kategori) {
     <a href='?importer&id_kategori=2' class='btn btn-success mb2'>Penerimaan Fabric</a>
     <hr>
     <h2 class=mb4>Import Pengeluaran</h2>
-    <a href='?importer_out&id_kategori=1&trx=out' class='btn btn-warning mb2'>Pengeluaran Aksesoris</a>
-    <a href='?importer_out&id_kategori=2&trx=out' class='btn btn-warning mb2'>Pengeluaran Fabric</a>
+    <a href='?importer&id_kategori=1&trx=out' class='btn btn-warning mb2'>Pengeluaran Aksesoris</a>
+    <a href='?importer&id_kategori=2&trx=out' class='btn btn-warning mb2'>Pengeluaran Fabric</a>
   ";
   exit;
 }
@@ -67,13 +67,13 @@ if (!$id_kategori) {
 # REUPLOAD CSV PROCESSORS
 # ===========================================
 if (isset($_POST['btn_reupload_csv'])) {
-  if (unlink("csv/tmp.csv")) {
+  if (unlink("csv/tmp_out.csv")) {
     // upload berhasil
-    echo div_alert('success', 'Hapus CSV berhasil.');
+    echo div_alert('success', 'Hapus CSV Pengeluaran berhasil.');
     jsurl('', 2000);
   } else {
     // upload gagal
-    die(div_alert('danger', 'Tidak bisa hapus file CSV temporer.'));
+    die(div_alert('danger', 'Tidak bisa hapus file CSV Pengeluaran temporer.'));
   }
 }
 
@@ -81,13 +81,13 @@ if (isset($_POST['btn_reupload_csv'])) {
 # FILES PROCESSORS
 # ===========================================
 if (isset($_FILES['input_file_csv'])) {
-  if (move_uploaded_file($_FILES['input_file_csv']['tmp_name'], "csv/tmp.csv")) {
+  if (move_uploaded_file($_FILES['input_file_csv']['tmp_name'], "csv/tmp_out.csv")) {
     // upload berhasil
-    echo div_alert('success', 'Upload CSV berhasil.');
+    echo div_alert('success', 'Upload CSV Pengeluaran berhasil.');
     jsurl('', 2000);
   } else {
     // upload gagal
-    die(div_alert('danger', 'Tidak bisa move upload file CSV.'));
+    die(div_alert('danger', 'Tidak bisa move upload file CSV Pengeluaran.'));
   }
 }
 
@@ -96,23 +96,23 @@ if (isset($_FILES['input_file_csv'])) {
 # ===========================================
 if (isset($_POST['btn_delete_row'])) { // delete row
   echolog('deleting row');
-  $s = "DELETE FROM tb_importer WHERE id_auto = $_POST[btn_delete_row]";
+  $s = "DELETE FROM tb_importer_out WHERE id_auto = $_POST[btn_delete_row]";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   echolog('sukses');
   jsurl('', 500);
 }
 
 if (isset($_POST['btn_set_null'])) { // set null id lama
-  echolog('updating tb_importer, set null ID');
-  $s = "UPDATE tb_importer SET ID = NULL where id_auto = $_POST[btn_set_null]";
+  echolog('updating tb_importer_out, set null ID');
+  $s = "UPDATE tb_importer_out SET ID = NULL where id_auto = $_POST[btn_set_null]";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   echolog('sukses');
   jsurl('', 500);
 }
 
 if (isset($_POST['btn_update_konten'])) {
-  echolog('updating tb_importer, updating ID-lama');
-  $s = "UPDATE tb_importer SET ID = '$_POST[ID]' where id_auto = $_POST[btn_update_konten]";
+  echolog('updating tb_importer_out, updating ID-lama');
+  $s = "UPDATE tb_importer_out SET ID = '$_POST[ID]' where id_auto = $_POST[btn_update_konten]";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   echolog('sukses');
   jsurl('', 500);
@@ -120,7 +120,7 @@ if (isset($_POST['btn_update_konten'])) {
 
 if (isset($_POST['btn_update_dg_id_lama'])) {
   echolog('Replacing ID-baru dengan id-lama');
-  $s = "UPDATE tb_importer SET ID_BARU = '$_POST[ID]' where id_auto = $_POST[btn_update_dg_id_lama]";
+  $s = "UPDATE tb_importer_out SET ID_BARU = '$_POST[ID]' where id_auto = $_POST[btn_update_dg_id_lama]";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   echolog('sukses');
   jsurl('', 500);
@@ -149,7 +149,7 @@ if (isset($_POST['btn_update_dg_id_lama'])) {
 # DESAIN JUDUL
 # ===========================================
 $ada_error = 0;
-$judul = 'Import Data Penerimaan ' . $arr_kategori[$id_kategori];
+$judul = 'Import Data Pengeluaran ' . $arr_kategori[$id_kategori];
 set_title($judul);
 ?>
 <style>
@@ -163,7 +163,7 @@ set_title($judul);
   <h1><?= $judul ?></h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="?penerimaan">Penerimaan</a></li>
+      <li class="breadcrumb-item"><a href="?importer">Importer Home</a></li>
       <li class="breadcrumb-item active"><?= $judul ?></li>
     </ol>
   </nav>
@@ -203,23 +203,23 @@ while ($d = mysqli_fetch_assoc($q)) {
 
 
 # ===========================================
-# CSV HANDLER
+# CSV Pengeluaran HANDLER
 # ===========================================
-$file_tmp_csv = 'csv/tmp.csv';
+$file_tmp_csv = 'csv/tmp_out.csv';
 if (file_exists($file_tmp_csv)) {
   $ada_file_csv = 1;
-} else { // FILE CSV BELUM ADA
-  // UPLOAD CSV AVAILABLE
+} else { // FILE CSV Pengeluaran BELUM ADA
+  // UPLOAD CSV Pengeluaran AVAILABLE
   $ada_file_csv = 0;
 }
 
 # ===========================================
-# IMPORT CSV KE TABEL IMPORTER
+# IMPORT CSV Pengeluaran KE TABEL IMPORTER
 # ===========================================
 if (isset($_POST['btn_import_csv'])) {
 
   // recheck
-  $s = "SELECT * FROM tb_importer LIMIT 1";
+  $s = "SELECT * FROM tb_importer_out LIMIT 1";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if (mysqli_num_rows($q)) {
     die('Sudah ada data di tabel importer. Proses harus diulang dari awal.');
@@ -248,12 +248,12 @@ if (isset($_POST['btn_import_csv'])) {
 
   $arr_header_kolom_importer = substr($arr_header_kolom_importer, 1);
   $arr_header_isi_importer = substr($arr_header_isi_importer, 1);
-  echolog('process CSV to array... sukses');
+  echolog('process CSV Pengeluaran to array... sukses');
 
 
 
   # ===========================================
-  # INSERT CSV INTO TB_IMPORTER
+  # INSERT CSV Pengeluaran INTO TB_IMPORTER
   # ===========================================
   echolog('<b class="darkblue f20">inserting csv data... mohon tunggu! waktu selesai tergantung banyaknya data</b>');
   foreach ($arr_csv as $key => $d) {
@@ -273,7 +273,7 @@ if (isset($_POST['btn_import_csv'])) {
       }
       $values = substr($values, 1); // remove first comma
       echolog("inserting data #$key");
-      $s = "INSERT INTO tb_importer ($arr_header_kolom_importer) VALUES ($values)";
+      $s = "INSERT INTO tb_importer_out ($arr_header_kolom_importer) VALUES ($values)";
 
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       echolog('sukses');
@@ -281,7 +281,7 @@ if (isset($_POST['btn_import_csv'])) {
     }
   }
 
-  echo '<hr><b class="bold green f20">SUKSES INSERT DATA CSV KE TABEL IMPORTER. Silahkan refresh!</b>';
+  echo '<hr><b class="bold green f20">SUKSES INSERT DATA CSV Pengeluaran KE TABEL IMPORTER. Silahkan refresh!</b>';
   jsurl('', 5000);
 }
 
@@ -311,30 +311,7 @@ if (isset($_POST['btn_import_csv'])) {
 
 
 
-# ===========================================
-# CHECK IF TB_IMPORTER EXISTS
-# ===========================================
-$s = "SHOW TABLES LIKE 'tb_importer'";
-$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-if (mysqli_num_rows($q) == 0) {
-  # ===========================================
-  # CREATE TB_IMPORTER
-  # ===========================================
-  echolog('creating tb_importer');
-  $sql_koloms = '';
-  foreach ($arr_header as $nama_kolom) {
-    $sql_koloms .= "$nama_kolom varchar(100) DEFAULT NULL,";
-  }
-  echolog('creating tb_importer');
-  $s = "CREATE TABLE tb_importer (
-    id_auto int(11) NOT NULL AUTO_INCREMENT, 
-    $sql_koloms
-    last_update timestamp NULL DEFAULT NULL,
-    PRIMARY KEY (id_auto)
-  )";
-  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  echolog('sukses');
-}
+
 
 
 
@@ -371,7 +348,7 @@ if (mysqli_num_rows($q) == 0) {
 // loop untuk mendapatkan semua baris
 $tr = '';
 $i = 0;
-$s = "SELECT * FROM tb_importer";
+$s = "SELECT * FROM tb_importer_out";
 echolog('loop data from tabel importer');
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
@@ -379,27 +356,27 @@ if (!$jumlah_row) {
   if ($ada_file_csv) {
     $hapus_dan_reupload = "
       <form method=post style='display:inline' class=m0>
-        <button class='btn btn-danger btn-sm' onclick='return confirm(\"Yakin untuk reupload CSV?\")' name=btn_reupload_csv>Reupload CSV</button>
+        <button class='btn btn-danger btn-sm' onclick='return confirm(\"Yakin untuk reupload CSV Pengeluaran?\")' name=btn_reupload_csv>Reupload CSV Pengeluaran</button>
       </form>
     ";
-    echo div_alert('info', "File CSV sudah ada. <hr> $hapus_dan_reupload");
+    echo div_alert('info', "File CSV Pengeluaran sudah ada. <hr> $hapus_dan_reupload");
     echo "
       <form method=post>
-          <button class='btn btn-primary' name=btn_import_csv>Import semua data CSV ke Tabel Importer</button>
+          <button class='btn btn-primary' name=btn_import_csv>Import semua data CSV Pengeluaran ke Tabel Importer</button>
       </form>
     ";
   } else {
-    echo div_alert('info', "File CSV belum ada.");
+    echo div_alert('info', "File CSV Pengeluaran belum ada.");
     echo "
       <form method=post enctype='multipart/form-data'>
         <div class='alert alert-info'>
           Belum ada data pada tabel importer.
         </div>
         <div class='wadah gradasi-hijau'>
-          <div class='mb1 abu'>File CSV Stok Penerimaan</div>
+          <div class='mb1 abu'>File CSV Stok Pengeluaran</div>
           <input required type=file class='form-control mb2' name=input_file_csv accept=.csv />
           <button class='btn btn-primary'>Upload Stok Format CSV</button>
-          <div class='mb2 mt1  miring f12'>Jika file Anda masih format Excel, silahkan Save As dahulu dalam format CSV. Untuk baris pertama berupa nama-nama kolom yang harus sesuai dengan <a class='tebal green bg-yellow p1' href='csv/template-stok-penerimaan.xlsx' target=_blank>Contoh Template Stok Penerimaan XLSX</a></div>
+          <div class='mb2 mt1  miring f12'>Jika file Anda masih format Excel, silahkan Save As dahulu dalam format CSV. Untuk baris pertama berupa nama-nama kolom yang harus sesuai dengan <a class='tebal green bg-yellow p1' href='csv/template-stok-pengeluaran.xlsx' target=_blank>Contoh Template Stok Pengeluaran XLSX</a></div>
         </div>
       </form>
     ";
@@ -416,7 +393,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   # ===========================================
   if (!$d['LOC'] && !$d['ID_BARU']) {
     echolog('menghaspus data dengan lokasi dan id_baru null');
-    $s2 = "DELETE FROM tb_importer WHERE id_auto=$d[id_auto]";
+    $s2 = "DELETE FROM tb_importer_out WHERE id_auto=$d[id_auto]";
     $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
     continue;
   }
@@ -624,7 +601,7 @@ if ($ada_error) {
 }
 
 $th = '';
-$s = "DESCRIBE tb_importer";
+$s = "DESCRIBE tb_importer_out";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 while ($d = mysqli_fetch_assoc($q)) {
   $th .= "<th>$d[Field]</th>";

@@ -16,6 +16,16 @@
       <div class="row">
 
         <?php
+        if ($username == 'admin') {
+          echo "
+          <div class=wadah>
+            <h2>Login As</h2>
+            <p>Digunakan khusus oleh admin agar dapat login sebagai username lain.</p>
+            <hr>
+            <a class='btn btn-success' href='?login_as'>Login As</a>
+          </div>
+          ";
+        }
         include 'dashboard-progress.php';
         // include 'dashboard-proses-bisnis.php';
         // include 'dashboard-penerimaan.php';

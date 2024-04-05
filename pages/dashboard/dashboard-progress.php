@@ -35,7 +35,7 @@ $img_loading = "<img src='assets/img/gifs/loading.gif' height=25px>";
 if (isset($_POST['btn_add_fitur'])) {
   $nama_fitur = $_POST['new_fitur'] ?? die(erid('new_fitur'));
   $nama_fitur = strtoupper($nama_fitur);
-  $s = "INSERT INTO tb_fitur (nama, request_by) VALUES ('$nama_fitur',$id_user)";
+  $s = "INSERT INTO tb_fitur (nama, request_by,sub_divisi) VALUES ('$nama_fitur',$id_user,'NEW REQUEST')";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   jsurl();
 }

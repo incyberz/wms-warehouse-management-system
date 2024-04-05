@@ -1,6 +1,6 @@
 <?php
 $profile_na = "assets/img/profile_na.jpg";
-if($username==''){
+if ($username == '') {
   // belum login
   $id_user = '';
   $is_login = '';
@@ -8,7 +8,7 @@ if($username==''){
   $sebagai = 'Pengunjung';
   $nama_user = '';
   $src_profile = $profile_na;
-}else{
+} else {
   //telah login
   $s = "SELECT a.*, 
   a.kode as username,   
@@ -19,7 +19,12 @@ if($username==''){
   JOIN tb_role b ON a.id_role=b.id 
   WHERE a.kode='$username'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0) die('Data username tidak ada.');
+  if (mysqli_num_rows($q) == 0) {
+    unset($_SESSION['wms_username']);
+    unset($_SESSION['wms_role']);
+
+    die("Data username: $username tidak ada.");
+  }
 
   $d = mysqli_fetch_assoc($q);
 
@@ -36,6 +41,5 @@ if($username==''){
   $jabatan = ucwords(strtolower($jabatan));
 
   $src_profile = "assets/img/user/$id_user.jpg";
-  if(!file_exists($src_profile)) $src_profile = $profile_na;
+  if (!file_exists($src_profile)) $src_profile = $profile_na;
 }
-

@@ -171,9 +171,9 @@ $form_cari = "
 
 ";
 
-$bread = "<li class='breadcrumb-item'><a href='?rekap_kumulatif&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
+$bread = "<li class='breadcrumb-item'><a href='?stok_opname&cat=fab'>Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
 if ($cat == 'fab')
-  $bread = "<li class='breadcrumb-item'><a href='?rekap_kumulatif&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
+  $bread = "<li class='breadcrumb-item'><a href='?stok_opname&cat=aks'>Aksesoris</a></li><li class='breadcrumb-item active'>Fabric</li>";
 
 
 

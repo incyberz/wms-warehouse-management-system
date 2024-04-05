@@ -482,6 +482,9 @@ if (!$ada_kosong) {
           $select_lokasi
         </div>
       </div>
+      <div class='mt1 mb2'>
+        <a href='?add_lokasi&id_kategori=$id_kategori'>Add Lokasi</a>
+      </div>
   
       $btn
   

@@ -256,7 +256,7 @@ while ($d2 = mysqli_fetch_assoc($q2)) {
 }
 $select_lokasi = "<select class='form-control mb2' name=kode_lokasi>$opt</select>";
 
-$tgl_qc = date('Y-m-d', strtotime($d['tanggal_qc']));
+$tgl_qc = $d['tanggal_qc'] ? date('Y-m-d', strtotime($d['tanggal_qc'])) : $d['tanggal_qc'];
 $value_tanggal_qc = $d['tanggal_qc'] ? $tgl_qc : $today;
 $jam_qc = $d['tanggal_qc'] ? date('H:i', strtotime($d['tanggal_qc'])) : date('H:i', strtotime('now'));
 

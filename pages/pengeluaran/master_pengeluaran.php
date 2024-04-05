@@ -128,8 +128,8 @@ while ($d = mysqli_fetch_assoc($q)) {
   $allocator = $d['allocator'];
   $picker = $d['picker'];
 
-  $allocator = ucwords(strtolower($allocator));
-  $picker = ucwords(strtolower($picker));
+  $allocator = $allocator ? ucwords(strtolower($allocator)) : $allocator;
+  $picker = $picker ? ucwords(strtolower($picker)) : $picker;
 
   // tanggal
   $tanggal_pick = $d['tanggal_pick'];

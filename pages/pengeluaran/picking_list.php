@@ -3,7 +3,8 @@ $belum_red = '<span class="red f12 miring">belum</span>';
 $belum_abu = '<span class="abu f12 miring">belum</span>';
 // allocate sangat penting untuk WH
 $belum = $id_role == 3 ? $belum_red : $belum_abu;
-$jumlah_item_valid = 0;
+$jumlah_valid_pick = 0;
+$jumlah_valid_allocate = 0;
 
 # =============================================================
 # HAK AKSES PIC ONLY
@@ -125,8 +126,8 @@ if ($jumlah_item) {
     $allocator = $d['allocator'];
     $picker = $d['picker'];
 
-    $allocator = ucwords(strtolower($allocator));
-    $picker = ucwords(strtolower($picker));
+    $allocator = $allocator ? ucwords(strtolower($allocator)) : $allocator;
+    $picker = $picker ? ucwords(strtolower($picker)) : $picker;
 
     // tanggal
     $tanggal_pick = $d['tanggal_pick'];
@@ -176,6 +177,7 @@ if ($jumlah_item) {
       $qty_pick_or_allocate = $qty_pick;
       $stok_akhir = $qty_datang - $qty_pick_or_allocate - $qty_pick_by_other;
     }
+    $stok_akhir_show = number_format($stok_akhir, 2);
 
     // set max
     $qty_set_max_pick = $stok_available + $qty_pick;
@@ -213,6 +215,11 @@ if ($jumlah_item) {
       <span id=lock__$id_pick class='toggle_allocate $hide_lock btn btn-success btn-sm'>Lock</span>
     </div>";
 
+    // exception for pic1 as Head PPIC
+    if ($username != 'pic1') {
+      $toggle_allocate_show = '<span class="btn btn-secondary btn-sm" onclick="alert(\'Hanya Pic1 yang bisa Lock/Unlock.\')">Lock</span>';
+    }
+
     // tanggal_show
     $tanggal_pick_show = date('d-M H:i', strtotime($tanggal_pick));
     $tanggal_allocate_show = date('d-M H:i', strtotime($tanggal_allocate));
@@ -225,7 +232,8 @@ if ($jumlah_item) {
     $repeat_show = $d['is_repeat'] ? '<span class="tebal consolas miring abu bg-yellow">repeat item</span>' : '';
 
 
-    if ($qty_pick) $jumlah_item_valid++;
+    if ($qty_pick) $jumlah_valid_pick++;
+    if ($qty_allocate) $jumlah_valid_allocate++;
 
     // qty for input
     $qty_input_pick = $qty_pick ? $qty_pick : '';
@@ -345,7 +353,7 @@ if ($jumlah_item) {
         />
         $set_max
       ";
-    }
+    } // end if role==7 PIC
 
 
 
@@ -411,10 +419,10 @@ if ($jumlah_item) {
           <div class=darkblue id=qty_datang__$id_pick>$qty_datang</div>
           <div class='darkred f12' id=qty_allocate_by_other__$id_pick>-$qty_allocate_by_other</div>
         </td>
-        <td width=100px>
+        <td width=150px>
           $input_allocate
         </td>
-        <td><span id=stok_akhir__$id_pick>$stok_akhir</span></td>
+        <td><span id=stok_akhir__$id_pick>$stok_akhir_show</span></td>
         <td>$satuan</td>
         <td>$ket</td>
       </tr>
@@ -438,6 +446,11 @@ if ($jumlah_item) {
   $btn_simpan_picking_list = '<span class="f12 miring abu">belum ada items</span>';
 }
 
+// button Cetak Barcode dan Surat Jalan
+$button_cetak_barcode = '';
+if ($id_role == 3) {
+  $button_cetak_barcode = "<a class='btn btn-success w-100' href='?pengeluaran&p=surat_jalan&kode_do=$kode_do&cat=$cat'>Cetak Barcode dan Surat Jalan</a>";
+}
 
 
 
@@ -513,6 +526,11 @@ if ($jumlah_item) {
     <tr class=wh_only>
       <td colspan=100%>
         <?= $btn_simpan_allocate ?>
+      </td>
+    </tr>
+    <tr class=wh_only>
+      <td colspan=100%>
+        <?= $button_cetak_barcode ?>
       </td>
     </tr>
   </table>
