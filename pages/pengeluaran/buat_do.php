@@ -142,6 +142,8 @@ if ($kode_do != '') {
   $Manage = $id_role == 7 ? 'Manage' : '';
   $Allocate = $id_role == 3 ? 'Allocate' : '';
   $judul = "$Manage$Allocate Picking List $jenis_barang";
+  $retur_do = $_GET['retur_do'] ?? '';
+  if ($retur_do) $judul = 'Retur DO';
   set_title($judul);
   $page_title = "
     <div class='pagetitle'>

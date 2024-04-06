@@ -16,6 +16,7 @@ $arr_kategori[2] = 'Fabric';
 $arr_cat[1] = 'aks';
 $arr_cat[2] = 'fab';
 
+
 // set auto login
 // $_SESSION['wms_username'] = 'wh';
 
@@ -159,6 +160,11 @@ if ($parameter == 'logout') {
 
     .bg-hijau {
       background: #0f0
+    }
+
+    .debug {
+      background: yellow;
+      <?php if (!$dm) echo 'display: none;'; ?>
     }
   </style>
 

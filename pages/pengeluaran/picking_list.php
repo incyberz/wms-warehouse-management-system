@@ -6,14 +6,18 @@ $belum = $id_role == 3 ? $belum_red : $belum_abu;
 $jumlah_valid_pick = 0;
 $jumlah_valid_allocate = 0;
 
+
 # =============================================================
-# HAK AKSES PIC ONLY
+# GET CSV
 # =============================================================
-# =============================================================
-# HAK AKSES WH ONLY
-# =============================================================
-// Jam masuk before Allocate zzz 
-// jam keluar after Allocate
+$get_csv = $_GET['get_csv'] ?? '';
+if ($get_csv) {
+  $src_csv = "csv/picking-list-$kode_do.csv";
+  $file = fopen($src_csv, "w+");
+  fputcsv($file, [$judul]);
+  fputcsv($file, ['Nomor DO', $kode_do]);
+  fputcsv($file, ['Artikel', $kode_artikel]);
+}
 
 
 
@@ -114,6 +118,24 @@ if ($jumlah_item) {
   $i = 0;
   while ($d = mysqli_fetch_assoc($q)) {
     $i++;
+
+    // Get CSV
+    if ($get_csv) {
+      if ($i == 1) { // put header
+        $arr = [];
+        foreach ($d as $key => $value) {
+          array_push($arr, $key);
+        }
+        // put header
+        fputcsv($file, $arr);
+      }
+
+      // put konten
+      fputcsv($file, $d);
+    }
+
+
+
     $id_pick = $d['id_pick'];
     $no_lot = $d['no_lot'];
     $kode_lokasi = $d['kode_lokasi'];
@@ -234,10 +256,15 @@ if ($jumlah_item) {
 
     if ($qty_pick) $jumlah_valid_pick++;
 
+    // cetak QR dan retur DO for WH 
     $cetak_qr_do = '';
-    if ($qty_allocate) {
-      $jumlah_valid_allocate++;
-      $cetak_qr_do = "<a onclick='return confirm(\"Maaf, masih dalam tahap coding!\")' target=_blank class='btn btn-sm btn-success mt1 w-100' href='cetak_qr_pengeluaran.php?id_pick=$id_pick'>Cetak QR</a>";
+    $retur_do = '';
+    if ($id_role == 3) {
+      if ($qty_allocate) {
+        $jumlah_valid_allocate++;
+        $cetak_qr_do = "<a target=_blank class='btn btn-sm btn-success mt1 w-100' href='cetak_qr_pengeluaran.php?id_pick=$id_pick'>Cetak QR</a>";
+        $retur_do = "<a class='btn btn-sm btn-info mt1 w-100' href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat&retur_do=1'>Retur DO</a>";
+      }
     }
 
     // qty for input
@@ -264,7 +291,6 @@ if ($jumlah_item) {
     }
 
     if ($id_role == 3) {
-      echolog('wh only', false);
       // wh only
       $input_pick = "
         <div id=qty_pick__$id_pick>$qty_pick</div>
@@ -282,7 +308,6 @@ if ($jumlah_item) {
         $ket = '';
       }
 
-      echolog(" qty_pick:$qty_pick");
 
       if ($qty_pick) {
         if ($d['boleh_allocate']) {
@@ -434,6 +459,7 @@ if ($jumlah_item) {
         <td width=150px>
           $input_allocate
           $cetak_qr_do
+          $retur_do
         </td>
         <td><span id=stok_akhir__$id_pick>$stok_akhir_show</span></td>
         <td>$satuan</td>
@@ -462,7 +488,13 @@ if ($jumlah_item) {
 // button Cetak Barcode dan Surat Jalan
 $button_surat_jalan = '';
 if ($id_role == 3) {
-  $button_surat_jalan = "<a onclick='return confirm(\"Maaf, masih dalam tahap coding!\")' class='btn btn-success w-100' href='?pengeluaran&p=surat_jalan&kode_do=$kode_do&cat=$cat'>Cetak Surat Jalan</a>";
+  $button_surat_jalan = "<a class='btn btn-success w-100' href='?pengeluaran&p=surat_jalan&kode_do=$kode_do&cat=$cat'>Cetak Surat Jalan</a>";
+}
+
+if ($get_csv) {
+  echo "<a class='btn btn-primary' href='$src_csv'>Download CSV</a>  <a class='btn btn-secondary' href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat'>Back to Picking List</a> ";
+  fclose($file);
+  exit;
 }
 
 
@@ -546,8 +578,14 @@ if ($id_role == 3) {
         <?= $button_surat_jalan ?>
       </td>
     </tr>
+    <tr>
+      <td colspan=100%>
+        <a href="?pengeluaran&p=buat_do&kode_do=<?= $kode_do ?>&cat=<?= $cat ?>&get_csv=1" class="btn btn-success w-100">Get CSV</a>
+      </td>
+    </tr>
   </table>
 </form>
+
 
 <div id=picking_list_add class="hideit wadah gradasi-kuning">
   <?php include 'picking_list_add.php'; ?>
