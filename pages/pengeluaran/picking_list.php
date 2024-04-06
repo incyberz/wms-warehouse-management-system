@@ -233,7 +233,12 @@ if ($jumlah_item) {
 
 
     if ($qty_pick) $jumlah_valid_pick++;
-    if ($qty_allocate) $jumlah_valid_allocate++;
+
+    $cetak_qr_do = '';
+    if ($qty_allocate) {
+      $jumlah_valid_allocate++;
+      $cetak_qr_do = "<a onclick='return confirm(\"Maaf, masih dalam tahap coding!\")' target=_blank class='btn btn-sm btn-success mt1 w-100' href='cetak_qr_pengeluaran.php?id_pick=$id_pick'>Cetak QR</a>";
+    }
 
     // qty for input
     $qty_input_pick = $qty_pick ? $qty_pick : '';
@@ -281,6 +286,17 @@ if ($jumlah_item) {
 
       if ($qty_pick) {
         if ($d['boleh_allocate']) {
+          if ($qty_allocate) {
+            $set_max = '';
+          } else {
+            $set_max = "
+              <div class='f12 darkabu mt1'>
+                <span class='set_max_allocate pointer' id=set_max_allocate__$id_pick>
+                  Set Max : <span id=qty_pick__$id_pick>$qty_pick</span>
+                </span>
+              </div>
+            ";
+          }
           $input_allocate = "
             <input 
               class='form-control qty_allocate' 
@@ -291,11 +307,7 @@ if ($jumlah_item) {
               max='$max_allocate' 
               value='$qty_input_allocate'
             />
-            <div class='f12 darkabu mt1'>
-              <span class='set_max_allocate pointer' id=set_max_allocate__$id_pick>
-                Set Max : <span id=qty_pick__$id_pick>$qty_pick</span>
-              </span>
-            </div>
+            $set_max
           ";
         } else {
           $input_allocate = "<span class='consolasa f10 red miring'>Line Locked<br>by $picker</span>";
@@ -307,7 +319,7 @@ if ($jumlah_item) {
           $input_allocate = "<span class='consolasa f10 red miring'>Belum Pick</span>";
         }
       }
-    }
+    } // end if $id_role == 3
 
     if ($id_role == 7) {
       // pic only
@@ -421,6 +433,7 @@ if ($jumlah_item) {
         </td>
         <td width=150px>
           $input_allocate
+          $cetak_qr_do
         </td>
         <td><span id=stok_akhir__$id_pick>$stok_akhir_show</span></td>
         <td>$satuan</td>
@@ -447,9 +460,9 @@ if ($jumlah_item) {
 }
 
 // button Cetak Barcode dan Surat Jalan
-$button_cetak_barcode = '';
+$button_surat_jalan = '';
 if ($id_role == 3) {
-  $button_cetak_barcode = "<a class='btn btn-success w-100' href='?pengeluaran&p=surat_jalan&kode_do=$kode_do&cat=$cat'>Cetak Barcode dan Surat Jalan</a>";
+  $button_surat_jalan = "<a onclick='return confirm(\"Maaf, masih dalam tahap coding!\")' class='btn btn-success w-100' href='?pengeluaran&p=surat_jalan&kode_do=$kode_do&cat=$cat'>Cetak Surat Jalan</a>";
 }
 
 
@@ -530,7 +543,7 @@ if ($id_role == 3) {
     </tr>
     <tr class=wh_only>
       <td colspan=100%>
-        <?= $button_cetak_barcode ?>
+        <?= $button_surat_jalan ?>
       </td>
     </tr>
   </table>
