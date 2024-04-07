@@ -383,7 +383,7 @@ while ($d = mysqli_fetch_assoc($q)) {
           $parsial_icon
         </td>
         <td>$d[no_lot]</td>
-        <td>$d[kode_lokasi]</td>
+        <td><a href='?relokasi&id_kumulatif=$id_kumulatif' onclick='return confirm(\"Relokasi item ini?\")'>$d[kode_lokasi]</a></td>
         <td>$d[count_roll]</td>
         <td class=darkred>$qty_transit_show</td>
         <td class=darkred>$qty_tr_fs_show</td>

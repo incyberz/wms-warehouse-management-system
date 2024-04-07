@@ -88,6 +88,12 @@
     <li class="nav-heading">Manage</li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="?manage_lokasi">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Manage Lokasi</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link collapsed" href="?relokasi">
         <i class="bi bi-file-earmark-spreadsheet"></i>
         <span>Relokasi</span>
