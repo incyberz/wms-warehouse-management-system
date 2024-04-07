@@ -161,6 +161,7 @@ if ($jumlah_item) {
     $qty_qc = floatval($d['qty_qc']);
     $qty_qc_fs = floatval($d['qty_qc_fs']);
     $qty_retur = floatval($d['qty_retur']);
+    $qty_retur_do = floatval($d['qty_retur_do']);
     $qty_ganti = floatval($d['qty_ganti']);
 
     //pengeluaran
@@ -263,7 +264,10 @@ if ($jumlah_item) {
       if ($qty_allocate) {
         $jumlah_valid_allocate++;
         $cetak_qr_do = "<a target=_blank class='btn btn-sm btn-success mt1 w-100' href='cetak_qr_pengeluaran.php?id_pick=$id_pick'>Cetak QR</a>";
-        $retur_do = "<a class='btn btn-sm btn-info mt1 w-100' href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat&retur_do=1'>Retur DO</a>";
+
+        $qty_retur_do_show = $qty_retur_do ? ": $qty_retur_do" : '';
+        $btn_info = $qty_retur_do ? 'btn-info' : 'btn-secondary';
+        $retur_do = "<a class='btn btn-sm $btn_info mt1 w-100' href='?pengeluaran&p=buat_do&kode_do=$kode_do&cat=$cat&retur_do=1'>Retur DO$qty_retur_do_show</a>";
       }
     }
 

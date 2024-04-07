@@ -57,7 +57,8 @@ c.kode_do,
 c.date_created as tanggal_do,
 c.id_kategori,
 d.nama as kategori,
-f.satuan
+f.satuan,
+(SELECT sum(qty) FROM tb_retur_do WHERE id_pick=b.id) qty_retur_do
 
 FROM tb_sj_kumulatif a 
 JOIN tb_pick b ON a.id=b.id_kumulatif 
@@ -77,6 +78,8 @@ while ($d = mysqli_fetch_assoc($q)) {
   $tanggal_do_show = date('d-M-y, H:i', strtotime($d['tanggal_do']));
   $hutangan_show = $d['is_hutangan'] ? "<span class='badge bg-red mb1 bold'>HUTANGAN</span>" : '';
   $repeat_show = $d['is_repeat'] ? '<span class="tebal consolas miring abu bg-yellow">repeat item</span>' : '';
+  $qty_retur_do = floatval($d['qty_retur_do']);
+  $btn_info = $qty_retur_do ? 'btn-info' : 'btn-secondary';
 
   $tr_do .= "
     <tr>
@@ -86,6 +89,7 @@ while ($d = mysqli_fetch_assoc($q)) {
       <td>$d[kategori]</td>
       <td>$qty_pick $hutangan_show $repeat_show</td>
       <td>$d[satuan]</td>
+      <td><a href='?pengeluaran&p=buat_do&kode_do=$d[kode_do]&cat=$cat' class='btn btn-sm $btn_info'>Retur: $qty_retur_do</a></td>
     </tr>
   ";
 }
@@ -123,6 +127,7 @@ echo "
       <th>Material</th>
       <th>QTY Pick</th>
       <th>UOM</th>
+      <th>Retur DO</th>
     </thead>
     $tr_do
   </table>

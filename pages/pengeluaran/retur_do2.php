@@ -50,12 +50,11 @@ if (isset($_POST['btn_tambah_retur_do'])) {
   jsurl();
 }
 
-if (isset($_POST['btn_delete_item_picking'])) {
-  echo 'Processing Delete DO Item ...<hr>';
-  // $s = "DELETE FROM tb_pick WHERE id=$_POST[btn_delete_item_picking]";
-  // $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  // unset($_POST['btn_delete_item_picking']);
-  // echo div_alert('success', 'Delete DO Item success.');
+if (isset($_POST['btn_hapus_retur_do'])) {
+  echo 'Processing Delete Retur DO ...<hr>';
+  $s = "DELETE FROM tb_retur_do WHERE id=$_POST[btn_hapus_retur_do]";
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  echo div_alert('success', 'Delete Retur DO success.');
   jsurl();
 }
 
@@ -144,16 +143,9 @@ if ($jumlah_item) {
     $allocator = $d['allocator'];
 
     $allocator = ucwords(strtolower($allocator));
-
-    // tanggal
     $tanggal_allocate = $d['tanggal_allocate'];
-
-    //pengeluaran
-    $qty_allocate = floatval($d['qty_allocate']);
-
-
-    // tanggal_show
     $tanggal_allocate_show = date('d-M H:i', strtotime($tanggal_allocate));
+    $qty_allocate = floatval($d['qty_allocate']);
 
     // other show
     $no_lot_show = $no_lot ? $no_lot : $null;
@@ -167,26 +159,62 @@ if ($jumlah_item) {
         <div class='f12'>$allocator</div>
         <div class='abu f10'>$tanggal_allocate_show</div>
       ";
+      $form_retur_do = "
+        <form method=post class='wadah gradasi-hijau'>
+          <div class=sub_form>Form Tambah Retur DO</div>
+          <div class=flexy>
+            <div>
+              <input required type=number step=$step min=$step max=$qty_allocate placeholder='qty...' class='form-control form-control-sm' name=qty>
+            </div>
+            <div>
+              <input required minlength=3 maxlength=100 placeholder='alasan...' class='form-control form-control-sm' name=alasan>
+            </div>
+            <div>
+              <button class='btn btn-success btn-sm' name=btn_tambah_retur_do value=$id_pick>Retur</button>
+            </div>
+          </div>
+        </form>
+      ";
+
+      //listing retur
+      $list_retur = div_alert('info', 'Belum ada retur untuk PL ini.');
+      if ($count_retur_do) {
+        $list_retur = '';
+        $s2 = "SELECT *, a.id as id_retur_do FROM tb_retur_do a WHERE a.id_pick=$id_pick";
+        $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+        $j = 0;
+        while ($d2 = mysqli_fetch_assoc($q2)) {
+          $j++;
+          $qty = floatval($d2['qty']);
+          $tanggal_retur = date('d-M-y H:i', strtotime($d2['tanggal_retur']));
+          $id_retur_do = $d2['id_retur_do'];
+
+          $list_retur .= "
+            <tr>
+              <td>$j</td>
+              <td>$qty $satuan</td>
+              <td>$tanggal_retur</td>
+              <td><span class='abu f12'>alasan: </span> $d2[alasan_retur]</td>
+              <td>
+                <form method=post>
+                  <button class='btn btn-sm btn-danger' value=$id_retur_do onclick='return confirm(\"Hapus Retur DO?\")' name=btn_hapus_retur_do>Hapus</button>
+                </form>
+              </td>
+            </tr>
+          ";
+        }
+        $list_retur = "
+          <div class='wadah gradasi-kuning'>
+            <div class=sub_form>List Retur</div>
+            <table class=table>$list_retur</table>
+          </div>
+        ";
+      }
     } else {
       $ket = '';
+      $form_retur_do = div_alert('danger', 'QTY Allocate masih nol.');
     }
 
-    $form_retur_do = "
-      <form method=post class=wadah>
-        <div class=sub_form>Form Tambah Retur DO</div>
-        <div class=flexy>
-          <div>
-            <input required type=number step=$step min=$step max=$qty_allocate placeholder='qty...' class='form-control form-control-sm' name=qty>
-          </div>
-          <div>
-            <input required minlength=3 maxlength=100 placeholder='alasan...' class='form-control form-control-sm' name=alasan>
-          </div>
-          <div>
-            <button class='btn btn-success btn-sm' name=btn_tambah_retur_do value=$id_pick>Retur</button>
-          </div>
-        </div>
-      </form>
-    ";
 
 
 
@@ -233,7 +261,10 @@ if ($jumlah_item) {
           $qty_allocate
           $ket
         </td>
-        <td>$form_retur_do</td>
+        <td>
+          $list_retur
+          $form_retur_do
+        </td>
       </tr>
     ";
   }

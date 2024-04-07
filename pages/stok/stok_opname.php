@@ -300,7 +300,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   $link_pick_by = "<a href='?picked_by_do&id_kumulatif=$id_kumulatif'>$img_next</a>";
   $qty_pick_show = $qty_pick ? floatval($qty_pick) . " $link_pick_by" : '-';
   $qty_allocate_show = $qty_allocate ? floatval($qty_allocate) : '-';
-  $link_retur_do = $qty_pick ? "<a href='?retur_do&id_kumulatif=$id_kumulatif'>$img_next</a>" : '';
+  $link_retur_do = $qty_pick ? "<a href='?picked_by_do&id_kumulatif=$id_kumulatif'>$img_next</a>" : '';
   $qty_retur_do_show = $qty_retur_do ? floatval($qty_retur_do) : '-';
   $qty_retur_do_show .= " $link_retur_do";
 

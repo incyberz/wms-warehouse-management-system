@@ -68,7 +68,7 @@ d.satuan,
   WHERE id_kumulatif=a.id) qty_allocate,
 (
   SELECT sum(qty) FROM tb_retur_do 
-  WHERE id_kumulatif=a.id) qty_retur_do
+  WHERE id_kumulatif=a.id) qty_retur_do 
 
 $FROM
 ";

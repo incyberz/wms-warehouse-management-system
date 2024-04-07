@@ -100,7 +100,10 @@ $sql_pick = "SELECT
   (
     SELECT count(1) FROM tb_roll 
     WHERE id_kumulatif = b.id) count_roll,
-
+  (
+    SELECT SUM(p.qty) FROM tb_retur_do p 
+    WHERE p.id_pick=a.id 
+    ) qty_retur_do, 
 
     -- =========================================
     -- PICKER | ALLOCATOR
