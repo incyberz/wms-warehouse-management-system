@@ -1,4 +1,3 @@
-<h2 class='mt4 darkblue mb4'>Progress dan Request Fitur</h2>
 <style>
   .sub_number {
     width: 30px;
@@ -24,6 +23,10 @@
   }
 </style>
 <?php
+$judul = "Progress dan Request Fitur";
+set_title($judul);
+
+echo "<h2 class='mt4 darkblue mb4'>$judul</h2>";
 $img_arti[1] = '<img src="assets/img/icons/check_brown.png" height=20px>';
 $img_arti[2] = '<img src="assets/img/icons/check_pink.png" height=20px>';
 $img_arti[3] = '<img src="assets/img/icons/check_blue.png" height=20px>';
@@ -84,7 +87,7 @@ if (isset($_POST['btn_set_status'])) {
 
   $s = "UPDATE tb_subfitur SET status=$status WHERE id=$id_subfitur";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  jsurl("?dashboard&id_fitur=$id_fitur");
+  jsurl("?progress&id_fitur=$id_fitur");
 }
 
 if (isset($_POST['btn_sedang_dikerjakan'])) {
@@ -250,12 +253,12 @@ while ($d = mysqli_fetch_assoc($q)) {
 $s = "SELECT a.id, a.nama
 FROM tb_fitur a ORDER BY a.sub_divisi_no";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-$nav = "<a class='btn btn-sm btn-info f12' href='?dashboard' >All Fitur</a> ";
+$nav = "<a class='btn btn-sm btn-info f12' href='?progress' >All Fitur</a> ";
 $i = 0;
 $no_next_fitur = mysqli_num_rows($q) + 1;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $btn = $d['id'] == $get_id_fitur ? "<span class='btn btn-sm btn-primary' style='display:inline-block;margin:0 10px 0 5px'>$i</span>" : "<a class='btn btn-sm btn-info f10 miring' href='?dashboard&id_fitur=$d[id]&no=$i' >$i</a> ";
+  $btn = $d['id'] == $get_id_fitur ? "<span class='btn btn-sm btn-primary' style='display:inline-block;margin:0 10px 0 5px'>$i</span>" : "<a class='btn btn-sm btn-info f10 miring' href='?progress&id_fitur=$d[id]&no=$i' >$i</a> ";
   $nav .= $btn;
 }
 $total_subfitur_show = "<span id=subfitur_info__toggle class='btn btn-sm btn_aksi f12' style='display:inline-block;margin:0 10px 0 5px'>$total_subfitur Subfitur $img_detail</span>";

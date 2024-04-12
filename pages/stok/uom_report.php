@@ -1,5 +1,5 @@
 <?php
-$judul = 'Report Inbound-Outbound';
+$judul = 'UOM Report';
 set_title($judul);
 // to do : fix decimal
 $cat = $_GET['cat'] ?? 'aks'; //default AKS
@@ -14,9 +14,9 @@ include 'sql_opname.php';
 # =====================================================
 # BREAD HANDLER
 # =====================================================
-$bread = "<li class='breadcrumb-item'><a href='?report&cat=fab'>Report Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
+$bread = "<li class='breadcrumb-item'><a href='?uom_report&cat=fab'>Report Fabric</a></li><li class='breadcrumb-item active'>Aksesoris</li>";
 if ($cat == 'fab')
-  $bread = "<li class='breadcrumb-item'><a href='?report&cat=aks'>Report Aksesoris</a></li><li class='breadcrumb-item active'>Report Fabric</li>";
+  $bread = "<li class='breadcrumb-item'><a href='?uom_report&cat=aks'>Report Aksesoris</a></li><li class='breadcrumb-item active'>Report Fabric</li>";
 echo "
   <div class='pagetitle'>
     <h1>$judul $jenis_barang</h1>
@@ -36,7 +36,7 @@ if (isset($_POST['btn_download_csv'])) {
   $tanggal_akhir = $_GET['tanggal_akhir'] ?? $today;
   $s = "SELECT * FROM tb_rekap WHERE tanggal>='$tanggal_awal' AND tanggal <='$tanggal_akhir'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  $src = "csv/report-$today.csv";
+  $src = "csv/uom_report-$today.csv";
   $file = fopen($src, "w+");
   $i = 0;
   while ($d = mysqli_fetch_assoc($q)) {

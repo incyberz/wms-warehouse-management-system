@@ -10,6 +10,12 @@
         <span>Dashboard</span>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link " href="?progress">
+        <i class="bi bi-grid"></i>
+        <span>Progress</span>
+      </a>
+    </li>
 
     <!-- ====================================== -->
     <!-- PRE BAB -->
@@ -99,6 +105,12 @@
         <span>Relokasi</span>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?update_status_po">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Update Status PO</span>
+      </a>
+    </li>
 
     <li class="nav-heading">Laporan</li>
 
@@ -109,9 +121,15 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link collapsed" href="?report">
+      <a class="nav-link collapsed" href="?uom_report">
         <i class="bi bi-file-earmark-spreadsheet"></i>
-        <span>Report</span>
+        <span>UOM Report</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="?penelusuran_item">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Penelusuran Item</span>
       </a>
     </li>
   </ul>

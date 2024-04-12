@@ -1,33 +1,89 @@
-<div class="col-md-6">
-  <div class="card info-card sales-card">
+<?php
 
-    <div class="filter">
-      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-        <li class="dropdown-header text-start">
-          <h6>Filter</h6>
-        </li>
+$s = "SELECT 
+(
+  SELECT count(1) FROM tb_sj_kumulatif a 
+  JOIN tb_sj_item b ON a.id_sj_item=b.id 
+  JOIN tb_barang c ON b.kode_barang=c.kode
+  WHERE a.tanggal_masuk >= '$today' AND c.id_kategori=1) count_aks,
+(
+  SELECT count(1) FROM tb_sj_kumulatif a 
+  JOIN tb_sj_item b ON a.id_sj_item=b.id 
+  JOIN tb_barang c ON b.kode_barang=c.kode
+  WHERE a.tanggal_masuk >= '$today' AND c.id_kategori=2) count_fab,
+(
+  SELECT count(1) FROM tb_sj_kumulatif a 
+  JOIN tb_sj_item b ON a.id_sj_item=b.id 
+  JOIN tb_barang c ON b.kode_barang=c.kode
+  WHERE c.id_kategori=1) count_aks_all,
+(
+  SELECT count(1) FROM tb_sj_kumulatif a 
+  JOIN tb_sj_item b ON a.id_sj_item=b.id 
+  JOIN tb_barang c ON b.kode_barang=c.kode
+  WHERE c.id_kategori=2) count_fab_all,
+(
+  SELECT count(1) FROM tb_lokasi a 
+  JOIN tb_blok b ON a.blok=b.blok 
+  WHERE b.id_kategori=1) lokasi_aks,
+(
+  SELECT count(1) FROM tb_blok a 
+  WHERE a.id_kategori=1) blok_aks,
+(
+  SELECT count(1) FROM tb_lokasi a 
+  JOIN tb_blok b ON a.blok=b.blok 
+  WHERE b.id_kategori=2) lokasi_fab,
+(
+  SELECT count(1) FROM tb_blok a 
+  WHERE a.id_kategori=2) blok_fab
+";
+$q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+$d = mysqli_fetch_assoc($q);
+$count_aks = $d['count_aks'];
+$count_fab = $d['count_fab'];
+$count_aks_all = $d['count_aks_all'];
+$count_fab_all = $d['count_fab_all'];
+$lokasi_aks = $d['lokasi_aks'];
+$lokasi_fab = $d['lokasi_fab'];
+$blok_aks = $d['blok_aks'];
+$blok_fab = $d['blok_fab'];
 
-        <li><a class="dropdown-item" href="#">Today</a></li>
-        <li><a class="dropdown-item" href="#">This Month</a></li>
-        <li><a class="dropdown-item" href="#">This Year</a></li>
-      </ul>
-    </div>
 
-    <div class="card-body">
-      <h5 class="card-title">Penerimaan <span>| Today</span></h5>
+$count['Aksesoris'] = [$count_aks, $count_aks_all, $lokasi_aks, $blok_aks];
+$count['Fabric'] = [$count_fab, $count_fab_all, $lokasi_fab, $blok_fab];
 
-      <div class="d-flex align-items-center">
-        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-          <i class="bi bi-arrow-down-square"></i>
-        </div>
-        <div class="ps-3">
-          <h6>98 <span class="text-muted small pt-2 ps-1">QTY</span></h6>
-          <span class="text-success small pt-1 fw-bold">5</span> <span class="text-muted small pt-2 ps-1">Purchase Order</span>
-
-        </div>
+$div = '';
+foreach ($count as $key => $arr) {
+  $cat = $key == 'Aksesoris' ? 'aks' : 'fab';
+  $id_kategori = $key == 'Aksesoris' ? 1 : 2;
+  $div .= "
+    <div class='col-lg-6'>
+      <div class='wadah'>
+        <h2>$key Count</h2>
+        <table class='table table-hover'>
+          <tr>
+            <td>Hari ini</td>
+            <td>:</td>
+            <td>$arr[0] item</td>
+          </tr>
+          <tr>
+            <td>All time</td>
+            <td>:</td>
+            <td><a href='?rekap_kumulatif&cat=$cat'>$arr[1] item</a></td>
+          </tr>
+          <tr>
+            <td>Lokasi</td>
+            <td>:</td>
+            <td><a href='?manage_lokasi&id_kategori=$id_kategori'>$arr[2] Lokasi</a></td>
+          </tr>
+          <tr>
+            <td>Blok Lokasi</td>
+            <td>:</td>
+            <td><a href='?manage_lokasi&id_kategori=$id_kategori'>$arr[3] Blok</a></td>
+          </tr>
+        </table>
       </div>
     </div>
+  ";
+}
 
-  </div>
-</div>
+echo "<div class=row>$div</div>";

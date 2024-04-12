@@ -372,7 +372,7 @@ while ($d = mysqli_fetch_assoc($q)) {
         </td>
         <td>$tanggal_masuk_show</td>
         <td>
-          <div>$d[kode_barang]</div>
+          <div>$d[kode_barang] <a href='?penelusuran_item&kode_barang=$d[kode_barang]'>$img_detail</a></div>
           <div class='f12 abu'>Kode lama: $d[kode_lama]</div>
           <div class='f12 abu'>$d[nama_barang]</div>
           <div class='f12 abu'>$d[keterangan_barang]</div>
