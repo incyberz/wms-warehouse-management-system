@@ -485,7 +485,7 @@ if ($btn_caption == 'Update DO') {
             if (kode_bulan >= 1 && kode_bulan <= 12) {
               $('#kode_bulan').text(kode_bulan);
               $('#div_kode_bulan').show();
-              if (kode_tahun >= 23 && kode_tahun <= 24) {
+              if (kode_tahun >= 21 && kode_tahun <= 24) {
                 $('#kode_tahun').text(kode_tahun);
                 $('#div_kode_tahun').show();
                 if (kode_gender) {
@@ -505,7 +505,7 @@ if ($btn_caption == 'Update DO') {
                 }
               } else {
                 if (kode_tahun) {
-                  $('#kode_tahun').html('<span class=red>Proyeksi tahun antara 23 s.d 24</span>');
+                  $('#kode_tahun').html('<span class=red>Proyeksi tahun antara 21 s.d 24</span>');
                   $('#div_kode_tahun').show();
                 }
               }

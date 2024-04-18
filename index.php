@@ -16,6 +16,7 @@ $arr_kategori[2] = 'Fabric';
 $arr_cat[1] = 'aks';
 $arr_cat[2] = 'fab';
 $today = date('Y-m-d');
+$dm_db = 0;
 
 
 // set auto login

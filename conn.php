@@ -19,10 +19,10 @@ if ($online_version) {
   $db_user = "root";
   $db_pass = '';
   $db_name = "db_wms";
-  if (1) {
-    $dm_db = 1;
-    $db_name = "db_online_wms";
-  }
+  // if (1) {
+  //   $dm_db = 1;
+  //   $db_name = "db_online_wms";
+  // }
 }
 
 $cn = new mysqli($db_server, $db_user, $db_pass, $db_name);

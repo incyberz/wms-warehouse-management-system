@@ -127,7 +127,7 @@ $sql_from
 
 ORDER BY qty_qc DESC, qty_qc_fs DESC  
 
-LIMIT 10 
+LIMIT 50 
 
 ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -234,7 +234,7 @@ if (mysqli_num_rows($q) == 0) {
 # ===================================================
 # FINAL ECHO
 # ===================================================
-$info_dibatasi = $jumlah_records > 10 ? "<div class='alert alert-info mt2'>Hanya ditampilkan $jumlah_tampil dari $jumlah_records total records. Silahkan masukan keyword dengan lebih spesifik.</div>" : '';
+$info_dibatasi = $jumlah_records > 50 ? "<div class='alert alert-info mt2'>Hanya ditampilkan $jumlah_tampil dari $jumlah_records total records. Silahkan masukan keyword dengan lebih spesifik.</div>" : '';
 echo "
   <div class='sub_form mt2'>Hasil Pencarian: Picking List Add Fetcher</div>
   <table class=table>
