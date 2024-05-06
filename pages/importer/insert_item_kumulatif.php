@@ -96,7 +96,7 @@ if (isset($_POST['btn_insert_item_kumulatif'])) {
           $id_sj_item, 
           '$kode_lokasi',
           '$kode_kumulatif',
-          $tmp_qty,
+          '$tmp_qty',
           $no_lot_or_null,
           $nomor,
           '$tanggal_masuk',

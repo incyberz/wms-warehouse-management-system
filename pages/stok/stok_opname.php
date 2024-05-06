@@ -263,6 +263,14 @@ while ($d = mysqli_fetch_assoc($q)) {
   $qty_retur = $d['qty_retur'];
   $qty_ganti = $d['qty_ganti'];
 
+  $debug .= "<br>qty_transit$qty_transit";
+  $debug .= "<br>qty_tr_fs$qty_tr_fs";
+  $debug .= "<br>qty_qc$qty_qc";
+  $debug .= "<br>qty_qc_fs$qty_qc_fs";
+  $debug .= "<br>qty_retur$qty_retur";
+  $debug .= "<br>qty_ganti$qty_ganti";
+
+
   // qty pengeluaran
   $qty_pick = $d['qty_pick'];
   $qty_allocate = $d['qty_allocate'];
@@ -273,16 +281,24 @@ while ($d = mysqli_fetch_assoc($q)) {
   $tanggal_qc = $d['tanggal_qc'];
 
 
-
   // qty calculation
   $qty_datang = $qty_transit + $qty_tr_fs + $qty_qc_fs + $qty_qc - $qty_retur + $qty_ganti;
+  $debug .= "<br>qty_datang$qty_datang";
+
 
   if (!$qty_datang and strpos($d['kode_sj'], '-999')) {
     // $qty_datang = $d['tmp_qty'];
-    $qty_qc = $qty_datang;
+    // $qty_qc = $qty_datang;
+    $debug .= "<br>qty_qc (after assign by qty_datang) aborted";
   }
+  // $debug .= "<br>qty_qc (after assign by qty_datang) = $qty_qc";
 
   $qty_available = $qty_qc_fs + $qty_qc - $qty_retur + $qty_ganti;
+  $debug .= "<br>qty_available (old-code)$qty_available (old-code)";
+
+  $qty_available = $qty_datang;
+  $debug .= "<br>qty_available (new-code) = $qty_available = qty_datang:$qty_datang";
+
   $qty_stok = $qty_available - $qty_allocate + $qty_retur_do;
 
   // qty show pemasukan
