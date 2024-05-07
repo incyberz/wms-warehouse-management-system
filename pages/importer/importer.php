@@ -274,6 +274,7 @@ if (isset($_POST['btn_import_csv'])) {
       $values = substr($values, 1); // remove first comma
       echolog("inserting data #$key");
       $s = "INSERT INTO tb_importer ($arr_header_kolom_importer) VALUES ($values)";
+      echo $s;
 
       $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
       echolog('sukses');
@@ -427,7 +428,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   foreach ($d as $kolom => $isi) {
 
     // bersihkan isi cell
-    $isi = str_replace('\'', '`', strtoupper(trim($isi)));
+    $isi = $isi ? str_replace('\'', '`', trim(strtoupper($isi))) : $isi;
 
     # ===========================================
     # VALIDASI UNTUK SETIAP KOLOM

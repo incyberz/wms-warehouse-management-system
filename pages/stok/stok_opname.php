@@ -299,7 +299,16 @@ while ($d = mysqli_fetch_assoc($q)) {
   $qty_available = $qty_datang;
   $debug .= "<br>qty_available (new-code) = $qty_available = qty_datang:$qty_datang";
 
+  $qty_available = $qty_available ? number_format($qty_available, 4) : 0;
+  $qty_allocate = $qty_allocate ? number_format($qty_allocate, 4) : 0;
+  $qty_retur_do = $qty_retur_do ? number_format($qty_retur_do, 4) : 0;
+
   $qty_stok = $qty_available - $qty_allocate + $qty_retur_do;
+  // $debug .= "<h1 class='red f30'>qty_stok:$qty_stok = qty_available:$qty_available - qty_allocate:$qty_allocate + qty_retur_do:$qty_retur_do;</h1>";
+  // if ($qty_available == $qty_allocate) $debug .= "<br>qty_available == qty_allocate";
+  // if ($qty_available === $qty_allocate) $debug .= "<br>qty_available === qty_allocate";
+
+
 
   // qty show pemasukan
   $qty_transit_show = $qty_transit ? floatval($qty_transit) : '-';
