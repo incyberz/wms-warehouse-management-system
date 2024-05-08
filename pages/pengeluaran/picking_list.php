@@ -202,6 +202,14 @@ if ($jumlah_item) {
     }
     $stok_akhir_show = number_format($stok_akhir, 2);
 
+    // auto save stok_akhir jika tidak sama dengan stok_akhir_tmp
+    if ($stok_akhir != $d['stok_akhir_tmp'] || $d['stok_akhir_tmp'] === null) {
+      $stok_akhir = round($stok_akhir, 4);
+      $s2 = "UPDATE tb_pick SET stok_akhir_tmp=$stok_akhir WHERE id=$id_pick";
+      echo "<div class='debuga f12 blue mb2'>Updating Stok Akhir Temporer: $s2</div>";
+      $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+    }
+
     // set max
     $qty_set_max_pick = $stok_available + $qty_pick;
     $max_pick = $is_hutangan ? '' : $qty_set_max_pick;

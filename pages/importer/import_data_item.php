@@ -6,6 +6,7 @@ $today = date('Y-m-d');
 
 if (isset($_POST['btn_insert_item'])) {
   $s = "SELECT * FROM tb_importer_po";
+  echo "<div class='debuga f30 red'>$s</div>";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   while ($d = mysqli_fetch_assoc($q)) {
     $kode_po = $d['kode_po'];
@@ -15,6 +16,7 @@ if (isset($_POST['btn_insert_item'])) {
 
     // select kode barang at importer where kode_po
     $s2 = "SELECT ID_BARU,SISA_STOCK FROM tb_importer WHERE PO='$kode_po'";
+    echo "<div class='debuga f20 biru'>LOOP $s2</div>";
     $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
     while ($d2 = mysqli_fetch_assoc($q2)) {
       $ID_BARU = $d2['ID_BARU'];
@@ -31,8 +33,9 @@ if (isset($_POST['btn_insert_item'])) {
 
 
       $s3 = "SELECT 1 FROM tb_sj_item WHERE kode_sj='$kode_sj' AND kode_barang='$kode_barang'";
+      echo "<div class='debuga f14 merah'>LOOP LOOP $s3</div>";
       $q3 = mysqli_query($cn, $s3) or die(mysqli_error($cn));
-      if (mysqli_num_rows($q3) == 0) {
+      if (!mysqli_num_rows($q3)) {
         $s4 = "INSERT INTO tb_sj_item (
           kode_sj,
           kode_barang,
@@ -44,7 +47,18 @@ if (isset($_POST['btn_insert_item'])) {
           '$qty_po',
           '$qty'
         )";
+        echo "<div class='debuga f14 merah'>LOOP LOOP INSERT $s4</div>";
         // die($s4);
+        $q4 = mysqli_query($cn, $s4) or die(mysqli_error($cn));
+      } else {
+        $s4 = "UPDATE tb_sj_item SET 
+          kode_sj = '$kode_sj',
+          kode_barang = '$kode_barang',
+          qty_po = '$qty_po',
+          qty = '$qty' 
+        WHERE kode_sj = '$kode_sj' AND kode_barang = '$kode_barang'
+        ";
+        echo "<div class='debuga f14 merah'>LOOP LOOP UPDATE $s4</div>";
         $q4 = mysqli_query($cn, $s4) or die(mysqli_error($cn));
       }
     }

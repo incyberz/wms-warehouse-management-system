@@ -1,6 +1,7 @@
 <style>
   #tb_do td {
     padding: 5px 10px;
+    padding: 3px;
   }
 </style>
 <?php
@@ -17,12 +18,13 @@ if (isset($_POST['btn_cetak'])) {
 
 $judul = 'Surat Jalan Pengeluaran';
 set_title($judul);
-echo "<h1 class='f20 tengah'>$judul</h1>";
+echo "<h1 class='f20 tengah' style=color:black>$judul</h1>";
 
 $tr = "<tr><td colspan=100%><div class='alert alert-danger'>Belum ada item</div></td></tr>";
 $s = "SELECT 
 a.id as id_pick,
 a.qty_allocate,
+a.stok_akhir_tmp,
 b.no_lot,
 b.kode_lokasi,
 b.is_fs,
@@ -61,6 +63,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   $no_lot = $d['no_lot'];
   $kode_lokasi = $d['kode_lokasi'];
   $brand = $d['brand'];
+  $stok_akhir_tmp = $d['stok_akhir_tmp'];
   // $is_hutangan = $d['is_hutangan'];
   $count_roll = $d['count_roll'];
   $is_fs = $d['is_fs'];
@@ -93,18 +96,20 @@ while ($d = mysqli_fetch_assoc($q)) {
     <tr>
       <td>$i</td>
       <td>
+      <div>
         $d[kode_po]
-      </td>
-      <td>
+      </div>
+      <div>
         $no_lot
-      </td>
-      <td>
+      </div>
+      <div>
         $kode_lokasi $brand
+      </div>
       </td>
 
       <td>
         <div>$d[kode_barang]</div>
-        <div class='f12 abu'>
+        <div class=' '>
           <div>Kode lama: $d[kode_lama]</div>
         </div>
       </td>
@@ -114,8 +119,11 @@ while ($d = mysqli_fetch_assoc($q)) {
       </td>
       <td>
         $qty_allocate
+        <div>$satuan</div>
       </td>
-      <td>$satuan</td>
+      <td>
+        $stok_akhir_tmp
+      </td>
     </tr>
   ";
 }
@@ -123,34 +131,35 @@ while ($d = mysqli_fetch_assoc($q)) {
 echo "
 
   <hr>
-  <table id=tb_do>
+  <table id=tb_do style='color:black' width=100%>
     <tr>
       <td>Nomor DO</td>
       <td>:</td>
       <td>$kode_do</td>
+      <td width=20%>&nbsp;</td>
+      <td>Tanggal Delivery</td>
+      <td>:</td>
+      <td class=upper>$tanggal_delivery_show</td>
     </tr>
     <tr>
       <td>Jenis</td>
       <td>:</td>
       <td class=upper>$cat</td>
-    </tr>
-    <tr>
-      <td>Tanggal Delivery</td>
-      <td>:</td>
-      <td class=upper>$tanggal_delivery_show</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
     </tr>
   </table>
-  <hr>
+  
   <table class='table' style='border: solid 1px black'>
     <thead>
       <th>No</th>
-      <th>PO</th>
-      <th>LOT</th>
-      <th>LOKASI</th>
+      <th>PO-LOT-LOC</th>
       <th>ITEM</th>
       <th>DESKRIPSI</th>
-      <th>Allocate</th>
-      <th>UOM</th>
+      <th>ALLOCATE</th>
+      <th>STOCK</th>
     </thead>
     $tr
   </table>

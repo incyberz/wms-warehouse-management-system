@@ -2,8 +2,8 @@
 $kode_po = 'AK202401026';
 if (!$kode_po) die(div_alert('danger', 'Dibutuhkan po_number untuk GET API.'));
 
-$api_url = "http://203.176.176.170:81/apiwhrm/Get_po?po_id=AK202401026";
-$api_url = "http://103.110.9.21:81/api/purchasing/purchase-order/get-po-by?number=$kode_po";
+// $api_url = "http://203.176.176.170:81/apiwhrm/Get_po?po_id=AK202401026";
+$api_url = "http://203.176.176.170:81/api/purchasing/purchase-order/get-po-by?number=$kode_po";
 
 $ch = curl_init();
 $opts = [

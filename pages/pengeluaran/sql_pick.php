@@ -23,6 +23,7 @@ $sql_pick = "SELECT
   a.tanggal_allocate,
   a.is_repeat,
   a.boleh_allocate,
+  a.stok_akhir_tmp,
   b.no_lot,
   b.kode_lokasi,
   b.is_fs,

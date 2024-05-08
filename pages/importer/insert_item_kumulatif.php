@@ -79,7 +79,20 @@ if (isset($_POST['btn_insert_item_kumulatif'])) {
       $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
       if (mysqli_num_rows($q2)) {
         // jika ada duplikat
-        echolog("kode kumulatif <u class=darkred>$kode_kumulatif</u> telah ada pada database ==================== SKIPPED");
+        echolog("kode kumulatif <u class=darkred>$kode_kumulatif</u> telah ada pada database ==================== UPDATED");
+        $s2 = "UPDATE tb_sj_kumulatif SET 
+        id_sj_item = '$id_sj_item', 
+        kode_lokasi = '$kode_lokasi',
+        kode_kumulatif = '$kode_kumulatif',
+        tmp_qty = '$tmp_qty',
+        no_lot = $no_lot_or_null,
+        nomor = $nomor,
+        tanggal_masuk = '$tanggal_masuk',
+        tanggal_qc = CURRENT_TIMESTAMP 
+        WHERE kode_kumulatif='$kode_kumulatif'
+
+        ";
+        $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
       } else {
 
         echolog("insert kumulatif <u class=darkred>$kode_kumulatif</u>");

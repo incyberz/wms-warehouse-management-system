@@ -5,6 +5,9 @@ set_title($judul);
 $today = date('Y-m-d');
 
 if (isset($_POST['btn_buat_sj'])) {
+  echo '<pre>';
+  var_dump($_POST);
+  echo '</pre>';
   $s = "SELECT * FROM tb_importer_po";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   while ($d = mysqli_fetch_assoc($q)) {
@@ -15,7 +18,7 @@ if (isset($_POST['btn_buat_sj'])) {
 
     $s2 = "SELECT 1 FROM tb_sj WHERE kode='$kode'";
     $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
-    if (mysqli_num_rows($q2) == 0) {
+    if (!mysqli_num_rows($q2)) {
       $s2 = "INSERT INTO tb_sj (
         id_kategori,
         kode,
@@ -28,6 +31,17 @@ if (isset($_POST['btn_buat_sj'])) {
         '$kode_supplier'
       )";
       $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+      echo "<br>$s2";
+    } else {
+      $s2 = "UPDATE tb_sj SET 
+        id_kategori = '$id_kategori',
+        kode = '$kode',
+        kode_po = '$kode_po',
+        kode_supplier = '$kode_supplier'
+      WHERE kode = '$kode'
+      ";
+      $q2 = mysqli_query($cn, $s2) or die(mysqli_error($cn));
+      echo "<div class='debuga f12 green'>$s2</div>";
     }
   }
   echo div_alert('success', 'Semua Surat Jalan berhasil dibuat.');
