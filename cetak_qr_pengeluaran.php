@@ -15,6 +15,7 @@ b.kode_lokasi,
 b.no_lot,
 b.is_fs,
 f.brand as this_brand,
+g.kode_artikel,
 (SELECT count(1) FROM tb_roll WHERE id_kumulatif=b.id) count_roll
 
 FROM tb_pick a 
@@ -23,11 +24,13 @@ JOIN tb_sj_item c ON b.id_sj_item=c.id
 JOIN tb_sj d ON c.kode_sj=d.kode 
 JOIN tb_barang e ON c.kode_barang=e.kode 
 JOIN tb_lokasi f ON b.kode_lokasi=f.kode 
+JOIN tb_do g ON a.id_do=g.id 
 
 WHERE a.id=$id_pick";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $d = mysqli_fetch_assoc($q);
 
+$kode_artikel = $d['kode_artikel'];
 $kode_barang = $d['kode_barang'];
 $nama_barang = $d['nama_barang'];
 $keterangan_barang = $d['keterangan_barang'];
@@ -93,7 +96,7 @@ if ($count) {
               </td>
               <td>
                 $fs_label_info
-                <div class=f12>No. $i</div>
+                <div class=f12>No. $i | ART.$kode_artikel</div>
                 <div class=f12>$no_po_dll</div>
                 <div class='f16 mt2 mb1'>$nama_barang</div>
                 <div class='f12'>$keterangan_barang</div>
